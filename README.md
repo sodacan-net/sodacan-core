@@ -1,5 +1,5 @@
 # SodaCan
-This is a proff-of-concept for plant automation using Java 8+, Apache Kafka and JBoss Drools. It is probably overkill for Home Automation but it does provide a lan-based alternative to those systems that depend on a commercial cloud service. If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
+This is a proof-of-concept for plant automation using Java 8+, Apache Kafka and JBoss Drools. It is probably overkill for Home Automation but it does provide a lan-based alternative to those systems that depend on a commercial cloud service. If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
 
 Each "device" should be a microcontroller capable of running Java. BeagleBone Black or Green would be appropriate.
 The central control, what I'm calling the SodaCan, is a Drools rule engine that manages events and device state. Persistence, fault-tolerance, and communication is provided by Apache Kafka. 
