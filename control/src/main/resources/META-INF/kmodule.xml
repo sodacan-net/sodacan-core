@@ -1,0 +1,11 @@
+<kmodule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+         xmlns="http://jboss.org/kie/6.0.0/kmodule">
+  <kbase name="kbase1" default="true" eventProcessingMode="stream" 
+  		equalsBehavior="equality" declarativeAgenda="disabled" 
+  		>
+    <ksession name="ksession1" type="stateful" default="true" clockType="realtime" beliefSystem="simple" 
+    	scope="javax.enterprise.context.ApplicationScoped" >
+    </ksession>
+  </kbase>
+  
+</kmodule>

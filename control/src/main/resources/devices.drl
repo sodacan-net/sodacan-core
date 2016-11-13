@@ -1,0 +1,106 @@
+import org.t3.farm.control.DevParam;
+import org.t3.farm.control.DevParamChange;
+import org.t3.farm.control.ButtonEvent;
+import org.t3.farm.control.DevEvent;
+import org.t3.farm.control.HeartbeatEvent;
+/*
+ * One for each device that these rules support. Device name consists of facility and device, but not the parameter name.
+ * eg "fac1-dev1" or "test-dev1"
+ */
+declare Device
+	deviceName : String @key
+	heartbeat : boolean
+end
+
+declare Alert
+	deviceName : String @key
+	sendTo: String @key
+end
+/*
+ * Rules react to changes in device parameter values and to events. A rule should send a new parameter 
+ * value to the device, not modify an existing parameter value. This "round trip" will prevent 
+ * loops in the rules and ensures that a reaction to a device parameter change has come from the device 
+ * rather than from a rule.
+ * A Device fact recognizes each device by name
+ * Notice that we test the possibility of having more than one alert for a device.
+ */
+rule "Init"
+	then
+		System.out.println("devices.drl loaded");
+		insert( new Device("test-alert-alert1", false));
+		insert( new Device("test-button1", true));
+		insert( new Device("test-light1", true));
+		insert( new Alert("test-button1", "test-alert-state"));
+		insert( new Alert("test-button1", "test-alert2-state"));
+		insert( new Alert("test-light1", "test-alert-state"));
+end
+
+query "find Device Parameter" (String k) 
+	$r : DevParam( key==k )
+end
+
+query "find All Heartbeats" 
+	$h : HeartbeatEvent(  ) from entry-point "EventStream"
+end
+
+query "Device Parameter Changes"  
+	$r : DevParamChange( )
+end
+
+rule "Heartbeat check for alert"
+	duration (5s)
+when
+	Device( $dn : deviceName, heartbeat==true )
+	Alert( deviceName==$dn, $st : sendTo )
+    not (exists HeartbeatEvent( deviceName == $dn ) from entry-point "EventStream")
+then
+	System.out.println("No heartbeat for " + $dn);
+	insert( new DevParamChange( $st, "on" ));
+end
+
+rule "Heartbeat check for no alert"
+	duration (5s)
+when
+	Device( $dn : deviceName, heartbeat==true )
+	Alert( deviceName==$dn, $st : sendTo )
+    exists HeartbeatEvent( deviceName == $dn ) from entry-point "EventStream"
+then
+	System.out.println("Heartbeat restored for " + $dn);
+	insert( new DevParamChange( $st, "off" ));
+end
+
+/*
+ * A toggle event must only be processed once so we set a processed flag so that we never see it again
+ * We don't change state in rules, we send a message to the device for it to change state.
+ */
+rule "Toggle State" 
+	when
+		$e : ButtonEvent( key=="test-button1-button", processed == false ) from entry-point "EventStream" 
+		$p : DevParam( $d : key == "test-light1-state")
+	then
+		modify($e) {setProcessed( true )};
+		insert( new DevParamChange( $d, ("off".equals($p.getValue())?"on":"off" )));
+end
+
+//rule "Look for state and description for a device"
+//	when
+//		DevParam( $d: deviceName, name == "state", $state: value)
+//		DevParam( deviceName==$d, name == "desc", $desc: value)
+//	then
+//		System.out.println("Got state " + $state + " for " + $d + " # " + $desc);
+//end
+
+//rule "Any parameter"
+//	when
+//		$d : DevParam($k:key,$v:value)
+//	then
+//		System.out.println($k + "=" + $v);
+//end
+
+//rule "Any Device Parameter Change"
+//	when
+//		DevParamChange( $d : devParam, $nv : newValue )
+//	then
+//		System.out.println( "DevParamChange " + $d + "=" + $nv);
+//end	
+
