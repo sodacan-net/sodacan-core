@@ -15,3 +15,7 @@ Kafka provides all state persistence as well as fast, reliable message delivery.
 ## Cabling
 I'm running normal Cat-6 cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting devices, most of which are custom-made.
 
+## Leader Election
+Kafka handles leader election among the brokers. However, for the SodaCan itself (the rule engine) there should only be one instance running at a time since rules should reason over the entire domain of facts available to it. Nevertheless, it is desirable to have more than one SodaCan running at the same time should the current leader fail. There are two approaches: 1. The SodaCan is completely idle and essentially only synchronizes when it becomes leader. 2. A non-leader SodaCan can listen to the same messages as the leader without taking any actions based on those messages in order to stay as synchronized as possible. 
+
+Once a given SodaCan becomes the leader, it remains the leader until it is killed or it dies. For this reason, the only thing that a leading SodaCan can do it it loses leadership is to exit.
