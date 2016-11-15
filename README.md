@@ -19,7 +19,7 @@ Kafka provides all state persistence for SodaCan as well as fast, reliable messa
 ## Cabling
 I'm running normal Cat-6 cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting devices, most of which are custom-made.
 
-## Indistrial Standards
+## Industrial Standards
 This approach is much less compact than a protocol such as MODBUS. Nevertheless, it is relatively compact and provides built-in security, error detection, failover, etc. This project makes no attempt to comply with the SCADA standard. There are products available that support protocol conversion between various standards. That function is beyond the scope of this project.
 
 ## Load Balancing
