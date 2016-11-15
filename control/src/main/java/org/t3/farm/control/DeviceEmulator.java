@@ -23,7 +23,7 @@ public class DeviceEmulator {
 	private KafkaConsumer<String, String> consumer = null;
 	private Producer<String, String> producer;
 	static Logger logger = LoggerFactory.getLogger(DeviceEmulator.class);
-	List<TopicPartition> topics = new ArrayList<TopicPartition>();
+	List<String> topics = new ArrayList<String>();
 
 	public void setupConsumer() {
 		Properties props = new Properties();
@@ -31,13 +31,13 @@ public class DeviceEmulator {
 		props.put("group.id", "EmulatorGroup");
 		props.put("enable.auto.commit", "true");		// Offset is saved automatically
 		props.put("auto.commit.interval.ms", 10*1000);	// at this interval
-//		props.put("auto.offset.reset", "earliest");
+		props.put("auto.offset.reset", "earliest");
 		props.put("session.timeout.ms", "30000");
 		props.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		props.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 		// Setup a consumer
 		consumer = new KafkaConsumer<String, String>(props);
-		consumer.assign(topics);
+		consumer.subscribe(topics);
 	}
 	
 	public void setupProducer() {
@@ -50,7 +50,7 @@ public class DeviceEmulator {
 		producer = new KafkaProducer<String, String>(props);
 	}
 	public DeviceEmulator() {
-		topics.add(new TopicPartition("dpc",0));
+		topics.add("dpc");
 		setupConsumer();
 		setupProducer();
 	}
@@ -95,7 +95,7 @@ public class DeviceEmulator {
 				// Device Parameter received, update working memory by sending back a parameter update
 				if ("dpc".equals(record.topic())) {
 					DevParam dp = new DevParam(record.key(), record.value());
-					logger.debug("ECHO event as DevParam: " + dp);
+					logger.debug("ECHO event as DevParam: " + dp + " offset: " + record.offset());
 					sendDevParam( dp);
 				}
 			}
