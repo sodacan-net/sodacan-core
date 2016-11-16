@@ -118,7 +118,7 @@ public class Engine  {
 	public void close() {
 //		devParamChangeQuery.close();
 		kieSession.halt();
-//		kieSession.dispose();
+		kieSession.dispose();
 	}
 	
 //	@Override
