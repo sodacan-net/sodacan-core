@@ -28,7 +28,7 @@ Each microcontroller should also send a "heartbeat" event periordically so that 
 SodaCan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains, at least, the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the SodaCan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to SodaCan.
 
 ## Servers
-In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a Docer container.
+In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a Docker container.
 
 At least three physical servers should provide sufficient redundancy. While my servers are in a single rack, they could be more distributed to improve reliability. 
 
