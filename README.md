@@ -13,7 +13,19 @@ Device parameters are represented as facts in the rule engine. Rules should not 
 
 Device Events originate in certain devices, typically buttons or similar triggers. An event doesn't usually persist vert long in the rule engine. For example, a button press used to toggle another device on or off would have little meaning once the target device state change has occured. For this reason, events are stored in a separate Kafka topic from parameters. An event persists in a topic for a configurable amount of time, say one week when it's space is simply reclaimed. Events are not replayed should the SodaCan fail and be restarted.
 
-Device Parameters are handled differently. Logically, the last setting of each unique parameter will remain in the topic. If a SodaCan should fail, when it starts again, it simply rewinds to the beginning of the topic and loads all parameters into working memory. Behind the scenes, the "log compaction process" which retains the most recent parameter state is not synchronized so it is possible that during a load, multiple versions of a single parameter might be processed (in order). This is not a problem for the SodaCan.
+Device Parameters are handled differently. Logically, the last setting of each unique parameter will remain in the topic. If a SodaCan should fail, when it starts again, it simply rewinds to the beginning of the topic and loads all parameters into working memory. Behind the scenes, the "log compaction process" which retains the most recent parameter state runs only periodically so it is possible that during a load, multiple versions of a single parameter might be processed (in order). This is not a problem for the SodaCan.
+
+## High-level Dataflow
+Dataflow from various perspectives and operational conditions are described here.
+### Device Controller, steady-state
+During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primary SodaCan, desires to change a parameter, it will send a parameter change message which the microcontroller can use as notification of a request to change a paramter value. In any case, when the microcontroller changers the value of a parameter (or the parameter is added), it must send a message containing the new value.
+
+When appropriate, a microcontroller can send an event rather than changing it's state. The difference between a button-press (event) and say, a temperature reading (a parameter change).
+
+Each microcontroller should also send a "heartbeat" event periordically so that the rules can react to a device being off-line.
+
+### SodaCan, steady-state
+SodaCan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains, at least, the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the SodaCan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to SodaCan.
 
 ## Servers
 In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a Docer container.
