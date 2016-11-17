@@ -28,16 +28,17 @@ Each microcontroller should also send a "heartbeat" event periordically so that 
 SodaCan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains, at least, the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the SodaCan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to SodaCan.
 
 ## Servers
-In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a Docker container.
+In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a [Docker](https://www.docker.com/) container.
 
 At least three physical servers should provide sufficient redundancy. While my servers are in a single rack, they could be more distributed to improve reliability. 
 
-The logical organization of servers is: Three Zookeeper servers, three Message Broker servers, and three SodaCan servers. Since all three boxes can be expected to be up most of the time, it is best that each of the three major components runs on each of the boxes. Of course in the case of a failure, the services running on the failed box will shift to processes running on the remaining boxes.
+The logical organization of servers is: Three 
+eeper servers, three Kafka Message Broker servers, and three SodaCan servers. Since all three boxes can be expected to be up most of the time, it is best that each of the three major components runs on each of the boxes. Of course in the case of a failure, the services running on the failed box will shift to processes running on the remaining boxes.
 
 Using the 3x3 configuration described above, one could in theory run these on nine separate boxes. But that would leave 6 boxes idle most of the time. In any case, Docker containers are used to represent each of these nine logical boxes so that they can be deployed over three servers, or on AWS or similar service if desired. Should a phyical box go down, the Docker container can simply be run on a different box.  
 
 ## Peristence
-Kafka provides all state persistence for SodaCan as well as fast, reliable message delivery. Leader election is provided by Zookeeper which also manages distributed configuration information. There's really no need for a reliable disk configuration due to efficient replication and failover. As a general philosophy, if a server should fail for any reason, it should simply be wiped clean and rebuilt. There should be no need for backups or for any downtime. This philosophy also applies to the disk files used by Kafka: If a server goes down, the kafka files can be wiped. When Kafka restarts, they will be restored from other brokers.
+Kafka provides all state persistence for SodaCan as well as fast, reliable message delivery. There is really no need for a reliable disk configuration (eg RAID) due to efficient replication and failover at the software level. As a general philosophy, if a server should fail for any reason, it should simply be wiped clean and rebuilt. There should be no need for backups or for any downtime. This philosophy also applies to the disk files used by Kafka: If a server goes down, any persistent files can be wiped. When a server restarts, data will be restored from other servers.
 
 ## Cabling
 I'm running normal Cat-6 cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting devices, most of which are custom-made.
