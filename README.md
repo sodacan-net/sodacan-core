@@ -17,25 +17,22 @@ Device Parameters are handled differently. Logically, the last setting of each u
 
 ## High-level Dataflow
 Dataflow from various perspectives and operational conditions are described here.
-### Device Controller, steady-state
+#### Device Controller, steady-state
 During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primary SodaCan, desires to change a parameter, it will send a parameter change message which the microcontroller can use as notification of a request to change a paramter value. In any case, when the microcontroller changers the value of a parameter (or the parameter is added), it must send a message containing the new value.
 
 When appropriate, a microcontroller can send an event rather than changing it's state. The difference between a button-press (event) and say, a temperature reading (a parameter change).
 
 Each microcontroller should also send a "heartbeat" event periordically so that the rules can react to a device being off-line.
 
-### SodaCan, steady-state
+#### SodaCan, steady-state
 SodaCan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains, at least, the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the SodaCan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to SodaCan.
 
 ## Servers
-In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a [Docker](https://www.docker.com/) container.
+In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a [Docker](https://www.docker.com/) container. I'll use the term "box" to refer to a physical server.
 
-At least three physical servers should provide sufficient redundancy. While my servers are in a single rack, they could be more distributed to improve reliability. 
+The logical organization of servers is: Three zookeeper servers, three Message Broker servers, and three SodaCan servers. These logical servers can be implemented on three physical boxes to provide sufficient redundancy. All three physical boxes can be expected to be up most of the time so it is best that each of the three major components runs on each of the boxes. Just make sure that the three instances of any one server function are not all allocated to a single box. In the case of a failure, the services running on the failed box will shift to processes running on the remaining boxes.
 
-The logical organization of servers is: Three 
-eeper servers, three Kafka Message Broker servers, and three SodaCan servers. Since all three boxes can be expected to be up most of the time, it is best that each of the three major components runs on each of the boxes. Of course in the case of a failure, the services running on the failed box will shift to processes running on the remaining boxes.
-
-Using the 3x3 configuration described above, one could in theory run these on nine separate boxes. But that would leave 6 boxes idle most of the time. In any case, Docker containers are used to represent each of these nine logical boxes so that they can be deployed over three servers, or on AWS or similar service if desired. Should a phyical box go down, the Docker container can simply be run on a different box.  
+Using the 3x3 configuration described above, one could run these on nine separate boxes. But that would leave 6 boxes idle most of the time. More boxes might be justified for additional capacity, but that is a separate discussion. In any case, Docker containers are used to represent each of these nine logical boxes so that they can be deployed over three servers, or on AWS or similar service if desired. Should a phyical box go down, the Docker container can simply be run on a different box. Replication in this style also facilitates rolling upgrades in order to eliminate the need for downtime.
 
 ## Peristence
 Kafka provides all state persistence for SodaCan as well as fast, reliable message delivery. There is really no need for a reliable disk configuration (eg RAID) due to efficient replication and failover at the software level. As a general philosophy, if a server should fail for any reason, it should simply be wiped clean and rebuilt. There should be no need for backups or for any downtime. This philosophy also applies to the disk files used by Kafka: If a server goes down, any persistent files can be wiped. When a server restarts, data will be restored from other servers.
