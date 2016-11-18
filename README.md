@@ -4,16 +4,18 @@ This is a proof-of-concept for plant automation using Java 8+, Apache Kafka and 
 If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
 
 ## Device Controllers
-Each "device" should be a microcontroller capable of running Java. BeagleBone Black or Wireless BeagleBone Green would be appropriate.
+Each "device" should be connected to a local microcontroller capable of running Java. BeagleBone Black or Wireless BeagleBone Green would be appropriate.
 
 ## Rules
-The SodaCan contains rules that manages events, device state, alerts, heartbeat, delays, etc. A key concept is that SodaCan rules should be able to reason over all available facts which mostly boils down to all parameters of all devices.
+The SodaCan contains rules that manage events, device state, alerts, heartbeat, temporal reasoning, etc. A key concept is that SodaCan rules should be able to reason over all available facts which mostly boils down to all parameters of all devices in the system. In modern computing, there's really no reason to have to pick and choose which parameters need to be sent to which logic engine.
 
-Device parameters are represented as facts in the rule engine. Rules should not change device parameters directly but rather should send a device parameter change request to the device. In response, the device will make the parameter change locally and then send an updated parameter to the SodaCan.
+Device parameters are represented as facts in the rule engine. Rules should not change device parameters directly but rather should send a device parameter change request to the controller to which the device is connected. In response, the device will make the parameter change locally and then send an updated parameter to the SodaCan.
 
 Device Events originate in certain devices, typically buttons or similar triggers. An event doesn't usually persist vert long in the rule engine. For example, a button press used to toggle another device on or off would have little meaning once the target device state change has occured. For this reason, events are stored in a separate Kafka topic from parameters. An event persists in a topic for a configurable amount of time, say one week when it's space is simply reclaimed. Events are not replayed should the SodaCan fail and be restarted.
 
 Device Parameters are handled differently. Logically, the last setting of each unique parameter will remain in the topic. If a SodaCan should fail, when it starts again, it simply rewinds to the beginning of the topic and loads all parameters into working memory. Behind the scenes, the "log compaction process" which retains the most recent parameter state runs only periodically so it is possible that during a load, multiple versions of a single parameter might be processed (in order). This is not a problem for the SodaCan.
+
+As a minor contradiction to the "all facts known to one SodaCan", it is a rather simple configuration change to have two or more different sets of rules operating on different servers. This can even be done in a live system. The name of the "group" that contains SodaCan is SodaCanGroup. In another process, it can be changed to some other name, such as "MyRulesGroup" and when that process runs, it will see the same facts as the SodaCanGroup but can make completely different decisions based on those facts. This feature is distict from having multiple instances of the same group name such as 3 replicas of the SodaCanGroup. 
 
 ## High-level Dataflow
 Dataflow from various perspectives and operational conditions are described here.
