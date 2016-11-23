@@ -4,7 +4,7 @@ This is a proof-of-concept for plant automation using Java 8+, Apache Kafka and 
 If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
 
 ## Device Controllers
-Each "device" should be connected to a local microcontroller capable of running Java. BeagleBone Black or Wireless BeagleBone Green would be appropriate.
+Each "device" should be connected to a local microcontroller capable of running Java or Python. BeagleBone Black or Wireless BeagleBone Green would be appropriate. pykafka supports client communication to the Kafka broker(s). 
 
 ## Rules
 The SodaCan contains rules that manage events, device state, alerts, heartbeat, temporal reasoning, etc. A key concept is that SodaCan rules should be able to reason over all available facts which mostly boils down to all parameters of all devices in the system. In modern computing, there's really no reason to have to pick and choose which parameters need to be sent to which logic engine.
