@@ -4,7 +4,7 @@ This is a proof-of-concept for plant automation using Java 8+, Apache Kafka and 
 If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
 
 ## Device Controllers
-Each "device" should be connected to a local microcontroller capable of running Java or Python. BeagleBone Black or Wireless BeagleBone Green would be appropriate. pykafka supports client communication to the Kafka broker(s). 
+Each "device" should be connected to a local microcontroller capable of running C, Java or Python. BeagleBone Black or Wireless BeagleBone Green would be appropriate. pykafka supports client communication from Python to the Kafka broker(s). 
 
 ## Rules
 The SodaCan contains rules that manage events, device state, alerts, heartbeat, temporal reasoning, etc. A key concept is that SodaCan rules should be able to reason over all available facts which mostly boils down to all parameters of all devices in the system. In modern computing, there's really no reason to have to pick and choose which parameters need to be sent to which logic engine.
@@ -15,12 +15,12 @@ Device Events originate in certain devices, typically buttons or similar trigger
 
 Device Parameters are handled differently. Logically, the last setting of each unique parameter will remain in the topic. If a SodaCan should fail, when it starts again, it simply rewinds to the beginning of the topic and loads all parameters into working memory. Behind the scenes, the "log compaction process" which retains the most recent parameter state runs only periodically so it is possible that during a load, multiple versions of a single parameter might be processed (in order). This is not a problem for the SodaCan.
 
-As a minor contradiction to the "all facts known to one SodaCan", it is a rather simple configuration change to have two or more different sets of rules operating on different servers. This can even be done in a live system. The name of the "group" that contains SodaCan is SodaCanGroup. In another process, it can be changed to some other name, such as "MyRulesGroup" and when that process runs, it will see the same facts as the SodaCanGroup but can make completely different decisions based on those facts. This feature is distict from having multiple instances of the same group name such as 3 replicas of the SodaCanGroup. 
+As a minor contradiction to the "all facts known to one SodaCan", it is a rather simple configuration change to have two or more different sets of rules operating on different servers. This can even be done in a live system. The name of the "group" that contains SodaCan is SodaCanGroup. In another process, it can be changed to some other name, such as "MyRulesGroup" and when that process runs, it will see the same facts as the SodaCanGroup but can make completely different decisions based on those facts. This feature is distict from having multiple instances of consumers with the same group name.
 
 ## High-level Dataflow
 Dataflow from various perspectives and operational conditions are described here.
 #### Device Controller, steady-state
-During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primary SodaCan, desires to change a parameter, it will send a parameter change message which the microcontroller can use as notification of a request to change a paramter value. In any case, when the microcontroller changers the value of a parameter (or the parameter is added), it must send a message containing the new value.
+During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primary SodaCan, desires to change a parameter, it will send a parameter change message to the microcontroller which it can use as notification of a request to change a paramter value. In any case, when the microcontroller changes the value of a parameter (or the parameter is created), it must send a message containing the new value. This notifies anoyone interested in that parameter value.
 
 When appropriate, a microcontroller can send an event rather than changing it's state. The difference between a button-press (event) and say, a temperature reading (a parameter change).
 
