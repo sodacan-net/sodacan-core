@@ -8,7 +8,14 @@ If you are looking for something that has all of the fault-tolerance of a cloud-
 ## Device Controllers
 Each "device" should be connected to a local microcontroller capable of running C, Java or Python. BeagleBone Black or Wireless BeagleBone Green would be appropriate. Also, pykafka supports client communication from Python to the Kafka broker(s).
 
-With a large device controller such as BeagleBone, it is reasonable for it to control many devices. For example, one physical area could have a single controller manage all devices in that area as long as the bandwidth of the controller is not overburdened. This approach suggests that a device controller should be soft-configured. That is, generic code loaded onto each controller and the behavior intended for that controller downloaded from the central servers. As descussed shortly, the configuration can be distributed to the controller via message. Each controller has a dedicated "topic" which contains device parameter change requests. These parameters can include both dynamic changes such as requesting that a digital output pin be changed as well as configuration changes such as that a particular GPIO pin's mode be set to output. Thus, the controller is simply responding to a stream of requests (and generating state changes and events as a result). This allows changes to be rolled out under control of rules which can even do so at a specific future time. 
+## Device Controller Configuration
+With a large device controller such as BeagleBone, it is reasonable for it to control many devices. For example, one physical area could have a single controller manage all devices in that area as long as the bandwidth of the controller is not overburdened. This approach suggests that a device controller should be soft-configured. That is, generic code loaded onto each controller and the behavior intended for that controller downloaded from the central servers. 
+
+As descussed shortly, the configuration can be distributed to the controller via message. Each controller has a dedicated "topic" which contains device parameter change requests. These parameters can include both dynamic changes such as requesting that a digital output pin be changed as well as configuration changes such as that a particular GPIO pin's mode be set to output. Thus, the controller is simply responding to a stream of requests (and generating state changes and events as a result). This allows changes to be rolled out under control of rules which can even do so at a specific future time. 
+
+When a controller starts up, it seeks to the beginning of it's "topic" to get configuration information and any state change requests from the SodaCan. The message system does not distinguish between old catch-up states and the most recent state change. While the final state will be the correct state, during startup of a controller, there could be undiserable flicker in outputs being controlled if the states were processed as received. Therefore, the controller may need to maintain a temporary map containing the final state of each parameter and then process only the final states during startup. This situation is likely to be minor since the timing between each of these startup state changes, if any, will be on the order of a few milliseconds.
+
+In this approach, the only thing that is unique to each device controller is its host name. 
 
 ## Rules
 The SodaCan contains rules that manage events, device state, alerts, heartbeat, temporal reasoning, etc. A key concept is that SodaCan rules should be able to reason over all available facts which mostly boils down to all parameters of all devices in the system. In modern computing, there's really no reason to have to pick and choose which parameters need to be sent to which logic engine.
@@ -49,10 +56,14 @@ An exception to the idea of rebuilding a server should an exception be detected 
 
 #### Controlling Server Recovery
 Determining what should be done when a server is started can be complex. As suggested, it is sometimes wise to simple start fresh when a server starts up whereas sometimes it is required to continue where it left off. The following is a reasonably conservative aprroach which has a disadvantage that it manual intervention. This approach may not be desired in the case of home automation which may have no person available to intervene in the case of a failure. However, it does allow time for operation to continue perhaps with one or more servers off-line until intervention can be provided. 
-When a server fails for any reason other than power failue, the server 
+
+When a server fails for any reason other than power failue to the box, the server is essentially taken off-line. Technically, it means that the Docker container is paused or perhaps exited. In the case of power failure, docker will automatically restart the container when the box boots up.
+
+The primary decision to be made after a failure: Should the server be rebuilt or restarted. Because of the nature of SodaCan, 
+an existing Docker container can always be destroyed and a new container created from the existing image. So, the only question is if the file system used by that container be left as-is or should it start clean. This is the choice needed to be made by a system administrator. To help make this choice, the administrator should be made aware of the state of other replicas of the data. And further, the decision to clean the last remaining in-sync replica should require double confirmation. (A replica that is currently in the process of syncing from another replica is not considered in-sync.) 
 
 ## Cabling
-I'm running normal Cat-6 LAN cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting fixtures. The lighting fixtures are custom-made.
+I'm running normal Cat-6 LAN cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting fixtures. Some of the lighting fixtures are custom-made.
 
 ## Industrial Standards
 The approach used by SodaCan is much less compact than a protocol such as MODBUS. Nevertheless, it is relatively compact and provides built-in security, error detection, failover, etc. This project makes no attempt to comply with the SCADA standard. 
@@ -62,5 +73,3 @@ There are products available that support protocol conversion between various st
 ## Load Balancing
 While Kafka provides partitioning which can provide distribution of processing across many systems, scalability (tens-of-thousands of nodes) is not a goal of this project. In Kafka terms, each "topic" has only one partition. A typical system might have hundreds of devices. For a system with tens of tousands of devices, it is likely that rules would not be able to reason over all facts and that a tiered system would be needed. Such could be done with SodaCan as the intermediate tier, but that's not something I'm working on at this point.
 
-## Device Controller Configuration
-Some device mirocontrollers can be setup in such a way that, with the exception of its unique host name, is completely configured from a central site using Kafka. To make this efficient, the following approach is used: Each device has its own topic. This topic is only used to send messages from SodaCan to the controller. Anything sent in the other direction (controller to server) is done via the event or state topic. When a controller starts up, it seeks to the beginning of it's "topic" to get configuration information and any state change requests from the SodaCan.
