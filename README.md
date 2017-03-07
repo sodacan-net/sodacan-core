@@ -73,5 +73,5 @@ The approach used by SodaCan is much less compact than a protocol such as MODBUS
 There are products available that support protocol conversion between various standards. That function is beyond the scope of this project.
 
 ## Load Balancing
-While Kafka provides partitioning which can provide distribution of processing across many systems, scalability (tens-of-thousands of nodes) is not a goal of this project. In Kafka terms, each "topic" has only one partition. A typical system might have hundreds of devices. For a system with tens of tousands of devices, it is likely that rules would not be able to reason over all facts and that a tiered system would be needed. Such could be done with SodaCan as the intermediate tier, but that's not something I'm working on at this point.
+While Kafka provides partitioning which can provide distribution of processing across many nodes, scalability (tens-of-thousands of nodes) is not a goal of this project. In Kafka terms, each SodaCan "topic" has only one partition. A typical system might have hundreds of devices. For a system with tens of tousands of devices, it is likely that rules would not be able to reason over all facts and that a tiered system would be needed. Such could be done with SodaCan as the intermediate tier, but that's not something I'm working on at this point.
 
