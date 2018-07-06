@@ -75,3 +75,19 @@ There are products available that support protocol conversion between various st
 ## Load Balancing
 While Kafka provides partitioning which can provide distribution of processing across many nodes, scalability (tens-of-thousands of nodes) is not a goal of this project. In Kafka terms, each SodaCan "topic" has only one partition. A typical system might have hundreds of devices. For a system with tens of tousands of devices, it is likely that rules would not be able to reason over all facts and that a tiered system would be needed. Such could be done with SodaCan as the intermediate tier, but that's not something I'm working on at this point.
 
+## Authentication
+Determining the identity of a user is required for most functions in SodaCan.
+### Persistence
+As with other aspects of SodaCan, user account information is store in Kafka. 
+### Realm and Username
+Username is qualified by realm. Therefore, a username in one realm does not conflict with the same username in another domain. In many cases, only a single Realm is sufficient. A separate realm is used for testing in any case.
+### Password
+The hashed password, password salt, the hash algorithm, and when the password was last changed are stored with user information. A password history is also stored.
+## Authorization
+A user must be authorized to access various aspects on the SodaCan application. For example, one user might be able to only view various parameters while another may be able to change certain parameters. Therefore, each user must have a specified list of "permissions" which correspond to the permissions associated with various functions.
+### User Role
+As a convenience, a user may be given a "role" which is a name for a group of one or more permissions. The actual permissions granted to a user in a certain role is determined at login. This allows the definition of a role to change over time without having to modify all user's permissions.
+### Permission Check
+A user can also be granted specific permissions though this is less frequent.
+
+When a user logs in, some information about the user is copied into the session object for that user. This includes all of the permissions for that user, both explicit and implied (via role).
