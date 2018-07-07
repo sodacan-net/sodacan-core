@@ -77,17 +77,22 @@ While Kafka provides partitioning which can provide distribution of processing a
 
 ## Authentication
 Determining the identity of a user is required for most functions in SodaCan.
-### Persistence
-As with other aspects of SodaCan, user account information is store in Kafka. 
-### Realm and Username
+#### Persistence
+As with other aspects of SodaCan, user account information is stored in Kafka. 
+#### Realm and Username
 Username is qualified by realm. Therefore, a username in one realm does not conflict with the same username in another domain. In many cases, only a single Realm is sufficient. A separate realm is used for testing in any case.
-### Password
-The hashed password, password salt, the hash algorithm, and when the password was last changed are stored with user information. A password history is also stored.
+
+Username is not unique without realm to qualify it. For example, a user may be known by Joe123 in the facebook realm and joe456 in the Sodacan realm. In any case, Realm is prepended to the username when looking up permissions for the user and whenever else a username is looked up.
+
+#### Password
+The hashed password, password salt, the hash algorithm, and the time when the password was last changed are stored with user information. A password history is also stored for the user.
 ## Authorization
-A user must be authorized to access various aspects on the SodaCan application. For example, one user might be able to only view various parameters while another may be able to change certain parameters. Therefore, each user must have a specified list of "permissions" which correspond to the permissions associated with various functions.
-### User Role
-As a convenience, a user may be given a "role" which is a name for a group of one or more permissions. The actual permissions granted to a user in a certain role is determined at login. This allows the definition of a role to change over time without having to modify all user's permissions.
-### Permission Check
+A user must be authorized to access various aspects of the SodaCan application. For example, one user might be able to only view various parameters while another may be able to change certain parameters. Therefore, each user must have a specified list of "permissions" which correspond to the permissions associated with various functions. Permissions are fine-grained. For example, a user might be able to read a specific parameter, such as water-level, but not to the pump turn-on time. In general, permissions go to the instance-level. That is, a user is not usually authorized to access all pump-controllers but rather specific pump controllers. Therefore, permissions are usually stated in the form "well-pump-controller" or sometimes "well-A-pump-controller"
+#### User Role
+As a convenience, a user may be given a "role" which is a name for a group of one or more permissions. The actual permissions granted to a user in a certain role is determined at login. This allows the definition of a role to change over time without having to modify all of a user's permissions.
+#### Persistence
+As with other aspects of SodaCan, user authorization is stored in Kafka. Unlike authentication, authorization is stored together for all users regardless of the realm used to authentication the identity of the user. 
+#### Permission Check
 A user can also be granted specific permissions though this is less frequent.
 
 When a user logs in, some information about the user is copied into the session object for that user. This includes all of the permissions for that user, both explicit and implied (via role).
