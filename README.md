@@ -96,3 +96,14 @@ As with other aspects of SodaCan, user authorization is stored in Kafka. Unlike 
 A user can also be granted specific permissions though this is less frequent.
 
 When a user logs in, some information about the user is copied into the session object for that user. This includes all of the permissions for that user, both explicit and implied (via role).
+## Asynchronous Communication
+For the most part, communication that is fundementally request-response is handled asynchronously. For example, a call to the login restful API does not immediately result in a logged-in user. Rather, it initiates a request to login. The successful response from the request means that the request has been received by the server. The client cannot assume that the login is successful at this point.
+
+Once a session has been established on the client (which is synchronous), the client opens a websocket (or plain socket) and listens for messages from the server. The client can use this same socket to communicate with the server. But there is no expectation that there is a one-to-one correspondence between messages. For example, one client may be collecting data and sending it to the server which other clients may be simply displaying a status.
+
+In general, if a client intents to display, say, 5 pages of information, then it should subscribe to all data seen on those pages and not simply data on the one page currently being displayed. The controls on that client can then determine which page to display and of course how to display it.
+
+## Session
+On the server, the session object keeps tract of the logged in user, if any, the permissions of that user, and any active subscriptions. A user may have more than one active session.
+
+The session object is normally cached in memory but is also saved periodically so that if a server should fail or otherwise have to shed work another server can read in active sessions and continue on without requiring a fresh login from clients.
