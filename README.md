@@ -106,4 +106,6 @@ In general, if a client intents to display, say, 5 pages of information, then it
 ## Session
 On the server, the session object keeps track of the logged in user, if any, the permissions of that user, and any active subscriptions. A user may have more than one active session.
 
-The session object is normally cached in memory but is also saved periodically so that if a server should fail or otherwise have to shed work another server can read in active sessions and continue on without requiring a fresh login from clients.
+The session object is normally cached in memory on the server for performance but it is also saved periodically so that if a server should fail or otherwise have to shed work then another server can read in the active sessions and continue on without requiring a fresh login from clients.
+
+All communications from client to server will contain the seesion id in a cookie. This id is usually not exposed to client browser javascript for security reasons. When a websocket is used, the (stateful) socket id is mapped to the session id and therefore does not need to be sent in each message.
