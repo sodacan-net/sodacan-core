@@ -103,9 +103,3 @@ Once a session has been established on the client (which is synchronous), the cl
 
 In general, if a client intents to display, say, 5 pages of information, then it should subscribe to all data seen on those pages and not simply data on the one page currently being displayed. The controls on that client can then determine which page to display and of course how to display it.
 
-## Session
-On the server, the session object keeps track of the logged in user, if any, the permissions of that user, and any active subscriptions. A user may have more than one active session.
-
-The session object is normally cached in memory on the server for performance but it is also saved periodically so that if a server should fail or otherwise have to shed work then another server can read in the active sessions and continue on without requiring a fresh login from clients.
-
-All communications from client to server will contain the seesion id in a cookie. This id is usually not exposed to client browser javascript for security reasons. When a websocket is used, the (stateful) socket id is mapped to the session id and therefore does not need to be sent in each message.
