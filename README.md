@@ -8,10 +8,10 @@ Realtime high-frequency control of industrial devices is beyond the scope of thi
 If you are looking for something that has all of the fault-tolerance of a cloud-based service (Amazon, Google, etc) in an in-house package, this may eventually be a solution. 
 
 ## Device Controllers
-Each "device" should be connected to a local microcontroller capable of running C, Java or Python. BeagleBone Black or Wireless BeagleBone Green would be appropriate. Also, pykafka supports client communication from Python to the Kafka broker(s).
+Each "device" should be connected to a local microcontroller capable of running C, Java or Python. The device should be capable of initiating Kafka producer messages. It should be capable of connection via TCP. Raspberry PI or BeagleBone Black are appropriate. Also, pykafka supports client communication from Python to the Kafka broker(s).
 
 ## Device Controller Configuration
-With a large device controller such as BeagleBone, it is reasonable for it to control many devices. For example, one physical area could have a single controller manage all devices in that area as long as the bandwidth of the controller is not overburdened. This approach suggests that a device controller should be soft-configured. That is, generic code loaded onto each controller and the behavior intended for that controller downloaded from the central servers. 
+With a large device controller such as Raspberry Pi, it is reasonable for it to control many devices. For example, one physical area could have a single controller manage all devices in that area as long as the bandwidth of the controller is not overburdened. This approach suggests that a device controller should be soft-configured. That is, generic code loaded onto each controller and the behavior intended for that controller downloaded from the central servers. 
 
 As descussed shortly, the configuration can be distributed to the controller via message. Each controller has a dedicated "topic" which contains device parameter change requests. These parameters can include both dynamic changes such as requesting that a digital output pin be changed as well as configuration changes such as that a particular GPIO pin's mode be set to output. Thus, the controller is simply responding to a stream of requests (and generating state changes and events as a result). This allows changes to be rolled out under control of rules which can even do so at a specific future time. 
 
@@ -34,21 +34,21 @@ As a minor contradiction to the "all facts known to one Sodacan", it is a rather
 Dataflow from various perspectives and operational conditions are described here.
 
 #### Device Controller, steady-state
-During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primary SodaCan, desires to change a parameter, it will send a parameter change message to the microcontroller which it can use as notification of a request to change a paramter value. In any case, when the microcontroller changes the value of a parameter (or the parameter is created), it must send a message containing the new value. This notifies anoyone interested in that parameter value.
+During normal operation, a device controller maintains a copy of all parameters associated with all devices connected to that microcontroller. This is the "source of truth" for these parameters and no other components should normally change the parameter values. However, when an external component, primarily Sodacan, desires to change a parameter, it will send a parameter change message to the microcontroller which it can use as notification of a request to change a paramter value. In any case, when the microcontroller changes the value of a parameter (or the parameter is created), it must send a message containing the new value. This notifies anoyone interested in that parameter value.
 
 When appropriate, a microcontroller can send an event rather than changing it's state. The difference between a button-press (event) and say, a temperature reading (a parameter change) is that events are short-lived whereas a parameter change is permanent, and saved, until changed.
 
 Each device controller should also send a "heartbeat" event periordically so that the rules can react to a device being off-line.
 
 #### Sodacan, steady-state
-Sodacan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains, at least, the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the Sodacan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to Sodacan.
+Sodacan reacts to parameter changes by inserting a new fact or modifying an existing fact in working memory. Thus, working memory contains the corrent value of all parameters in the system. Rules will then react as appropriate, or not at all, to parameter changes. Events are processed differently: Most events only spend a brief time in working memory.The tend to "age out" within seconds. Should a rule desire to change a parameter value, such as when a button event causes the state of a light to toggle from on-to-off, the Sodacan does not change it's value but rather sends out a parameter change request, which the device is likely to honor by making the parameter change and sending the updated parameter back to Sodacan.
 
 ## Servers
-In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a [Docker](https://www.docker.com/) container. I'll use the term "box" to refer to a physical (bare metal) server.
+In general, server describes a logical concept. Indeed, a server in this environment may be nothing more than a [Docker](https://www.docker.com/) container. I'll use the term "box" to refer to a physical (bare metal) server when needed.
 
 The logical organization of servers is: Three zookeeper servers, three Message Broker servers, and three Sodacan servers. These logical servers can be implemented on three physical boxes to provide sufficient redundancy. All three physical boxes can be expected to be up most of the time so it is best that each of the three major components runs on each of the boxes. Just make sure that the three instances of any one server function are not all allocated to a single box. In the case of a failure, the services running on the failed box will shift to processes running on the remaining boxes.
 
-Using the 3x3 configuration described above, one could run these server on nine separate boxes. But that would leave 6 boxes idle most of the time. More boxes might be justified for additional capacity, but that is a separate discussion. In any case, Docker containers are used to represent each of these nine logical servers so that they can be deployed over three physical boxes, or on AWS or a similar service if desired. Should a phyical box go down, the Docker container can simply be run on a different box. Replication in this style also facilitates rolling upgrades thus eliminating the need for downtime.
+Using the 3x3 configuration described above, one could run these server on nine separate boxes. But that would leave 6 boxes idle most of the time. More boxes might be justified for additional capacity, but that is a separate discussion. In any case, Docker containers could be used to represent each of these nine logical servers so that they can be deployed over three physical boxes, or on AWS or a similar service if desired. Should a phyical box go down, the Docker container can simply be run on a different box. Replication in this style also facilitates rolling upgrades thus eliminating the need for downtime.
 
 ## Peristence
 Kafka provides all state persistence for Sodacan as well as fast, reliable message delivery. There is really no need for a reliable disk configuration (eg RAID) due to efficient replication and failover at the software level. As a general philosophy, if a server should fail for any reason, it should simply be wiped clean and rebuilt. There should be no need for backups or for any downtime. This philosophy also applies to the disk files used by Kafka: If a server goes down, any persistent files can be wiped. When a server restarts, data will be restored from replicas on other servers.
@@ -65,7 +65,7 @@ The primary decision to be made after a failure: Should the server be rebuilt or
 an existing Docker container can always be destroyed and a new container created from the existing image. So, the only question is if the file system used by that container be left as-is or should it start clean. This is the choice needed to be made by a system administrator. To help make this choice, the administrator should be made aware of the state of other replicas of the data. And further, the decision to clean the last remaining in-sync replica should require double confirmation. (A replica that is currently in the process of syncing from another replica is not considered in-sync.) 
 
 ## Cabling
-I'm running normal Cat-6 LAN cable to each device controller (BeagleBone). In the case of lighting,  I run traditional RS-485 from a server to any number of DMX-based lighting fixtures. Some of the lighting fixtures are custom-made.
+Most newer controllers are available with Wifi. If not, I run normal Cat-6 LAN cable to each device controller (Raspberry Pi). In the case of lighting,  I have run traditional RS-485 from a server to any number of DMX-based lighting fixtures though this is less common now. 
 
 ## Industrial Standards
 The approach used by Sodacan is much less compact than a protocol such as MODBUS. Nevertheless, it is relatively compact and provides built-in security, error detection, failover, etc. This project makes no attempt to comply with the SCADA standard. 
@@ -76,9 +76,11 @@ There are products available that support protocol conversion between various st
 While Kafka provides partitioning which can provide distribution of processing across many nodes, scalability (tens-of-thousands of nodes) is not a goal of this project. In Kafka terms, each Sodacan "topic" has only one partition. A typical system might have hundreds of devices. For a system with tens of tousands of devices, it is likely that rules would not be able to reason over all facts and that a tiered system would be needed. Such could be done with Sodacan as the intermediate tier, but that's not something I'm working on at this point.
 
 ## Authentication
-Determining the identity of a user is required for most functions in Sodacan.
+Determining the identity of a user is required for most functions in Sodacan. 
+
 #### Persistence
 As with other aspects of Sodacan, user account information is stored in Kafka. 
+
 #### Realm and Username
 Username is qualified by realm. Therefore, a username in one realm does not conflict with the same username in another domain. In many cases, only a single Realm is sufficient. A separate realm is used for testing in any case.
 
@@ -86,8 +88,10 @@ Username is not unique without realm to qualify it. For example, a user may be k
 
 #### Password
 The hashed password, password salt, the hash algorithm, and the time when the password was last changed are stored with user information. A password history is also stored for the user.
+
 ## Authorization
 A user must be authorized to access various aspects of the Sodacan application. For example, one user might be able to only view various parameters while another may be able to change certain parameters. Therefore, each user must have a specified list of "permissions" which correspond to the permissions associated with various functions. Permissions are fine-grained. For example, a user might be able to read a specific parameter, such as water-level, but not to the pump turn-on time. In general, permissions go to the instance-level. That is, a user is not usually authorized to access all pump-controllers but rather specific pump controllers. Therefore, permissions are usually stated in the form "well-pump-controller" or sometimes "well-A-pump-controller"
+
 #### User Role
 As a convenience, a user may be given a "role" which is a name for a group of one or more permissions. The actual permissions granted to a user in a certain role is determined at login. This allows the definition of a role to change over time without having to modify all of a user's permissions.
 #### Persistence
