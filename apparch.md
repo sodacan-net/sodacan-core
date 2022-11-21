@@ -49,5 +49,5 @@ It should be easy to create a new rule that responds to an existing event stream
 
 Compensation: If a rule (and topic) is deleted, replace (updated). 
 
-Register a class. Introspector.getBeanInfo returns bean properties so that they will be sent/received.
+Register a class. Reflection. Introspector.getBeanInfo returns bean properties so that they will be sent/received.
 Use annotations to "name" the properties.
