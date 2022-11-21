@@ -51,7 +51,7 @@ Compensation: If a rule (and topic) is deleted, replace (updated).
 
 Register a class. Reflection. Introspector.getBeanInfo returns bean properties so that they will be sent/received.
 Use annotations to "name" the properties.
-
+`
   // MyState will have the current value from the specified topic
   @Subscribe(topic="myTopic")
   Boolean myState;
@@ -70,3 +70,4 @@ Use annotations to "name" the properties.
   }
 
   // This method well be called whenever an event arrives from 
+`
