@@ -23,18 +23,28 @@ When a rule starts up, it must load up its subscribers list in addition to its s
 
 Bootstrap: The controller activates the rule. everyhting else is done by the rule. Very distributable. Background code does the replay to restore state. It creates subscriptions (ports) and topics (wiring) as needed. Huge dependency problem? Does lazy messaging solve this? My preference is to do the wiring in code rather than separate config file. This allows the code, if needed, to react to changes in the configuration! 
 
-Example: Date input (system state). Computed state output: sunrise event , sunset event, day state, night state. Also: Wakeup (system) event.
+Example 1: Date input (system state). Computed state output: sunrise event , sunset event, day state, night state. Also: Wakeup (system) event.
 
 Notice that rules can be removed from memory at any time because their state is already saved and can be recovered easily.
 
 Bottome line, everything needed to make a decision is brought together via messages. The processor just needs to react to the state or event as presented.
 
-Sample pseudo-code: 
-Declare inputs (Subscriptions to topics)
-Declare outputs (topics)
-onEvent
-onStateChange (replay or live)
-onWakeup
-onHibernate
-getState
-setState (publish to declared topics)
+Pseudo-code: 
+- Declare inputs (Subscriptions to topics)
+- Declare outputs (topics)
+- onEvent
+- onStateChange
+- onStateLoad (replay/restore) default is to call setXXX method
+- onWakeup (before any state loaded)
+- onHibernate
+- onChange (rule changed)
+- getState
+- setState (and publish to declared topics)
+
+Local state is simply set by the rule and never published.
+If done as a bean, we can literally use get/set methods and let 
+Setup as a java bean so set/get can be automatic
+
+It should be easy to create a new rule that responds to an existing event stream or state.
+
+Compensation: If a rule (and topic) is deleted, replace (updated). 
