@@ -51,3 +51,22 @@ Compensation: If a rule (and topic) is deleted, replace (updated).
 
 Register a class. Reflection. Introspector.getBeanInfo returns bean properties so that they will be sent/received.
 Use annotations to "name" the properties.
+
+  // MyState will have the current value from the specified topic
+  @Subscribe(topic="myTopic")
+  Boolean myState;
+
+  // We generate data on this topic (Call set method to send it on its way)
+  @Publish(topic="anotherTopic")
+  Boolean anotherState;
+
+  // Called when an event arrives
+  @OnEvent(filter=xxx)
+  void onEvent(Event event)
+
+  // Called when any message arrives, can be filtered by topic and/or value?
+  @OnChange(topic="regex",value="regex")
+  void onChange() {
+  }
+
+  // This method well be called whenever an event arrives from 
