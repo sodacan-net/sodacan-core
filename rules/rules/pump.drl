@@ -1,0 +1,24 @@
+package net.sodacan.rules;
+import net.sodacan.rules.Event;
+import net.sodacan.rules.State;
+import net.sodacan.rules.Sender;
+import net.sodacan.rules.DayNight;
+
+rule "initialize pump"	
+  then
+  	insert(new State("tank2", 0.0));
+  	insert(new TankLevel("tank2Level","tank2"));
+  	insert(new State("wellpump", "off"));
+end
+
+rule "Process tank level"
+  when
+		TankLevel($en: event=="tank2Level",$sn: state=="tank2")
+		Event(name==$en,$level:level)
+		$s: State(name==$sn)
+  then
+  	insert(new Proposal("show",0, "off"));
+  	$s.setLevel($level);
+  	update($s);
+end
+

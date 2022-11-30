@@ -1,0 +1,93 @@
+package net.sodacan.rules;
+import net.sodacan.rules.Event;
+import net.sodacan.rules.Sender;
+import net.sodacan.rules.Tick;
+import net.sodacan.rules.Month;
+import net.sodacan.rules.Day;
+import net.sodacan.rules.Year;
+import net.sodacan.rules.Hour;
+import net.sodacan.rules.Minute;
+import net.sodacan.rules.DayNight;
+
+declare Switch
+	event: String @position(0);
+	state: String @position(1);
+	fromValue: String @position(2);
+	toValue: String @position(3);
+end
+
+declare TankLevel
+	event: String @position(0);
+	state: String @position(1);
+end
+
+/**
+* When state goes to fromValue, start a timer that sends an event when timer expires
+*/
+declare Timer
+ 	state : String @position(0);
+	fromValue: String @position(1);
+	time: int @position(2);
+	toValue: String @position(3);
+end
+
+/**
+* If a specified event, usually motion detector, occurs, reset the timer
+*/
+declare ResetTimer
+ 	state : String @position(0);
+	event: String @position(1);
+	time: int @position(2);
+end
+
+declare Send
+ 	state : String @position(0);	
+	url: String @position(1);
+end
+
+// Internal only, created when a timer is active
+declare TimerWorker
+	state: String @position(0);
+	time: int @position(1);
+	toValue: String @position(2);
+end
+
+declare Proposal
+ 	name : String @position(0);	
+	priority: int @position(1);
+	show: String @position(2);
+end
+
+rule "match on event"
+	salience 20
+  when
+  	Event($n: name)
+  then
+  	System.out.println("Event arrived: " + $n );
+  end
+ 
+ rule "match on event done"
+	salience -20
+  when
+  	Event($n: name)
+  then
+  	System.out.println("Event done: " + $n );
+  end
+
+rule "Show Clock"
+  when
+  	Month( $month: value)
+  	Day( $day: value)
+  	Year( $year: value)
+  	Hour( $hour: value)
+  	Minute( $minute: value)
+  then
+  	System.out.println("Date: " + $month + "/" + $day + "/" + $year + " " + $hour + ":" + $minute );
+end
+
+rule "Show Day Night"
+  when
+  	DayNight( $v: value)
+  then
+  	System.out.println("DayNight: " + $v );
+end

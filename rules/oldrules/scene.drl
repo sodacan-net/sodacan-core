@@ -1,0 +1,39 @@
+package net.sodacan.rules;
+import net.sodacan.rules.Event;
+import net.sodacan.rules.Connect;
+global net.sodacan.rules.Container container;
+
+declare Scene
+ 	name : String @position(0);	
+ 	state : doble @position(1);	
+end
+
+rule "Scene on"
+  when
+  	$e: Event(name=="s1") from entry-point Events
+  	$s: Scene(state==0.0)
+  then
+	delete($e);	// Consume event
+	modify($s) {
+		setState(1.0);
+	}
+end
+
+rule "Scene off"
+  when
+  	$e: Event(name=="s0") from entry-point Events
+  	$s: Scene(state==1.0)
+  then
+	delete($e);	// Consume event
+	modify($s) {
+		setState(0.0);
+	}
+end
+
+rule "Scene on"
+  when
+  	$s: Scene(state==1.0)
+  	$b: ButtonState()
+  then
+end
+

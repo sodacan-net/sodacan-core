@@ -1,0 +1,91 @@
+package net.sodacan.rules;
+import net.sodacan.rules.Event;
+import net.sodacan.rules.State;
+
+global net.sodacan.rules.Sender sender;
+global net.sodacan.rules.StateStore stateStore;
+
+rule "initialize lamp1"	
+  then
+	// Create a lamp
+  	insert(new State("lamp1","off"));
+
+	// When a state value changes, send it to this url
+  	insert(new Send("lamp1","http://lamp1-device1/"));
+  	insert(new Send("lamp1","http://lamp1-device2/"));
+	
+	// Same event for on and off means it's a toggle  	
+  	insert(new Switch("button1","lamp1","off","on"));
+  	insert(new Switch("button1","lamp1","on","off"));
+
+	// A simple switch uses two events
+  	insert(new Switch("lighton","lamp1","off","on"));
+  	insert(new Switch("lightoff","lamp1","on","off"));
+
+	// The lamp is turned off after 3 ticks
+  	insert(new Timer("lamp1","on",3,"off"));
+
+	// Timer for state is reset usually due to motion detector
+	insert(new ResetTimer( "lamp1", "motion", 3 ));
+	
+end
+
+rule "Send state to url"
+  when
+  	State($n: name, $v: value)
+	Send(state==$n, $u: url)
+  then
+  	sender.send($u, $v);
+end
+
+rule "Light on(off) turns State off(on)"
+	lock-on-active true
+  when
+  	Switch($en: event, $sn: state, $fv: fromValue, $tv: toValue)
+  	$s: State(name==$sn,value==$fv)
+  	$e: Event(name==$en)
+  then
+    $s.setValue($tv);
+    update($s);
+end
+
+rule "Start a timer when the specified state has the specified value"
+  when
+  	Timer($sn: state, $t: time, $fv: fromValue, $tv: toValue)
+  	State(name==$sn, value==$fv)
+  then
+  	insertLogical(new TimerWorker($sn,$t, $tv));
+end
+
+rule "Decrement timer"
+	lock-on-active true
+  when
+  	$e: Tick()
+  	$t: TimerWorker($tv: time)
+  then
+  	System.out.println("Decrement timer");
+    $t.setTime($tv-1);
+    update($t);
+end
+
+rule "Reset timer"
+	lock-on-active true
+  when
+  	$r: ResetTimer($s: state, $e: event, $t: time)
+  	$tw: TimerWorker(state==$s)
+  	Event(name==$e)
+  then
+  	System.out.println("Reset timer");
+    $tw.setTime($t);
+    update($tw);
+end
+
+rule "If timer expires, change state (turn light off)"
+  when
+  	$tw: TimerWorker(time == 0, $sn: state, $tv: toValue)
+  	$s: State(name==$sn)
+  then
+  	System.out.println("Turn off lamp");
+    $s.setValue($tv);
+    update($s);
+end

@@ -1,0 +1,69 @@
+// Logical Component Definitions
+define level irrigation-tank
+  range 1-100
+  Normalize value (0.0-1.0)
+  
+define smoothing function
+
+
+define relay well-pump
+  on-off
+define well-control
+  
+// Device definitions
+
+// Device to Command Mapping
+topic 
+
+// Commands
+level irrigation-tank 
+
+// Wire it all up
+route level sensor to level state
+
+
+// fancy level function (using time window)
+rule "Sound the alarm if temperature rises above threshold"
+when
+  TemperatureThreshold($max : max)
+  Number(doubleValue > $max) from accumulate(
+    SensorReading($temp : temperature) over window:time(10m),
+    average($temp))
+then
+  // Sound the alarm.
+end
+
+// using count window
+rule "Sound the alarm if temperature rises above threshold"
+when
+  TemperatureThreshold($max : max)
+  Number(doubleValue > $max) from accumulate(
+    SensorReading($temp : temperature) over window:length(100),
+    average($temp))
+then
+  // Sound the alarm.
+end
+
+// Flag light
+on at sunset, off at sunrise
+except when christmas tree is lit
+
+// Christmas tree
+lit during christmas season
+
+// Christmas season
+when month is december
+then
+insertLogical(christmasSeason)
+
+// Seasons and holidays
+
+// NOTE: Make time of day and season changes events
+// but how to toss out old values? Modify state in rules
+event: It's 4pm
+state: modify(timeOfDay)
+
+event: It's any-day-in december 
+state: insertLogical(christmasSeason)
+
+Plan show schedule - Continuous real-time
