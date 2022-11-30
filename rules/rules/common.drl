@@ -19,6 +19,9 @@ end
 declare TankLevel
 	event: String @position(0);
 	state: String @position(1);
+	pump: String @position(2);
+	onAt: double @position(3);
+	offAt: double @position(4);
 end
 
 /**

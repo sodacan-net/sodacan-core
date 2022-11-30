@@ -53,7 +53,7 @@ public class State implements Element {
 
 		@Override
 		public String toString() {
-			return "State( " + getName() + ", " + getValue() + ")";
+			return "State( " + getName() + ", " + getValue() + ", " + getLevel() + ")";
 		}
 
 }

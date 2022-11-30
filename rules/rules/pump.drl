@@ -6,19 +6,38 @@ import net.sodacan.rules.DayNight;
 
 rule "initialize pump"	
   then
-  	insert(new State("tank2", 0.0));
-  	insert(new TankLevel("tank2Level","tank2"));
+  	insert(new State("tank2", 1.0));		// Assume it's full until we get a real level event
+  	insert(new TankLevel("tank2Level","tank2","wellpump", 0.7, 0.9));
   	insert(new State("wellpump", "off"));
 end
 
-rule "Process tank level"
+rule "Process tank level event"
   when
-		TankLevel($en: event=="tank2Level",$sn: state=="tank2")
+		TankLevel($en: event,$sn: state=="tank2")
 		Event(name==$en,$level:level)
 		$s: State(name==$sn)
   then
-  	insert(new Proposal("show",0, "off"));
+	System.out.println($sn + " level: " + $level );
   	$s.setLevel($level);
   	update($s);
 end
 
+rule "Turn pump on"
+  when
+  	TankLevel($sn: state, $pn: pump, $on: onAt)
+  	$p: State(name==$pn, value=="off")
+  	$s: State(name==$sn, level<$on)
+  then
+  	$p.setValue("on");
+  	update($p);
+end
+
+rule "Turn pump off"
+  when
+  	TankLevel($sn: state, $pn: pump, $off: offAt)
+  	$p: State(name==$pn, value=="on")
+  	$s: State(name==$sn, level>=$off)
+  then
+  	$p.setValue("off");
+  	update($p);
+end
