@@ -1,9 +1,10 @@
+timezone: America/Los_Angeles
 api:
     url: http://0.0.0.0:4011
 rules:
+    mode: normal
     files: 
         - rules/common.drl
         - rules/lamp.drl
         - rules/pump.drl
         - rules/show.drl
-        

@@ -1,6 +1,7 @@
 package net.sodacan.api.resource;
 
 import java.time.Instant;
+import java.time.ZonedDateTime;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -8,35 +9,34 @@ import org.apache.logging.log4j.Logger;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.EventSource;
+import net.sodacan.rules.RulesException;
+import net.sodacan.rules.Tick;
+import net.sodacan.rules.config.Config;
 
 @Path("rule")
 public class RuleApi {
 	Logger logger = LogManager.getLogger(RuleApi.class);
 	   
-	   public RuleApi() {
-	   }
-	 /**
-	 * Return the server time as a simple String, UTC format and timezone.
-	 * @return
-	 */
-	@Path("time")
-	@GET
-	@Produces("text/plain")
-	public String serverTime() {
-		return Instant.now().toString();
-	}	
+	public RuleApi() {
+	}
+
 	/**
-	 * Return the server time as a simple String, UTC format and timezone.
-	 * @return
+	 * Specify the current time.
+	 * Used only in test mode, see configuration file
 	 */
-	@Path("echo/{msg}")
+	@Path("tick/{time}")
 	@GET
-	public String echo(@PathParam("msg") String msg) {
-		logger.debug("rule/echo/{msg} = " + msg );
-		return msg;
+	public String setTime(@PathParam("time") String timeString ) {
+		ZonedDateTime time = ZonedDateTime.parse(timeString);
+		Config config = Config.getInstance();
+		String mode = config.getRules().getMode();
+		if (!"test".equals(mode)) {
+			throw new RulesException("Time can only be set in test mode");
+		}
+		EventSource.getInstance().addEvent(new Tick(time));
+		return "ok";
 	}	
 
 	@Path("state/{name}/{value}")
@@ -65,7 +65,5 @@ public class RuleApi {
 	public String event(@PathParam("name") String name ) {
 		EventSource.getInstance().addEvent(name);
 		return "ok";
-	}	
-
-
+	}
 }

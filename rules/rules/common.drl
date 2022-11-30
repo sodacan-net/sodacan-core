@@ -79,13 +79,9 @@ rule "match on event"
 
 rule "Show Clock"
   when
-  	Month( $month: value)
-  	Day( $day: value)
-  	Year( $year: value)
-  	Hour( $hour: value)
-  	Minute( $minute: value)
+	Tick($t:now)
   then
-  	System.out.println("Date: " + $month + "/" + $day + "/" + $year + " " + $hour + ":" + $minute );
+  	System.out.println("Time: " + $t );
 end
 
 rule "Show Day Night"
