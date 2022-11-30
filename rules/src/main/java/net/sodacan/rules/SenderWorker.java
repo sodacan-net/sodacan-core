@@ -14,7 +14,7 @@ public class SenderWorker implements Runnable {
 	@Override
 	public void run() {
 //		try {
-			  	logger.info("Send '" + message + "' to " + address);
+			  	logger.debug("Send '" + message + "' to " + address);
 //		} catch (InterruptedException e) {
 //		}
 		
