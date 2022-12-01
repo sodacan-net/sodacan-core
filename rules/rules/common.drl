@@ -7,7 +7,6 @@ import net.sodacan.rules.Day;
 import net.sodacan.rules.Year;
 import net.sodacan.rules.Hour;
 import net.sodacan.rules.Minute;
-import net.sodacan.rules.DayNight;
 
 declare Switch
 	event: String @position(0);
@@ -50,15 +49,15 @@ end
 
 // Internal only, created when a timer is active
 declare TimerWorker
-	state: String @position(0);
+	state: String @key @position(0);
 	time: int @position(1);
 	toValue: String @position(2);
 end
 
 declare Proposal
- 	name : String @position(0);	
+ 	name : String @key @position(0);	
 	priority: int @position(1);
-	show: String @position(2);
+	show: String @key @position(2);
 end
 
 rule "match on event"
@@ -84,9 +83,17 @@ rule "Show Clock"
   	System.out.println("Time: " + $t );
 end
 
-rule "Show Day Night"
+rule "Show Hour"
   when
-  	DayNight( $v: value)
+	Tick($t:hour)
   then
-  	System.out.println("DayNight: " + $v );
+  	System.out.println("Hour: " + $t );
 end
+
+rule "Its night time"
+  when
+	Tick(nighttime==true)
+  then
+  	System.out.println("$$$ Night Time $$$" );
+end
+

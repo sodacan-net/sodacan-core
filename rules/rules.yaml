@@ -1,8 +1,12 @@
 timezone: America/Los_Angeles
+location:
+    latitude: 42.5583482
+    longitude: -123.3968023
+
 api:
     url: http://0.0.0.0:4011
 rules:
-    mode: normal
+    mode: test
     files: 
         - rules/common.drl
         - rules/lamp.drl

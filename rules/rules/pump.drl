@@ -2,7 +2,6 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Sender;
-import net.sodacan.rules.DayNight;
 
 rule "initialize pump"	
   then

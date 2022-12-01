@@ -47,21 +47,20 @@ public class EventSource implements Runnable {
 	KieSession kSession;
 	static EventSource instance = null;
 	static ExecutorService service;
-	private FactHandle monthFH;
-	private FactHandle dayFH;
-	private FactHandle yearFH;
-	private FactHandle hourFH;
-	private FactHandle minuteFH;
-	private FactHandle daynightFH;
-	private int month;
-	private int day;
-	private int year;
-	private int hour;
-	private int minute;
-	private String daynight;
-	private Sun sun;
-	ZonedDateTime now;
-	protected final ZoneId zoneId = ZoneId.of("America/Los_Angeles");
+//	private FactHandle monthFH;
+//	private FactHandle dayFH;
+//	private FactHandle yearFH;
+//	private FactHandle hourFH;
+//	private FactHandle minuteFH;
+	private FactHandle tickFH = null;
+//	private int month;
+//	private int day;
+//	private int year;
+//	private int hour;
+//	private int minute;
+//	private Sun sun;
+	protected ZonedDateTime now;
+	protected ZoneId zoneId;
 	
 	private BlockingQueue<Element> queue;
 
@@ -70,6 +69,14 @@ public class EventSource implements Runnable {
 
 	public void initQueue() {
 		queue = new LinkedBlockingQueue<Element>();
+	}
+
+	public ZoneId getZoneId() {
+		return zoneId;
+	}
+
+	public void setZoneId(ZoneId zoneId) {
+		this.zoneId = zoneId;
 	}
 
 	public void initRules() {
@@ -107,29 +114,17 @@ public class EventSource implements Runnable {
 		Sender sender = Sender.getInstance();
 		sender.setSession(kSession);
 		kSession.setGlobal("sender", sender);
-		// Sunrise and sunset
-		ZonedDateTime now = ZonedDateTime.now(ZoneId.of(config.getTimezone()));
-		sun = FetchSunriseSunset.get(now);
-		ZonedDateTime sunrise = sun.getSunriseDT(zoneId);
-		ZonedDateTime sunset = sun.getSunsetDT(zoneId);
-		if (now.isAfter(sunrise) && now.isBefore(sunset))
-			daynight = "day";
-		else
-			daynight = "night";
-		daynightFH = kSession.insert(new DayNight(daynight));
-		
-//		int sunsetHour = sunset.getHour();
-		// Get date facts started
-		month = now.get(ChronoField.MONTH_OF_YEAR);
-		day = now.get(ChronoField.DAY_OF_MONTH);
-		year = now.get(ChronoField.YEAR);
-		hour = now.get(ChronoField.HOUR_OF_DAY);
-		minute = now.get(ChronoField.MINUTE_OF_HOUR);
-		monthFH = kSession.insert(new Month(month));
-		dayFH = kSession.insert(new Day(day));
-		yearFH = kSession.insert(new Year(year));
-		hourFH = kSession.insert(new Hour(hour));
-		minuteFH = kSession.insert(new Minute(minute));
+//		// Get date facts started
+//		month = now.get(ChronoField.MONTH_OF_YEAR);
+//		day = now.get(ChronoField.DAY_OF_MONTH);
+//		year = now.get(ChronoField.YEAR);
+//		hour = now.get(ChronoField.HOUR_OF_DAY);
+//		minute = now.get(ChronoField.MINUTE_OF_HOUR);
+//		monthFH = kSession.insert(new Month(month));
+//		dayFH = kSession.insert(new Day(day));
+//		yearFH = kSession.insert(new Year(year));
+//		hourFH = kSession.insert(new Hour(hour));
+//		minuteFH = kSession.insert(new Minute(minute));
 		kSession.addEventListener(new DebugRuleRuntimeEventListener() {
 
 			@Override
@@ -184,6 +179,7 @@ public class EventSource implements Runnable {
 		if (instance == null) {
 			instance = new EventSource();
 			instance.config = Config.getInstance();
+			instance.zoneId = ZoneId.of(instance.config.getTimezone());
 			instance.initRules();
 			instance.initQueue();
 			// Ticks are automatic in normal mode
@@ -217,42 +213,38 @@ public class EventSource implements Runnable {
 		queue.add(state);
 	}
 
-	public void changeTimeFacts(Tick tick) {
-		now = tick.getNow();
-		// If we're on a new day, query for today's sunrise and sunset
-		if (now.getDayOfMonth()!=sun.getQueryTime().getDayOfMonth()) {
-			sun = FetchSunriseSunset.get(now);
-		}
-		String tmp;
-		if (now.isAfter(sun.getSunriseDT(zoneId)) && now.isBefore(sun.getSunsetDT(zoneId)))
-			tmp = "day";
-		else
-			tmp = "night";
-		if (!tmp.equals(daynight)) {
-			daynight = tmp;
-			kSession.update(daynightFH, new DayNight(daynight));
-		}
-		if (month!=now.get(ChronoField.MONTH_OF_YEAR)) {
-			month = now.get(ChronoField.MONTH_OF_YEAR);
-			kSession.update(monthFH, new Month(month));
-		}
-		if (day!=now.get(ChronoField.DAY_OF_MONTH)) {
-			day = now.get(ChronoField.DAY_OF_MONTH);
-			kSession.update(dayFH, new Day(day));
-		}
-		if (year!=now.get(ChronoField.YEAR)) {
-			year = now.get(ChronoField.YEAR);
-			kSession.update(yearFH,new Year(year));
-		}
-		if (hour!=now.get(ChronoField.HOUR_OF_DAY)) {
-			hour = now.get(ChronoField.HOUR_OF_DAY);
-			kSession.update(hourFH, new Hour(hour));
-		}
-		if (minute!=now.get(ChronoField.MINUTE_OF_HOUR)) {
-			minute = now.get(ChronoField.MINUTE_OF_HOUR);
-			kSession.update(minuteFH, new Minute(minute));
-		}
-	}
+//	public void changeTimeFacts(Tick tick) {
+//		now = tick.getNow();
+//		String tmp;
+//		if (now.isAfter(sun.getSunriseDT(zoneId)) && now.isBefore(sun.getSunsetDT(zoneId)))
+//			tmp = "day";
+//		else
+//			tmp = "night";
+//		if (!tmp.equals(daynight)) {
+//			daynight = tmp;
+//			kSession.update(daynightFH, new DayNight(daynight));
+//		}
+//		if (month!=now.get(ChronoField.MONTH_OF_YEAR)) {
+//			month = now.get(ChronoField.MONTH_OF_YEAR);
+//			kSession.update(monthFH, new Month(month));
+//		}
+//		if (day!=now.get(ChronoField.DAY_OF_MONTH)) {
+//			day = now.get(ChronoField.DAY_OF_MONTH);
+//			kSession.update(dayFH, new Day(day));
+//		}
+//		if (year!=now.get(ChronoField.YEAR)) {
+//			year = now.get(ChronoField.YEAR);
+//			kSession.update(yearFH,new Year(year));
+//		}
+//		if (hour!=now.get(ChronoField.HOUR_OF_DAY)) {
+//			hour = now.get(ChronoField.HOUR_OF_DAY);
+//			kSession.update(hourFH, new Hour(hour));
+//		}
+//		if (minute!=now.get(ChronoField.MINUTE_OF_HOUR)) {
+//			minute = now.get(ChronoField.MINUTE_OF_HOUR);
+//			kSession.update(minuteFH, new Minute(minute));
+//		}
+//	}
 	/**
 	 * Process events as they are removed from the queue
 	 */
@@ -263,11 +255,19 @@ public class EventSource implements Runnable {
 			while (true) {
 				Element element = queue.take();
 				if (element instanceof Tick) {
-					changeTimeFacts((Tick)element);
+					FetchSunriseSunset.get((Tick)element,zoneId);
+					if (tickFH==null) {
+						tickFH = kSession.insert(element);
+					} else {
+						kSession.update(tickFH, element);
+					}
+					kSession.fireAllRules();
+					// We leave a tick event until another one comes along
+				} else {
+					FactHandle fh = kSession.insert(element);
+					kSession.fireAllRules();
+					kSession.delete(fh);
 				}
-				FactHandle fh = kSession.insert(element);
-				kSession.fireAllRules();
-				kSession.delete(fh);
 			}
 		} catch (InterruptedException e) {
 		}

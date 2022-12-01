@@ -17,6 +17,7 @@ public class Config {
 	private Api api;
 	private Rules rules;
 	private String timezone;
+	private Location location;
 	
 	private Config() {
 		
@@ -66,6 +67,14 @@ public class Config {
 
 	public void setTimezone(String timezone) {
 		this.timezone = timezone;
+	}
+
+	public Location getLocation() {
+		return location;
+	}
+
+	public void setLocation(Location location) {
+		this.location = location;
 	}
 	
 }

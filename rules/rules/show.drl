@@ -2,7 +2,6 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Sender;
-import net.sodacan.rules.DayNight;
 
 rule "initialize show"	
   then
@@ -11,15 +10,15 @@ end
 
 rule "Default show"
   when
-		DayNight(value=="day")
+		Tick(daytime==true)
 		not Proposal(name=="show",priority>1)
   then
-  	insert(new Proposal("show",0, "off"));
+  	insertLogical(new Proposal("show",0, "off"));
 end
 
 rule "Is it night light show"
 	when
-		DayNight(value=="night")
+		Tick(nighttime==true)
 		not Proposal(name=="show",priority>2)
 	then
 		insertLogical(new Proposal("show",2,"nightlight"));
@@ -27,7 +26,7 @@ end
 
 rule "Is it christmas"
 	when
-		DayNight(value=="night")
+		Tick(nighttime==true)
 		Month(value==12)
 		not Proposal(name=="show",priority>3)
 	then
