@@ -2,11 +2,6 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.Sender;
 import net.sodacan.rules.Tick;
-import net.sodacan.rules.Month;
-import net.sodacan.rules.Day;
-import net.sodacan.rules.Year;
-import net.sodacan.rules.Hour;
-import net.sodacan.rules.Minute;
 
 declare Switch
 	event: String @position(0);
@@ -81,13 +76,6 @@ rule "Show Clock"
 	Tick($t:now)
   then
   	System.out.println("Time: " + $t );
-end
-
-rule "Show Hour"
-  when
-	Tick($t:hour)
-  then
-  	System.out.println("Hour: " + $t );
 end
 
 rule "Its night time"

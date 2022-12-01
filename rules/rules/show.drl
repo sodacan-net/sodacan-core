@@ -26,8 +26,7 @@ end
 
 rule "Is it christmas"
 	when
-		Tick(nighttime==true)
-		Month(value==12)
+		Tick(nighttime==true,month==12)
 		not Proposal(name=="show",priority>3)
 	then
 		insertLogical(new Proposal("show",3,"christmas"));

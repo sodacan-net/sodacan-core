@@ -213,38 +213,6 @@ public class EventSource implements Runnable {
 		queue.add(state);
 	}
 
-//	public void changeTimeFacts(Tick tick) {
-//		now = tick.getNow();
-//		String tmp;
-//		if (now.isAfter(sun.getSunriseDT(zoneId)) && now.isBefore(sun.getSunsetDT(zoneId)))
-//			tmp = "day";
-//		else
-//			tmp = "night";
-//		if (!tmp.equals(daynight)) {
-//			daynight = tmp;
-//			kSession.update(daynightFH, new DayNight(daynight));
-//		}
-//		if (month!=now.get(ChronoField.MONTH_OF_YEAR)) {
-//			month = now.get(ChronoField.MONTH_OF_YEAR);
-//			kSession.update(monthFH, new Month(month));
-//		}
-//		if (day!=now.get(ChronoField.DAY_OF_MONTH)) {
-//			day = now.get(ChronoField.DAY_OF_MONTH);
-//			kSession.update(dayFH, new Day(day));
-//		}
-//		if (year!=now.get(ChronoField.YEAR)) {
-//			year = now.get(ChronoField.YEAR);
-//			kSession.update(yearFH,new Year(year));
-//		}
-//		if (hour!=now.get(ChronoField.HOUR_OF_DAY)) {
-//			hour = now.get(ChronoField.HOUR_OF_DAY);
-//			kSession.update(hourFH, new Hour(hour));
-//		}
-//		if (minute!=now.get(ChronoField.MINUTE_OF_HOUR)) {
-//			minute = now.get(ChronoField.MINUTE_OF_HOUR);
-//			kSession.update(minuteFH, new Minute(minute));
-//		}
-//	}
 	/**
 	 * Process events as they are removed from the queue
 	 */
