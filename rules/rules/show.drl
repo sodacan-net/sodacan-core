@@ -5,39 +5,39 @@ import net.sodacan.rules.Sender;
 
 rule "initialize show"	
   then
-  	insert(new State("show", "off"));
+  	insert(new State("eaves", "off"));
 end
 
-rule "Default show"
+rule "Default eaves show"
   when
 		Tick(daytime==true)
-		not Proposal(name=="show",priority>1)
+		not Proposal(name=="eaves",priority>1)
   then
-  	insertLogical(new Proposal("show",0, "off"));
+  	insertLogical(new Proposal("eaves",0, "off"));
 end
 
 rule "Is it night light show"
 	when
 		Tick(nighttime==true)
-		not Proposal(name=="show",priority>2)
+		not Proposal(name=="eaves",priority>2)
 	then
-		insertLogical(new Proposal("show",2,"nightlight"));
+		insertLogical(new Proposal("eaves",2,"nightlight"));
 end
 
 rule "Is it christmas"
 	when
 		Tick(nighttime==true,month==12)
-		not Proposal(name=="show",priority>3)
+		not Proposal(name=="eaves",priority>3)
 	then
-		insertLogical(new Proposal("show",3,"christmas"));
+		insertLogical(new Proposal("eaves",3,"christmas"));
 end
 
 rule "Send show"
 	when
-		Proposal(name=="show", $n: show)
-		$s: State(name=="show")
+		Proposal($sn: name, $n: show)
+		$s: State(name==$sn)
 	then
 		$s.setValue($n);
 		update($s);
-		System.out.println("****Show is: " + $n );
+		System.out.println("****eaves show is: " + $n );
 end

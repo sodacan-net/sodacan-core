@@ -77,11 +77,3 @@ rule "Show Clock"
   then
   	System.out.println("Time: " + $t );
 end
-
-rule "Its night time"
-  when
-	Tick(nighttime==true)
-  then
-  	System.out.println("$$$ Night Time $$$" );
-end
-
