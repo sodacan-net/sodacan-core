@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>Control Panel</title>
+  </head>
+  <body>
+ <input type="text" id="msg" name="msg">
+  <br/>
+  <button type="button" onclick="loadDoc()">Change Content</button>
+  <p>Status</p>
+  <div id="status">
+  </div>
+  <p>Result</p>
+  <div id="result">
+  </div>
+<script>
+
+var source = new EventSource("/broadcast");
+source.onmessage = function(event) {
+  document.getElementById("result").innerHTML += event.data + "<br>";
+};
+source.onopen = function(event) {
+	document.getElementById("status").innerHTML = "SSE Connection established";
+};
+source.onerror = function(event) {
+	document.getElementById("status").innerHTML = "error connecting to sse";
+};
+function loadDoc() {
+	  const xhttp = new XMLHttpRequest();
+	  xhttp.onload = function() {
+	    document.getElementById("status").innerHTML = this.responseText;
+	    }
+	  xhttp.open("POST", "/broadcast", true);
+	  xhttp.send(document.getElementById("msg").value);
+	}
+</script>
+</body>

@@ -3,7 +3,7 @@ import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Sender;
 
-rule "initialize pump"	
+rule "initialize pump"
   then
   	insert(new State("tank2", 1.0));		// Assume it's full until we get a real level event
   	insert(new TankLevel("tank2Level","tank2","wellpump", 0.7, 0.9));

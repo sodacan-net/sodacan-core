@@ -234,7 +234,9 @@ public class EventSource implements Runnable {
 				} else {
 					FactHandle fh = kSession.insert(element);
 					kSession.fireAllRules();
-					kSession.delete(fh);
+					if (element instanceof Event) {
+						kSession.delete(fh);
+					}
 				}
 			}
 		} catch (InterruptedException e) {
