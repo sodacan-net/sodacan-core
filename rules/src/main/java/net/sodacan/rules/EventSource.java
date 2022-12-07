@@ -36,6 +36,7 @@ import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.internal.io.ResourceFactory;
 
+import net.sodacan.api.resource.LogBroadcaster;
 import net.sodacan.rules.config.Config;
 
 //import net.sodacan.strip.StripService;
@@ -47,18 +48,7 @@ public class EventSource implements Runnable {
 	KieSession kSession;
 	static EventSource instance = null;
 	static ExecutorService service;
-//	private FactHandle monthFH;
-//	private FactHandle dayFH;
-//	private FactHandle yearFH;
-//	private FactHandle hourFH;
-//	private FactHandle minuteFH;
 	private FactHandle tickFH = null;
-//	private int month;
-//	private int day;
-//	private int year;
-//	private int hour;
-//	private int minute;
-//	private Sun sun;
 	protected ZonedDateTime now;
 	protected ZoneId zoneId;
 	
@@ -99,9 +89,6 @@ public class EventSource implements Runnable {
 		for (String filename : config.getRules().getFiles()) {
 			kfs.write(ResourceFactory.newFileResource(filename));
 		}
-//		kfs.write(ResourceFactory.newFileResource("rules/common.drl"));
-//		kfs.write(ResourceFactory.newFileResource("rules/lamp.drl"));
-//		kfs.write(ResourceFactory.newFileResource("rules/show.drl"));
 		KieBuilder kieBuilder = ks.newKieBuilder( kfs ).buildAll();
 		if (kieBuilder.getResults().getMessages( Message.Level.ERROR ).size() !=0) {
 			throw new RulesException("Rule compilation error");
@@ -114,17 +101,6 @@ public class EventSource implements Runnable {
 		Sender sender = Sender.getInstance();
 		sender.setSession(kSession);
 		kSession.setGlobal("sender", sender);
-//		// Get date facts started
-//		month = now.get(ChronoField.MONTH_OF_YEAR);
-//		day = now.get(ChronoField.DAY_OF_MONTH);
-//		year = now.get(ChronoField.YEAR);
-//		hour = now.get(ChronoField.HOUR_OF_DAY);
-//		minute = now.get(ChronoField.MINUTE_OF_HOUR);
-//		monthFH = kSession.insert(new Month(month));
-//		dayFH = kSession.insert(new Day(day));
-//		yearFH = kSession.insert(new Year(year));
-//		hourFH = kSession.insert(new Hour(hour));
-//		minuteFH = kSession.insert(new Minute(minute));
 		kSession.addEventListener(new DebugRuleRuntimeEventListener() {
 
 			@Override
@@ -132,9 +108,12 @@ public class EventSource implements Runnable {
 //        		super.objectUpdated(event);
 				String eventName;
 				if (event.getRule() == null) {
-					eventName = "<code>";
+					eventName = "code";
 				} else {
 					eventName = event.getRule().getName();
+				}
+				if (event.getObject() instanceof State) {
+					LogBroadcaster.broadcastState((State)event.getObject());
 				}
 				logger.debug("Updated Object " + event.getObject() + " by " + eventName);
 			}
@@ -148,6 +127,9 @@ public class EventSource implements Runnable {
 				} else {
 					eventName = event.getRule().getName();
 				}
+				if (event instanceof State) {
+					LogBroadcaster.broadcastState((State)event.getOldObject());
+				}
 				logger.debug("Deleted Object " + event.getOldObject() + " by " + eventName);
 			}
 
@@ -156,9 +138,12 @@ public class EventSource implements Runnable {
 //        		super.objectInserted(event);
 				String eventName;
 				if (event.getRule() == null) {
-					eventName = "<code>";
+					eventName = "code";
 				} else {
 					eventName = event.getRule().getName();
+				}
+				if (event instanceof State) {
+					LogBroadcaster.broadcastState((State)event.getObject());
 				}
 				logger.debug("Inserted Object " + event.getObject() + " by " + eventName);
 			}

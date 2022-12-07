@@ -1,10 +1,13 @@
 package net.sodacan.rules;
 
 import java.net.URI;
+import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
 
@@ -36,6 +39,11 @@ public class Main {
 	        // create and start a new instance of grizzly http server
 	        // exposing the Jersey application at BASE_URI
 	        server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
+	     // Static content handler at http://localhost:8080/static/...
+	        
+	        server.getServerConfiguration().addHttpHandler( new StaticHttpHandler("html/"), "/");
+//	        Map<HttpHandler,String[]> handlers = server.getServerConfiguration().getHttpHandlers();
+//	        server.getServerConfiguration().
 //	        final TCPNIOTransport transport = server.getListener("grizzly").getTransport();
 //	        transport.setSelectorRunnersCount(3);
 //	        transport.setWorkerThreadPoolConfig(ThreadPoolConfig.defaultConfig().setCorePoolSize(3).setMaxPoolSize(6));

@@ -1,5 +1,13 @@
 package net.sodacan.api.resource;
 
+import java.util.Arrays;
+
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.ArrayNode;
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
@@ -12,12 +20,15 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
+import net.sodacan.rules.RulesException;
+import net.sodacan.rules.State;
 
 @Singleton
 @Path("broadcast")
 public class LogBroadcaster {
     private static Sse sse;
     private static SseBroadcaster broadcaster;
+    private static ObjectMapper mapper = new ObjectMapper();
  
     public LogBroadcaster(@Context final Sse sse) {
         LogBroadcaster.sse = sse;
@@ -33,6 +44,24 @@ public class LogBroadcaster {
                 .build();
      
             broadcaster.broadcast(event);
+    }
+
+    public static void broadcastState(State state) {
+    	if (sse==null) return;
+    	try {
+			// build a JSON structure    	
+			ObjectNode topNode = mapper.createObjectNode();
+			// create three JSON objects
+			ObjectNode node = mapper.createObjectNode();
+			node.put("name",state.getName());
+			node.put("value", state.getValue());
+			node.put("level", state.getLevel());
+			topNode.put("type", "state");
+			topNode.set("state",node);
+			LogBroadcaster.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(topNode));
+		} catch (JsonProcessingException e) {
+			throw new RulesException("Error formatting json string",e);
+		}
     }
     
     @POST

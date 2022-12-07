@@ -6,22 +6,54 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title>Control Panel</title>
+	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-rbsA2VBKQhggwzxH7pPCaAqO46MgnOM80zW1RWuH61DGLwZJEdK2Kadq2F9CUG65" crossorigin="anonymous">    <!-- JavaScript Bundle with Popper -->
+	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-kenU1KFdBIe4zVF0s0G1M5b4hcpxyD9F7jL+jjXkk+Q2h455rYXK/7HAuoJl+0I4" crossorigin="anonymous"></script>
+	<script src="https://code.jquery.com/jquery-3.6.1.min.js" integrity="sha256-o88AwQnZB+VDvE9tvIXrMQaPlFFSUTR+nldQm1LuPXQ=" crossorigin="anonymous"></script>
+
+	<link href="sodacan.css" rel="stylesheet" >
   </head>
   <body>
- <input type="text" id="msg" name="msg">
-  <br/>
-  <button type="button" onclick="loadDoc()">Change Content</button>
-  <p>Status</p>
-  <div id="status">
-  </div>
-  <p>Result</p>
-  <div id="result">
-  </div>
+<div class="container">
+	<div class="container">
+		<button class=" single lamp" data-event="button1" data-state="lamp1">
+			<lamp1/>
+			<b>Lamp1</b>
+			<br/>
+			<lamp/>
+		</button>
+		<div class="progress progress-bar-vertical bg-danger" >
+		  <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 40%;">
+			<flower/>
+		    <span class="sr-only">40% Complete</span>
+		  </div>
+		</div>
+		<div class="progress progress-bar-vertical bg-danger event" data-event="button1">
+		  <div class="progress-bar" role="progressbar" aria-valuenow="50" aria-valuemin="0" aria-valuemax="100" style="height: 50%;">
+		    <span  id="lamp2" class="sr-only">50% Complete</span>
+		  </div>
+		</div>
+	</div>
+</div>
 <script>
+$('flower').replaceWith("<i class='bi bi-flower2'></i>");
+$('lamp').replaceWith("<h1 class='bi bi-lightbulb'></h1>");
 
-var source = new EventSource("/broadcast");
+$('.single').addClass("btn btn-primary"); 
+		
+$('[data-event]').on('click', function() {
+  $.get("/api/event/" + $( this ).data("event"));
+});
+
+$('[data-state]').add("p");
+
+var source = new EventSource("/api/broadcast");
 source.onmessage = function(event) {
-  document.getElementById("result").innerHTML += event.data + "<br>";
+	const p = JSON.parse(event.data);
+	if (p.type=="state") {
+		$("<i>" + p.state.value + "</i>").replaceAll( "i");
+
+//		document.getElementById(p.state.name).innerHTML = p.state.value;
+	}
 };
 source.onopen = function(event) {
 	document.getElementById("status").innerHTML = "SSE Connection established";
@@ -29,6 +61,7 @@ source.onopen = function(event) {
 source.onerror = function(event) {
 	document.getElementById("status").innerHTML = "error connecting to sse";
 };
+
 function loadDoc() {
 	  const xhttp = new XMLHttpRequest();
 	  xhttp.onload = function() {

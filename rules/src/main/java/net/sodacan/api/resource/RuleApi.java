@@ -15,7 +15,7 @@ import net.sodacan.rules.RulesException;
 import net.sodacan.rules.Tick;
 import net.sodacan.rules.config.Config;
 
-@Path("rule")
+@Path("")
 public class RuleApi {
 	Logger logger = LogManager.getLogger(RuleApi.class);
 	   
