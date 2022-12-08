@@ -7,6 +7,9 @@ import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -21,7 +24,8 @@ import net.sodacan.rules.config.Config;
 @Path("")
 public class RuleApi {
 	Logger logger = LogManager.getLogger(RuleApi.class);
-	   
+	private static ObjectMapper objectMapper = new ObjectMapper();;
+	
 	public RuleApi() {
 	}
 
@@ -74,6 +78,11 @@ public class RuleApi {
 	@GET
 	public String getStates( ) {
 		List<State> states = EventSource.getInstance().getAllStates();
-		return "done";
+		try {
+			String json = objectMapper.writeValueAsString(states);
+			return json;
+		} catch (JsonProcessingException e) {
+			throw new RulesException("Error creating JSON String",e);
+		}
 	}
 }
