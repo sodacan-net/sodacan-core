@@ -20,7 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
-import net.sodacan.api.resource.LogBroadcaster;
+import net.sodacan.api.resource.FactPublisher;
 
 @Plugin(
 		  name = "LogAppender", 
@@ -53,7 +53,7 @@ public class LogAppender extends AbstractAppender {
 		    ArrayNode arrayNode = mapper.createArrayNode();
 		    // add JSON users to array
 		    arrayNode.addAll(Arrays.asList(ln));
-			LogBroadcaster.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
+			FactPublisher.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(arrayNode));
 		} catch (JsonProcessingException e) {
 			throw new RulesException("Error appending message");
 		}

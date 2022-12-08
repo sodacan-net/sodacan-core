@@ -7,6 +7,8 @@ import java.time.ZoneId;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoField;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import java.util.TimeZone;
 import java.util.Timer;
@@ -34,9 +36,11 @@ import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.conf.ClockTypeOption;
 import org.kie.api.runtime.rule.FactHandle;
+import org.kie.api.runtime.rule.QueryResults;
+import org.kie.api.runtime.rule.QueryResultsRow;
 import org.kie.internal.io.ResourceFactory;
 
-import net.sodacan.api.resource.LogBroadcaster;
+import net.sodacan.api.resource.FactPublisher;
 import net.sodacan.rules.config.Config;
 
 //import net.sodacan.strip.StripService;
@@ -113,7 +117,7 @@ public class EventSource implements Runnable {
 					eventName = event.getRule().getName();
 				}
 				if (event.getObject() instanceof State) {
-					LogBroadcaster.broadcastState((State)event.getObject());
+					FactPublisher.broadcastState((State)event.getObject());
 				}
 				logger.debug("Updated Object " + event.getObject() + " by " + eventName);
 			}
@@ -128,7 +132,7 @@ public class EventSource implements Runnable {
 					eventName = event.getRule().getName();
 				}
 				if (event instanceof State) {
-					LogBroadcaster.broadcastState((State)event.getOldObject());
+					FactPublisher.broadcastState((State)event.getOldObject());
 				}
 				logger.debug("Deleted Object " + event.getOldObject() + " by " + eventName);
 			}
@@ -143,7 +147,7 @@ public class EventSource implements Runnable {
 					eventName = event.getRule().getName();
 				}
 				if (event instanceof State) {
-					LogBroadcaster.broadcastState((State)event.getObject());
+					FactPublisher.broadcastState((State)event.getObject());
 				}
 				logger.debug("Inserted Object " + event.getObject() + " by " + eventName);
 			}
@@ -178,6 +182,16 @@ public class EventSource implements Runnable {
 		return instance;
 	}
 
+	public List<State> getAllStates() {
+		QueryResults results = kSession.getQueryResults( "All states" );
+		System.out.println( "Query found " + results.size() + " states" );
+		List<State> states = new ArrayList<State>();
+		for ( QueryResultsRow row : results ) {
+		    State state = ( State ) row.get( "$state" );
+		    states.add(state);
+		}
+		return states;
+	}
 	/**
 	 * Add an event to rule engine. The event is queued and processed one-at-a-time
 	 * in sequence.

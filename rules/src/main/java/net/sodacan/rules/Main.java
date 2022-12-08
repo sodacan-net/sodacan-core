@@ -40,8 +40,9 @@ public class Main {
 	        // exposing the Jersey application at BASE_URI
 	        server = GrizzlyHttpServerFactory.createHttpServer(baseUri, resourceConfig);
 	     // Static content handler at http://localhost:8080/static/...
-	        
-	        server.getServerConfiguration().addHttpHandler( new StaticHttpHandler("html/"), "/");
+	        StaticHttpHandler staticHandler = new StaticHttpHandler("html/");
+	        staticHandler.setFileCacheEnabled(false);
+	        server.getServerConfiguration().addHttpHandler( staticHandler, "/");
 //	        Map<HttpHandler,String[]> handlers = server.getServerConfiguration().getHttpHandlers();
 //	        server.getServerConfiguration().
 //	        final TCPNIOTransport transport = server.getListener("grizzly").getTransport();

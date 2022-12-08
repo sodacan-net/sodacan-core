@@ -24,14 +24,14 @@ import net.sodacan.rules.RulesException;
 import net.sodacan.rules.State;
 
 @Singleton
-@Path("broadcast")
-public class LogBroadcaster {
+@Path("subscribe")
+public class FactPublisher {
     private static Sse sse;
     private static SseBroadcaster broadcaster;
     private static ObjectMapper mapper = new ObjectMapper();
  
-    public LogBroadcaster(@Context final Sse sse) {
-        LogBroadcaster.sse = sse;
+    public FactPublisher(@Context final Sse sse) {
+        FactPublisher.sse = sse;
         broadcaster = sse.newBroadcaster();
     }
  
@@ -58,7 +58,7 @@ public class LogBroadcaster {
 			node.put("level", state.getLevel());
 			topNode.put("type", "state");
 			topNode.set("state",node);
-			LogBroadcaster.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(topNode));
+			FactPublisher.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(topNode));
 		} catch (JsonProcessingException e) {
 			throw new RulesException("Error formatting json string",e);
 		}

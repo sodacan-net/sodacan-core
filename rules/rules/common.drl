@@ -2,6 +2,7 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.Sender;
 import net.sodacan.rules.Tick;
+import net.sodacan.rules.State;
 
 declare Switch
 	event: String @position(0);
@@ -76,4 +77,8 @@ rule "Show Clock"
 	Tick($t:now)
   then
   	System.out.println("Time: " + $t );
+end
+
+query "All states"
+	  $state: State()
 end

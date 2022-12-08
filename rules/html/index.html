@@ -15,12 +15,10 @@
   <body>
 <div class="container">
 	<div class="container">
-		<button class=" single lamp" data-event="button1" data-state="lamp1">
-			<lamp1/>
-			<b>Lamp1</b>
-			<br/>
-			<lamp/>
-		</button>
+		<div class=" single lamp" data-event="button1" data-state="lamp1">
+			<h1 class='bi bi-lightbulb'></h1>
+			<div  data-state-value="lamp1">Waiting...</div>
+		</div>
 		<div class="progress progress-bar-vertical bg-danger" >
 		  <div class="progress-bar" role="progressbar" aria-valuenow="40" aria-valuemin="0" aria-valuemax="100" style="height: 40%;">
 			<flower/>
@@ -34,9 +32,9 @@
 		</div>
 	</div>
 </div>
+
 <script>
 $('flower').replaceWith("<i class='bi bi-flower2'></i>");
-$('lamp').replaceWith("<h1 class='bi bi-lightbulb'></h1>");
 
 $('.single').addClass("btn btn-primary"); 
 		
@@ -44,15 +42,16 @@ $('[data-event]').on('click', function() {
   $.get("/api/event/" + $( this ).data("event"));
 });
 
-$('[data-state]').add("p");
+$('[data-state]').prepend(function () {
+	return "<h4>" + $(this).data("state") + "</h4>";
+});
 
-var source = new EventSource("/api/broadcast");
+var source = new EventSource("/api/subscribe");
 source.onmessage = function(event) {
 	const p = JSON.parse(event.data);
 	if (p.type=="state") {
-		$("<i>" + p.state.value + "</i>").replaceAll( "i");
-
-//		document.getElementById(p.state.name).innerHTML = p.state.value;
+		var selector = '[data-state-value="' + p.state.name + '"]';
+		$(selector).text(p.state.value);
 	}
 };
 source.onopen = function(event) {
@@ -62,13 +61,5 @@ source.onerror = function(event) {
 	document.getElementById("status").innerHTML = "error connecting to sse";
 };
 
-function loadDoc() {
-	  const xhttp = new XMLHttpRequest();
-	  xhttp.onload = function() {
-	    document.getElementById("status").innerHTML = this.responseText;
-	    }
-	  xhttp.open("POST", "/broadcast", true);
-	  xhttp.send(document.getElementById("msg").value);
-	}
 </script>
 </body>

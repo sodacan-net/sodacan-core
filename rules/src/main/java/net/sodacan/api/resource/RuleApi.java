@@ -2,6 +2,7 @@ package net.sodacan.api.resource;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
+import java.util.List;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -9,9 +10,11 @@ import org.apache.logging.log4j.Logger;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.EventSource;
 import net.sodacan.rules.RulesException;
+import net.sodacan.rules.State;
 import net.sodacan.rules.Tick;
 import net.sodacan.rules.config.Config;
 
@@ -65,5 +68,12 @@ public class RuleApi {
 	public String event(@PathParam("name") String name ) {
 		EventSource.getInstance().addEvent(name);
 		return "ok";
+	}
+
+	@Path("states")
+	@GET
+	public String getStates( ) {
+		List<State> states = EventSource.getInstance().getAllStates();
+		return "done";
 	}
 }
