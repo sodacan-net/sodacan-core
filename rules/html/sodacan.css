@@ -9,7 +9,7 @@
   float: left;
   box-sizing: border-box;
   background-color: rgb(220,220,220);
-  border-radius: 10px;
+  border-radius: 0.5rem;
   text-align: center;
   text-decoration: none;
   display: flex;
@@ -21,10 +21,12 @@
     text-align: center;
 }
 .event-name{
+		font-size:70%;
 	    text-align: center;
 }
 .follow-name{
-	    text-align: center;
+		font-size:70%;
+	text-align: center;
 }
 .wide {
   width: 310px;
@@ -44,23 +46,3 @@
 	border: 1px solid blue;
 }
 
-.progress-bar-vertical {
-  width: 150px;
-  min-height: 150px;
-  margin: 5px;
-  float: left;
-  display: -webkit-box;  /* OLD - iOS 6-, Safari 3.1-6, BB7 */
-  display: -ms-flexbox;  /* TWEENER - IE 10 */
-  display: -webkit-flex; /* NEW - Safari 6.1+. iOS 7.1+, BB10 */
-  display: flex;         /* NEW, Spec - Firefox, Chrome, Opera */
-  align-items: flex-end;
-  -webkit-align-items: flex-end; /* Safari 7.0+ */
-}
-
-.progress-bar-vertical .progress-bar {
-  width: 100%;
-  height: 0;
-  -webkit-transition: height 0.4s ease;
-  -o-transition: height 0.4s ease;
-  transition: height 0.4s ease;
-}

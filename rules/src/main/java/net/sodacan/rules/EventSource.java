@@ -119,6 +119,9 @@ public class EventSource implements Runnable {
 				if (event.getObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getObject());
 				}
+				if (event.getObject() instanceof TimerWorker) {
+					FactPublisher.broadcastTimerWorker((TimerWorker)event.getObject(), "update");
+				}
 				logger.debug("Updated Object " + event.getObject() + " by " + eventName);
 			}
 
@@ -131,8 +134,11 @@ public class EventSource implements Runnable {
 				} else {
 					eventName = event.getRule().getName();
 				}
-				if (event instanceof State) {
+				if (event.getOldObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getOldObject());
+				}
+				if (event.getOldObject() instanceof TimerWorker) {
+					FactPublisher.broadcastTimerWorker((TimerWorker)event.getOldObject(), "delete");
 				}
 				logger.debug("Deleted Object " + event.getOldObject() + " by " + eventName);
 			}
@@ -146,8 +152,11 @@ public class EventSource implements Runnable {
 				} else {
 					eventName = event.getRule().getName();
 				}
-				if (event instanceof State) {
+				if (event.getObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getObject());
+				}
+				if (event.getObject() instanceof TimerWorker) {
+					FactPublisher.broadcastTimerWorker((TimerWorker)event.getObject(), "insert");
 				}
 				logger.debug("Inserted Object " + event.getObject() + " by " + eventName);
 			}

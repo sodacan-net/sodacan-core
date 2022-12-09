@@ -25,8 +25,15 @@
 					<div class="follow-name" ></div>
 					<h1 class='bi bi-lightbulb'></h1>
 					<h4 class="value"></h4>
-					<div class="event-name" ></div>
+					<div class="progress" style="visibility: hidden;border:1px black">
+						<div class="progress-bar" role="progressbar" aria-label="Timer" 
+							style="width: 25%;height=50%;background-color: lightgreen;border-radius: 0px;" 
+							aria-valuenow="25" aria-valuemin="0" aria-valuemax="100">
+							<span id="lamp2" class="sr-only">20% Complete</span>
+						</div>
 					</div>
+					<div class="event-name" ></div>
+				</div>
 			</div>
 			<div class=" widget switch" data-follow="lamp1">
 				<div class="widget-content">
@@ -39,29 +46,38 @@
 			<div class=" widget event" data-event="button1">
 				<div class="widget-content">
 					<div class="follow-name" ></div>
-					<h1 class='bi bi-box-arrow-right'></h1>
+					<h1 class='bi bi-lightning'></h1>
 					<div class="event-name" ></div>
 				</div>
 			</div>
 			<div class="widget"	data-follow="wellpump">
-				<div class="value">Waiting...</div>
-				<div class="progress-bar" role="progressbar" aria-valuenow="40"
-					aria-valuemin="0" aria-valuemax="100" style="height: 40%;">
-					<flower />
-					<span class="sr-only">40% Complete</span>
+				<div class="widget-content">
+					<div class="value">Waiting...</div>
+					<div class="progress-bar" role="progressbar" aria-valuenow="40"
+						aria-valuemin="0" aria-valuemax="100" style="height: 40%;">
+						<flower />
+						<span class="sr-only">40% Complete</span>
+					</div>
 				</div>
 			</div>
 			<div class="widget progress" data-event="button1">
-				<div class="progress-bar" role="progressbar" aria-valuenow="20"
-					aria-valuemin="0" aria-valuemax="100" style="height: 20%;">
-					<span id="lamp2" class="sr-only">20% Complete</span>
+				<div class="widget-content">
+					<div class="progress-bar" role="progressbar" aria-valuenow="20"
+						aria-valuemin="0" aria-valuemax="100" style="height: 20%;">
+						<span id="lamp2" class="sr-only">20% Complete</span>
+					</div>
 				</div>
 			</div>
-			<div class="widget wide tall">
-				<h5>Status</h5>
-				<p id="status" class="card-text"></p>
+			<div class="widget wide">
+				<div class="widget-content">
+					<h5>Status</h5>
+					<p id="status" class="card-text"></p>
+				</div>
 			</div>
 			<div class="widget"	data-follow="unused">
+				<div class="widget-content">
+					<div class="follow-name" ></div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -91,6 +107,17 @@ source.onmessage = function(event) {
 			$(this).find(".value").text(p.state.value);
 			$(this).addClass( p.state.value);
 		});
+	}
+	if (p.type=="timerWorker") {
+		$('[data-follow="' + p.tw.state + '"]').each(function(index) {
+			if (p.iud=="insert") {
+				$(this).find(".progress").css("visibility","visible");
+			} else if (p.iud=="delete") {
+				$(this).find(".progress").css("visibility","hidden");
+			}
+			$(this).find(".progress-bar").css("width","" + (p.tw.time*25) +"%");
+		});
+		
 	}
 };
 source.onopen = function(event) {

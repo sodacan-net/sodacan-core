@@ -3,6 +3,7 @@ import net.sodacan.rules.Event;
 import net.sodacan.rules.Sender;
 import net.sodacan.rules.Tick;
 import net.sodacan.rules.State;
+import net.sodacan.rules.TimerWorker;
 
 declare Switch
 	event: String @position(0);
@@ -41,13 +42,6 @@ end
 declare Send
  	state : String @position(0);	
 	url: String @position(1);
-end
-
-// Internal only, created when a timer is active
-declare TimerWorker
-	state: String @key @position(0);
-	time: int @position(1);
-	toValue: String @position(2);
 end
 
 declare Proposal

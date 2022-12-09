@@ -1,6 +1,7 @@
 package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
+import net.sodacan.rules.TimerWorker;
 
 global net.sodacan.rules.Sender sender;
 global net.sodacan.rules.StateStore stateStore;
