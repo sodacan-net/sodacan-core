@@ -34,6 +34,7 @@ public class FetchSunriseSunset {
 		try {
 			if (ssDate==null || !tick.getNow().toLocalDate().equals(ssDate)) {
 				Config config = Config.getInstance();
+				ssDate = tick.getNow().toLocalDate();
 				int y = tick.getNow().getYear();
 				int m = tick.getNow().getMonthValue();
 				int d = tick.getNow().getDayOfMonth();
@@ -70,12 +71,12 @@ public class FetchSunriseSunset {
 				String sunsetString = top.get("results").get("sunset").asText();
 				sunrise = ZonedDateTime.ofInstant(Instant.parse(sunriseString), zoneId);
 				sunset = ZonedDateTime.ofInstant(Instant.parse(sunsetString), zoneId);
-				ssDate = tick.getNow().toLocalDate();
 			}
 		tick.setSunrise( sunrise );
 		tick.setSunset( sunset );
 		} catch (Exception e) {
-			throw new RulesException("Error getting sunrise sunset times", e);
+//			tick.setSunrise(sunrise);
+//			throw new RulesException("Error getting sunrise sunset times", e);
 		}
 	}
 }
