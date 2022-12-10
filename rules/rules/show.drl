@@ -2,6 +2,7 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Sender;
+global org.apache.logging.log4j.Logger logger;
 
 rule "initialize show"	
   then
@@ -39,5 +40,5 @@ rule "Send show"
 	then
 		$s.setValue($n);
 		update($s);
-		System.out.println("****eaves show is: " + $n );
+		logger.debug("****eaves show is: " + $n );
 end

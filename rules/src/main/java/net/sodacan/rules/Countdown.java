@@ -3,15 +3,17 @@ package net.sodacan.rules;
 /**
  *  Internal only, created when a timer is active
  */
-public class TimerWorker {
+public class Countdown {
 	private String state;
 	private int time;
+	private int maxTime;
 	private String toValue;
 	
-	public TimerWorker(String state, int time, String toValue) {
+	public Countdown(String state, int time, int maxTime, String toValue) {
 		super();
 		this.state = state;
 		this.time = time;
+		this.maxTime = maxTime;
 		this.toValue = toValue;
 	}
 	
@@ -34,6 +36,14 @@ public class TimerWorker {
 		this.toValue = toValue;
 	}
 
+	public int getMaxTime() {
+		return maxTime;
+	}
+
+	public void setMaxTime(int maxTime) {
+		this.maxTime = maxTime;
+	}
+
 	@Override
 	public int hashCode() {
 		return getState().hashCode();
@@ -41,8 +51,8 @@ public class TimerWorker {
 
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof TimerWorker) {
-			TimerWorker other = (TimerWorker)obj;
+		if (obj instanceof Countdown) {
+			Countdown other = (Countdown)obj;
 			if (getState().equals(other.getState()) && getToValue().equals(other.getToValue())) {
 				return true;
 			}
@@ -52,7 +62,7 @@ public class TimerWorker {
 
 	@Override
 	public String toString() {
-		return "TimeWorker %s to %s in %d".formatted(getState(),getToValue(),getTime());
+		return "Countdown %s to %s in %d".formatted(getState(),getToValue(),getTime());
 	}
 
 }

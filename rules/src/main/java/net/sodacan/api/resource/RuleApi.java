@@ -11,6 +11,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -19,6 +20,7 @@ import net.sodacan.rules.EventSource;
 import net.sodacan.rules.RulesException;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Tick;
+import net.sodacan.rules.Countdown;
 import net.sodacan.rules.config.Config;
 
 @Path("")
@@ -47,14 +49,14 @@ public class RuleApi {
 	}	
 
 	@Path("state/{name}/{value}")
-	@GET
+	@POST
 	public String state(@PathParam("name") String name, @PathParam("value") String value ) {
 		EventSource.getInstance().addState(name, value);
 		return "ok";
 	}	
 
 	@Path("event/{name}/{value}")
-	@GET
+	@POST
 	public String event2(@PathParam("name") String name, @PathParam("value") String value ) {
 		EventSource.getInstance().addEvent(new Event(name, value));
 		return "ok";
@@ -68,7 +70,7 @@ public class RuleApi {
 	}	
 
 	@Path("event/{name}")
-	@GET
+	@POST
 	public String event(@PathParam("name") String name ) {
 		EventSource.getInstance().addEvent(name);
 		return "ok";
@@ -80,6 +82,17 @@ public class RuleApi {
 		List<State> states = EventSource.getInstance().getAllStates();
 		try {
 			String json = objectMapper.writeValueAsString(states);
+			return json;
+		} catch (JsonProcessingException e) {
+			throw new RulesException("Error creating JSON String",e);
+		}
+	}
+	@Path("countdowns")
+	@GET
+	public String getCountdowns( ) {
+		List<Countdown> countdowns = EventSource.getInstance().getAllCountdowns();
+		try {
+			String json = objectMapper.writeValueAsString(countdowns);
 			return json;
 		} catch (JsonProcessingException e) {
 			throw new RulesException("Error creating JSON String",e);

@@ -105,6 +105,7 @@ public class EventSource implements Runnable {
 		Sender sender = Sender.getInstance();
 		sender.setSession(kSession);
 		kSession.setGlobal("sender", sender);
+		kSession.setGlobal("logger", logger);
 		kSession.addEventListener(new DebugRuleRuntimeEventListener() {
 
 			@Override
@@ -119,8 +120,8 @@ public class EventSource implements Runnable {
 				if (event.getObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getObject());
 				}
-				if (event.getObject() instanceof TimerWorker) {
-					FactPublisher.broadcastTimerWorker((TimerWorker)event.getObject(), "update");
+				if (event.getObject() instanceof Countdown) {
+					FactPublisher.broadcastCountdown((Countdown)event.getObject(), "update");
 				}
 				logger.debug("Updated Object " + event.getObject() + " by " + eventName);
 			}
@@ -137,8 +138,8 @@ public class EventSource implements Runnable {
 				if (event.getOldObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getOldObject());
 				}
-				if (event.getOldObject() instanceof TimerWorker) {
-					FactPublisher.broadcastTimerWorker((TimerWorker)event.getOldObject(), "delete");
+				if (event.getOldObject() instanceof Countdown) {
+					FactPublisher.broadcastCountdown((Countdown)event.getOldObject(), "delete");
 				}
 				logger.debug("Deleted Object " + event.getOldObject() + " by " + eventName);
 			}
@@ -155,8 +156,8 @@ public class EventSource implements Runnable {
 				if (event.getObject() instanceof State) {
 					FactPublisher.broadcastState((State)event.getObject());
 				}
-				if (event.getObject() instanceof TimerWorker) {
-					FactPublisher.broadcastTimerWorker((TimerWorker)event.getObject(), "insert");
+				if (event.getObject() instanceof Countdown) {
+					FactPublisher.broadcastCountdown((Countdown)event.getObject(), "insert");
 				}
 				logger.debug("Inserted Object " + event.getObject() + " by " + eventName);
 			}
@@ -193,13 +194,23 @@ public class EventSource implements Runnable {
 
 	public List<State> getAllStates() {
 		QueryResults results = kSession.getQueryResults( "All states" );
-		System.out.println( "Query found " + results.size() + " states" );
+		logger.debug( "Query found " + results.size() + " states" );
 		List<State> states = new ArrayList<State>();
 		for ( QueryResultsRow row : results ) {
 		    State state = ( State ) row.get( "$state" );
 		    states.add(state);
 		}
 		return states;
+	}
+	public List<Countdown> getAllCountdowns() {
+		QueryResults results = kSession.getQueryResults( "All Countdowns" );
+		logger.debug( "Query found " + results.size() + " Countdowns" );
+		List<Countdown> countdowns = new ArrayList<Countdown>();
+		for ( QueryResultsRow row : results ) {
+		    Countdown tw = ( Countdown ) row.get( "$c" );
+		    countdowns.add(tw);
+		}
+		return countdowns;
 	}
 	/**
 	 * Add an event to rule engine. The event is queued and processed one-at-a-time
@@ -238,7 +249,8 @@ public class EventSource implements Runnable {
 						kSession.update(tickFH, element);
 					}
 					kSession.fireAllRules();
-					// We leave a tick event until another one comes along
+					// We leave the tick event as is until another one comes along
+					// Thus, the tick event is persistent. normal events are removed after firing.
 				} else {
 					FactHandle fh = kSession.insert(element);
 					kSession.fireAllRules();

@@ -67,5 +67,18 @@ public class Tick extends Event {
 	public String toString() {
 		return "Tick";
 	}
+
+	/**
+	 * Ensure that a tick event is a singleton
+	 */
+	@Override
+	public int hashCode() {
+		return 1;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj instanceof Tick);
+	}
 	
 }

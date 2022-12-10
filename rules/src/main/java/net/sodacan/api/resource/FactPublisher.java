@@ -22,7 +22,7 @@ import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
 import net.sodacan.rules.RulesException;
 import net.sodacan.rules.State;
-import net.sodacan.rules.TimerWorker;
+import net.sodacan.rules.Countdown;
 
 @Singleton
 @Path("subscribe")
@@ -65,11 +65,11 @@ public class FactPublisher {
 		}
     }
     /**
-     * Broadcast TimeWorker
+     * Broadcast Countdown
      * @param tw
      * @param iud insert, update, or delete
      */
-    public static void broadcastTimerWorker(TimerWorker tw, String iud) {
+    public static void broadcastCountdown(Countdown tw, String iud) {
     	if (sse==null) return;
     	try {
 			// build a JSON structure    	
@@ -79,12 +79,13 @@ public class FactPublisher {
 			node.put("state",tw.getState());
 			node.put("toValue", tw.getToValue());
 			node.put("time", tw.getTime());
-			topNode.put("type", "timerWorker");
+			node.put("maxTime", tw.getMaxTime());
+			topNode.put("type", "countdown");
 			topNode.put("iud", iud);
-			topNode.set("tw",node);
+			topNode.set("countdown",node);
 			FactPublisher.sendMessage(mapper.writerWithDefaultPrettyPrinter().writeValueAsString(topNode));
 		} catch (JsonProcessingException e) {
-			throw new RulesException("Error formatting json string of TimeWorker",e);
+			throw new RulesException("Error formatting json string of Countdown",e);
 		}
     }
     

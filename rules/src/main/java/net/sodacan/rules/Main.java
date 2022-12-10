@@ -1,15 +1,15 @@
 package net.sodacan.rules;
 
 import java.net.URI;
-import java.util.Map;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
-import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.quartz.Scheduler;
+import org.quartz.impl.StdSchedulerFactory;
 
 import jakarta.ws.rs.core.UriBuilder;
 import net.sodacan.rules.config.Config;
@@ -51,6 +51,11 @@ public class Main {
 	    	// For Jetty, See: Jersey Issue: 4739
 	        // Start the API server
 	    	server.start();
+	    	// Start the quartz job scheduler
+	    	Scheduler scheduler = StdSchedulerFactory.getDefaultScheduler();
+	    	// and start it off
+	    	scheduler.start();
+
 	      } catch (Throwable e) {
 	      	e.printStackTrace();
 //	    	throw new RuntimeException("Error starting server", e);

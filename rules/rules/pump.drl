@@ -2,6 +2,7 @@ package net.sodacan.rules;
 import net.sodacan.rules.Event;
 import net.sodacan.rules.State;
 import net.sodacan.rules.Sender;
+global org.apache.logging.log4j.Logger logger;
 
 rule "initialize pump"
   then
@@ -16,7 +17,7 @@ rule "Process tank level event"
 		Event(name==$en,$level:level)
 		$s: State(name==$sn)
   then
-	System.out.println($sn + " level: " + $level );
+	logger.debug($sn + " level: " + $level );
   	$s.setLevel($level);
   	update($s);
 end

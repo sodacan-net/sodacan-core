@@ -3,7 +3,8 @@ import net.sodacan.rules.Event;
 import net.sodacan.rules.Sender;
 import net.sodacan.rules.Tick;
 import net.sodacan.rules.State;
-import net.sodacan.rules.TimerWorker;
+import net.sodacan.rules.Countdown;
+global org.apache.logging.log4j.Logger logger;
 
 declare Switch
 	event: String @position(0);
@@ -33,7 +34,7 @@ end
 /**
 * If a specified event, usually motion detector, occurs, reset the timer
 */
-declare ResetTimer
+declare ResetCountdown
  	state : String @position(0);
 	event: String @position(1);
 	time: int @position(2);
@@ -55,7 +56,7 @@ rule "match on event"
   when
   	Event($n: name)
   then
-  	System.out.println("Event arrived: " + $n );
+  	logger.debug("Event arrived: " + $n );
   end
  
  rule "match on event done"
@@ -63,16 +64,20 @@ rule "match on event"
   when
   	Event($n: name)
   then
-  	System.out.println("Event done: " + $n );
+  	logger.debug("Event done: " + $n );
   end
 
 rule "Show Clock"
   when
 	Tick($t:now)
   then
-  	System.out.println("Time: " + $t );
+  	logger.debug("Time: " + $t );
 end
 
 query "All states"
 	  $state: State()
+end
+
+query "All Countdowns"
+	  $c: Countdown()
 end

@@ -12,3 +12,5 @@ rules:
         - rules/lamp.drl
         - rules/pump.drl
         - rules/show.drl
+        - rules/timer.drl
+        
