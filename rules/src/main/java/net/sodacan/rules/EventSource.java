@@ -179,8 +179,8 @@ public class EventSource implements Runnable {
 			instance = new EventSource();
 			instance.config = Config.getInstance();
 			instance.zoneId = ZoneId.of(instance.config.getTimezone());
-			instance.initRules();
 			instance.initQueue();
+			instance.initRules();
 			// Ticks are automatic in normal mode
 			if ("normal".equals(instance.config.getRules().getMode())) {
 				instance.initTickTimer();

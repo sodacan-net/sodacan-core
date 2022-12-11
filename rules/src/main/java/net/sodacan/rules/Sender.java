@@ -25,7 +25,13 @@ public class Sender {
 		}
 		return instance;
 	}
-
+	
+	/**
+	 * Send an event back to ourself.
+	 */
+	public void event(Event event) {
+		EventSource.getInstance().addEvent(event);
+	}
 	public void send(String address, String message) {
 		service.submit(new SenderWorker( address, message));
 	}

@@ -13,6 +13,24 @@ declare Switch
 	toValue: String @position(3);
 end
 
+declare Reflex
+	whenEvent: String @position(0) @key;
+	thenEvent: String @position(1) @key;
+end
+
+// Use InsertLogical for this fact
+declare DeferredEvent
+	state: String @position(0) @key;
+	value: String @position(1) @key;
+	event: String @position(2) @key;
+	time: String @position(3);
+end
+
+declare DeferredEventSender
+	event: String @position(0) @key;
+	time: String @position(1);
+end
+
 declare TankLevel
 	event: String @position(0);
 	state: String @position(1);
@@ -72,6 +90,30 @@ rule "Show Clock"
 	Tick($t:now)
   then
   	logger.debug("Time: " + $t );
+end
+
+rule "Handle reflexive events"
+  when
+  	Reflex($we: whenEvent, $te: thenEvent)
+  	Event(name==$we)
+  then
+  	sender.event(new Event($te,null));
+end
+
+rule "Handle deferred events"
+  when
+	DeferredEvent($s: state, $v:value, $e: event, $t:time)
+	State(name==$s, value==$v)
+  then
+  	insertLogical(new DeferredEventSender($e,$t));
+end
+
+rule "Send deferred event when it comes due"
+	when
+		DeferredEventSender($e: event, $t: time)
+		Event(name==$t)
+	then
+		sender.event(new Event($e,""));
 end
 
 query "All states"

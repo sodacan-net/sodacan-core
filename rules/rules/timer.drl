@@ -5,39 +5,3 @@ import net.sodacan.rules.Countdown;
 import net.sodacan.rules.Tick;
 global org.apache.logging.log4j.Logger logger;
 
-declare Night
- 	name : String @position(0) @key;
-end
-
-rule "Show sunrise"
-  when
-	Tick(nighttime==true,month==12)
-//  	Tick($r: sunrise)
-  then
-  	insertLogical(new Night("a"));
-end
-
-rule "is it night"
-  when
-  	Night()
-  then
-  	logger.debug("It's night");
-end
-
-rule "If its night and lights off, turn on light"
-  when
-  	Night()
-  	$s: State(name=="lamp2",value=="off")
-  then
-  	$s.setValue("on");
-  	update($s);
-end
-
-rule "If its not Night and lights on, turn off light"
-  when
-  	not Night()
-  	$s: State(name=="lamp2",value=="on")
-  then
-  	$s.setValue("off");
-  	update($s);
-end

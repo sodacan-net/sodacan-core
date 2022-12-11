@@ -25,10 +25,20 @@ rule "initialize lamp1"
 	// A simple switch uses two events
   	insert(new Switch("lighton","lamp1","off","on"));
   	insert(new Switch("lightoff","lamp1","on","off"));
+	
+  	insert(new Switch("lamp2on","lamp2","off","on"));
+  	insert(new Switch("lamp2off","lamp2","on","off"));
+
+	// On at sunset, off at sunrise
+	insert(new Reflex("sunset","lamp2on"));
+	insert(new Reflex("sunrise","lamp2off"));
+	insert(new Reflex("sunrise","lightoff"));
 
 	// The lamp is turned off after 3 ticks
-  	insert(new Timer("lamp1","on",3,"off"));
+//  	insert(new Timer("lamp1","on",3,"off"));
 
+	insert(new DeferredEvent("lamp1","on","lightoff","3min"));
+	
 	// Timer for state is reset usually due to motion detector
 	insert(new ResetCountdown( "lamp1", "motion", 3 ));
 	
@@ -93,3 +103,4 @@ rule "If timer expires, change state (turn light off)"
     $s.setValue($tv);
     update($s);
 end
+
