@@ -1,4 +1,3 @@
-
 package net.sodacan.grammer;
 
 import java.util.HashMap;
