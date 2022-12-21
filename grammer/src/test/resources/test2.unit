@@ -1,0 +1,6 @@
+UNIT lamp1
+
+
+// This will cause a duplicate unit error
+UNIT lamp1
+

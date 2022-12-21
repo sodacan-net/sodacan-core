@@ -1,0 +1,10 @@
+// A comment
+PROPERTY server "http://localhost:4011/"
+
+UNIT lamp1
+	event next,on,off
+	state on,off
+// Another comment
+UNIT lamp2 LIKE lamp1
+	event auto
+
