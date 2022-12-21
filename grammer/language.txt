@@ -1,0 +1,204 @@
+// Properties	
+// Also from property file(s)
+PROPERTY server http://localhost:4011/
+
+// Simple on-off-toggle
+UNIT lamp1		// This names the thing and can be referenced within by $(unit)
+  state off,on
+  event next,on,off		// implies $(unit).event.next $(unit).event.on, etc which resolves to lamp1.event.next, lamp1.event.on, etc
+  WHEN event.next -> next state
+  WHEN event.on AND !state.on -> state.on
+  WHEN event.off AND !state.off -> state.off
+
+// All units derive from this, ABSTRACT means the unit can't receive events
+ABSTRACT UNIT %all
+  SEND state to $(server)$(unit)
+
+// Nothing happens until an event arrives. The event is fully processed before the next event is processed.
+// No data is returned by an event submission: The submission is asynchronous.
+
+// The WHEN list is processed in top-down order. Once a state or level is changed, it doesn't change again for the current event.
+// When a variable value changes, the new value is used on subsequent "whens"
+// Likewise, the previous value is used when it is referenced before the when that changed it
+
+// Anything controlled by an on-off (or next) type event
+ABSTRACT UNIT onoff
+  state off,on
+  event next,on,off		// implies $(unit).event.next $(unit).event.on, etc which resolves to lamp1.event.next, lamp1.event.on, etc
+  WHEN event.next -> NEXT state
+  WHEN event.on AND !state.on -> state.on
+  WHEN event.off AND !state.off -> SET state = off // Same as state.off
+  SEND state to $(server)$(unit)
+
+ABSTRACT UNIT tank
+  SEND level to $(server)$(unit)
+
+// Simple on-off-toggle using LIKE 
+UNIT lamp1 LIKE onoff		// This names the thing and can be referenced within by $(unit)
+
+// On-off-toggle with an off-timer after on for 30 minutes
+// Builds on lamp1 configuration. Notice that the send (from lamp1) will now go to ...lamp2
+UNIT lamp2 LIKE lamp1 {
+  +WHEN state.on -> delay 30min, state.off // Add this to the end of the list of whens
+  
+// Remove support for next in this variant of lamp1
+UNIT lamp2a LIKE lamp1 {
+  REMOVE EVENT next
+  REMOVE WHEN event.next
+  
+// Remove support for on and off events in this derivation of lamp1
+UNIT lamp2b LIKE lamp1 {
+  -event on, off		// Remove these two events
+  -WHEN event.on and !state.on	// To match, must be the exact (semantic) same condition as in lamp1
+
+// Override event "on" behavior
+UNIT lamp2c LIKE lamp1
+  ADD STATE junk
+  WHEN event.on and NOT state.on -> state.off state.junk
+
+// On-off-toggle with an off-timer after 30 minutes on, with motion sensor that resets the timer
+// Builds on lamp2 configuration
+// Note that on event and movement event reset the timer
+UNIT lamp3 LIKE lamp2
+  event movement
+  WHEN state.on -> delay 40min state.off
+  WHEN event.movement and state.on -> delay 30min state.off
+
+// Reference the state of another thing
+// Cause this lamp to follow the state of lamp1
+UNIT lamp4 {
+  state off,on
+  REFERENCE lamp1
+  WHEN lamp1.state.on -> state.on
+  WHEN lamp1.state.off -> state.off
+}
+
+// Similar to lamp4 but different syntax
+// We can simply copy the state without concern for the value
+UNIT lamp5 {
+  state off,on
+  REFERENCE lamp1
+  WHEN lamp1.state -> state
+}
+
+// Introduce mode setting in addition to state
+// Notice events affect mode rather than state
+// In auto mode, light on at sunset and off at sunrise
+UNIT lamp6 {
+  state off,on
+  mode mode,auto,on
+  event mode-next
+  REFERENCE clock
+  WHEN event.mode-next -> next mode
+  WHEN mode.on -> state.on
+  WHEN mode.off -> state.off
+  WHEN mode.auto and clock.event.sunset and state.off -> state.on
+  WHEN mode.auto and clock.event.sunrise and state.on -> state.off
+}
+
+// In auto mode, light on at night and off during the day
+// This style is more durable then lamp6: if we miss sunrise or sunset event, the correct action still occurs
+// because decision based on clock state rather than a clock event.
+UNIT lamp7 {
+  state off,on
+  mode off,auto,on
+  event mode-next
+  REFERENCE clock
+  WHEN event.mode-next -> next mode
+  WHEN mode.on -> state.on
+  WHEN mode.off -> state.off
+  WHEN mode.auto and clock.state.night and state.off -> state.on
+  WHEN mode.auto and clock.state.day and state.on -> state.off
+}
+
+// Notice shorthands
+UNIT lamp8 {
+  state off,on
+//  ... state.on ... is shorthand for lamp8.state.on
+// either form can be used
+// When referencing another thing, the long form is required.
+}
+
+// REFERENCE key word allows a unit to access another unit
+// lhs of -> is always a condition, rhs is a setting
+// for example, 
+//    state.on -> state.off
+// means: if state *is* on, then *set* state to off
+
+// Introduce level (a variation of state)
+// We can directly set the state of a different thing
+// A simple pump/tank fill control
+// *** is this example even possible? Setting another thing's state?
+UNIT tank1 LIKE tank{
+	event level
+	level 0.0-1.0
+	REFERENCE pump1
+	WHEN event.level -> level
+	WHEN level < 0.7 -> pump1.state.on
+	WHEN level > 0.9 -> pump1.state.off
+}
+
+// Pump used to fill tank1
+UNIT pump1 {
+	state off, on
+}
+
+// Improved tank and pump to be able to disable the pump
+// In this case, we send an event to the pump rather than setting its state directly
+UNIT tank2
+	level 0.0-1.0 // range can be anything but is internally normalized to 0.0-1.0
+	REFERENCE pump2
+	WHEN event.level -> level
+	WHEN level < 0.7 -> pump2.event.on
+	WHEN level > 0.9 -> pump2.event.off
+
+
+//  send only sends when the variable changes (and on startup?)
+
+// The first value for a state, mode, or level is the default value on startup
+
+// Pump used to fill tank2, with an off mode
+UNIT pump2 
+	event on,off,mode-auto,mode-off, mode-next
+	mode auto,off
+	state off, on
+	WHEN event.mode-auto -> mode.auto
+	WHEN event.mode-off -> mode.off
+	WHEN event.mode-next -> next mode
+	WHEN mode.auto and event.on and state.off -> state.on
+	WHEN mode.auto and event.off and state.on -> state.off
+    SEND state to http://localhost:4011/pump2
+
+// Show business
+// Implied priority, first setting of a state wins, all the rest (for that variable) are ignored
+// Therefore, lowest priority is at the bottom
+UNIT show1
+	mode auto,manual
+	state off,redeyes,christmas,christmasday
+	event *state // same events as states
+	WHEN event -> state, mode-manual, delay 30min mode-auto
+	WHEN mode.auto and clock.date = dec 25 -> state.christmasday
+	WHEN mode.auto and clock.date >= 12/1 and clock.date < 1/6 -> state.christmas
+	WHEN mode.auto and clock.night -> state.redeyes 
+	WHEN mode.auto and clock.day -> state.off
+
+UNIT thermostat1
+	EVENT temperature,setpoint
+	LEVEL temperature,setpoint
+	MODE off,auto
+	STATE on,off
+	REFERENCE fanUnit1,heater1
+	WHEN event.temperature -> level.temperature 
+	WHEN event.setpoint -> level.setpoint
+	WHEN mode.off -> state.off
+	WHEN mode.auto AND level.temperature < (setpoint-5) -> state.on
+	WHEN level.temperature > (setpoint+2) -> state.off
+	WHEN state.on AND heater1.state.off -> heater1.event.on
+	WHEN state.off AND heater1.state.on -> heater1.event.off
+	WHEN state.off AND fanUnit1.state.on AND fanUnit1.mode.auto -> fanUnit1.event.off
+	WHEN state.on AND fanUnit1.state.off -> delay 5min fanUnit.event.on
+	
+UNIT heater1 LIKE onoff
+	
+UNIT fanUnit1 LIKE onoff
+	
