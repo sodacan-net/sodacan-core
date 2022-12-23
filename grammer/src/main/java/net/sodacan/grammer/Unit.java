@@ -1,28 +1,41 @@
 package net.sodacan.grammer;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
+
+import net.sodacan.grammer.LanguageParser.WhenStatementContext;
 
 public class Unit {
 	private String name;
 	private String likeName;
-	private Set<String> events = new HashSet<>();
-	private Set<String> states = new HashSet<>();
+	private List<String> events = new ArrayList<>();
+	private List<String> states = new ArrayList<>();
+	private List<WhenStatementContext> whens = new ArrayList<>();
 	
 	public void addEvent(String event) {
 		events.add(event);
 	}
-	public Set<String> getStates() {
+	public List<String> getStates() {
 		return events;
 	}
 
 	public void addState(String state) {
 		states.add(state);
 	}
-	public Set<String> getEvents() {
+	public List<String> getEvents() {
 		return events;
 	}
 
+	public List<WhenStatementContext> getWhens() {
+		return whens;
+	}
+	
+	public void addWhen(WhenStatementContext ctx) {
+		whens.add(ctx);
+	}
+	
 	public String getName() {
 		return name;
 	}

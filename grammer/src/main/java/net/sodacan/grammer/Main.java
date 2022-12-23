@@ -1,10 +1,15 @@
 package net.sodacan.grammer;
 
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.Properties;
 
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.apache.commons.text.StringSubstitutor;
 
 import net.sodacan.grammer.LanguageParser.ProgContext;
 
@@ -19,9 +24,9 @@ public class Main {
       CommonTokenStream tokens = new CommonTokenStream(lexer);
       LanguageParser parser = new LanguageParser(tokens);
       ProgContext tree = parser.prog();
-      LanguageCustomVisitor visitor = new LanguageCustomVisitor();
+      ParseVisitor visitor = new ParseVisitor();
       try {
-    	  Value result = visitor.visit(tree);
+    	  visitor.visit(tree);
       } catch (Throwable e) {
     	  System.out.println(expression + " error: "  + e.getMessage());
       }
@@ -45,19 +50,23 @@ public class Main {
 //      test("true;");
 //      test("false;");
 //      test("true==false;");
-      String files[] = args.length==0? new String[]{ "test." + EXTENSION } : args;
+    	// Load properties
+    	Properties properties = new Properties(); 
+    	properties.load(new FileInputStream( DIRBASE + "unit.properties"));
+    	String files[] = args.length==0? new String[]{ "test." + EXTENSION } : args;
         System.out.println("Dirbase: " + DIRBASE);
         for (String file : files){
             System.out.println("Processing: " + file);
-            CharStream in = CharStreams.fromFileName(DIRBASE + file);
-            LanguageLexer lexer = new LanguageLexer(in);
+            // Read in the file
+            String template = Files.readString(Path.of(DIRBASE + file));
+        	String source = StringSubstitutor.replace(template,properties);
+            LanguageLexer lexer = new LanguageLexer(CharStreams.fromString(source));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
             LanguageParser parser = new LanguageParser(tokens);
             ProgContext tree = parser.prog();
-            LanguageCustomVisitor visitor = new LanguageCustomVisitor();
+            ParseVisitor visitor = new ParseVisitor();
             try {
-          	  Value result = visitor.visit(tree);
-          	  System.out.println("Properties: " + visitor.getProperties());
+          	  visitor.visit(tree);
             } catch (Throwable e) {
           	  System.out.println(file + " error: "  + e.getMessage());
             }

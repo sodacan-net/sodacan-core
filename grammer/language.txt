@@ -1,14 +1,10 @@
-// Properties	
-// Also from property file(s)
-PROPERTY server http://localhost:4011/
-
 // Simple on-off-toggle
 UNIT lamp1		// This names the thing and can be referenced within by $(unit)
   state off,on
   event next,on,off		// implies $(unit).event.next $(unit).event.on, etc which resolves to lamp1.event.next, lamp1.event.on, etc
   WHEN event.next -> next state
-  WHEN event.on AND !state.on -> state.on
-  WHEN event.off AND !state.off -> state.off
+  WHEN event.on AND NOT state.on -> state.on
+  WHEN event.off AND NOT state.off -> state.off
 
 // All units derive from this, ABSTRACT means the unit can't receive events
 ABSTRACT UNIT %all
@@ -54,7 +50,7 @@ UNIT lamp2b LIKE lamp1 {
 // Override event "on" behavior
 UNIT lamp2c LIKE lamp1
   ADD STATE junk
-  WHEN event.on and NOT state.on -> state.off state.junk
+  WHEN event.on and NOT state.on -> state.off;state.junk
 
 // On-off-toggle with an off-timer after 30 minutes on, with motion sensor that resets the timer
 // Builds on lamp2 configuration

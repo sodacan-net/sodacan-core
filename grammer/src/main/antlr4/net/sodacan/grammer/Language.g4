@@ -1,33 +1,19 @@
 grammar Language;
 
-prog:	props units  EOF ;
+prog:	units  EOF ;
 
-props
-	: prop*							# PropertyList
-	;
-
-prop
-	: PROP ID expression			# PropertyDeclaration
-	;
-	
 units
 	: unit*
 	;
 	
 unit
-	: UNIT ID (LIKE ID)? statements?
+	: UNIT ID (LIKE ID)? declaration* statement*
 	;
 
-statements
-	: statement+							# StatementList
-	;
-	
-statement
-	: EVENT events						# EventStatement
-	| STATE states						# StateStatement
-	| ID ASSIGN expression EOL				# AssignStatement
-	| expression EOL						# ExpressionStatement
-	;
+declaration
+	: EVENT events								# EventStatement
+	| STATE states								# StateStatement
+	; 
 
 events
 	: event (',' event)*
@@ -45,6 +31,25 @@ state
 	: ID
 	;	
 
+statement
+	: WHEN whenExpression '->' expressions		# WhenStatement
+	;
+
+whenExpression
+	: whenIdentifier							  # whenId
+    | (LPAREN whenExpression RPAREN)              # ParenWhen
+    | NOT whenExpression						  # NotWhen
+	| whenExpression (op=(AND|OR)) whenExpression # AndOrWhen
+	;
+
+whenIdentifier
+	: ID '.' ID ('.' ID)?
+	;
+expressions
+	: expression
+	| expression ';' expression
+	;
+
 expression
     : ID		                                # VariableExpr
     | atom										# AtomExpr
@@ -52,6 +57,7 @@ expression
   	| expression op=(MUL|DIV|MOD) expression    # MulDivExpr
     | expression op=(ADD|SUB) expression        # AddSubExpr
     | expression EQUALS expression              # EqualsExpr
+    | expression ASSIGN expression              # AssignExpr
     ;
 
 atom
@@ -65,10 +71,14 @@ COMMENT : '//' ~[\r\n]* '\r'? '\n' -> skip ;
 PROP: 'PROPERTY';
 UNIT: 'UNIT';
 LIKE: 'LIKE';
+NOT: 'NOT';
 TRUE: 'true';
 FALSE: 'false';
-EVENT: 'event';
-STATE: 'state';
+AND: 'AND';
+OR: 'OR';
+EVENT: 'EVENT';
+STATE: 'STATE';
+WHEN: 'WHEN';
 ADD: '+';
 SUB: '-';
 MUL: '*';

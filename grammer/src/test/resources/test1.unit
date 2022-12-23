@@ -1,10 +1,12 @@
 // A comment
-PROPERTY server "http://localhost:4011/"
-
 UNIT lamp1
-	event next,on,off
-	state on,off
+  EVENT next,on,off	// expands to lamp1.event.next, lamp1.event.on, etc.
+  STATE on,off		// expands to lamp1.state.on, etc
+  WHEN event.next -> state
+  WHEN event.on AND NOT state.on -> state=on
+  WHEN event.off AND NOT state.off -> state=off
+
 // Another comment
 UNIT lamp2 LIKE lamp1
-	event auto
+	EVENT auto
 
