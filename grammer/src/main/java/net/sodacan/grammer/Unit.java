@@ -13,7 +13,27 @@ public class Unit {
 	private List<String> events = new ArrayList<>();
 	private List<String> states = new ArrayList<>();
 	private List<WhenStatementContext> whens = new ArrayList<>();
-	
+
+	/**
+	 * Verify that the supplied name and value are valid
+	 * @param variable
+	 * @param value If non-null, value must match list of valid values
+	 * @return
+	 */
+	public boolean isValidDeclaration( String variable, String value) {
+		if ("state".contentEquals(variable)) {
+			if (value==null || states.contains(value)) {
+				return true;
+			}
+		}
+		if ("event".contentEquals(variable)) {
+			if (value==null || events.contains(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public void addEvent(String event) {
 		events.add(event);
 	}

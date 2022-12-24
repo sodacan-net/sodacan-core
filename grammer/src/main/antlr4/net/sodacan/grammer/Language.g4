@@ -32,7 +32,7 @@ state
 	;	
 
 statement
-	: WHEN whenExpression '->' expressions		# WhenStatement
+	: WHEN whenExpression THEN thenExpressions		# WhenStatement
 	;
 
 whenExpression
@@ -45,19 +45,26 @@ whenExpression
 whenIdentifier
 	: ID '.' ID ('.' ID)?
 	;
-expressions
-	: expression
-	| expression ';' expression
+thenExpressions
+	: thenExpression (';' thenExpression)*
+	;
+
+thenExpression
+	: thenIdentifier
+	;
+	
+thenIdentifier
+	: ID '.' ID
 	;
 
 expression
     : ID		                                # VariableExpr
     | atom										# AtomExpr
-    | (LPAREN expression RPAREN)                # ParenExpr
-  	| expression op=(MUL|DIV|MOD) expression    # MulDivExpr
-    | expression op=(ADD|SUB) expression        # AddSubExpr
-    | expression EQUALS expression              # EqualsExpr
-    | expression ASSIGN expression              # AssignExpr
+    | (LPAREN thenExpression RPAREN)                # ParenExpr
+  	| thenExpression op=(MUL|DIV|MOD) thenExpression    # MulDivExpr
+    | thenExpression op=(ADD|SUB) thenExpression        # AddSubExpr
+    | thenExpression EQUALS thenExpression              # EqualsExpr
+    | thenExpression ASSIGN thenExpression              # AssignExpr
     ;
 
 atom
@@ -79,6 +86,7 @@ OR: 'OR';
 EVENT: 'EVENT';
 STATE: 'STATE';
 WHEN: 'WHEN';
+THEN: 'THEN';
 ADD: '+';
 SUB: '-';
 MUL: '*';

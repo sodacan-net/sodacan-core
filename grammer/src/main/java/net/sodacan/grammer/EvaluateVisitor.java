@@ -3,17 +3,18 @@ package net.sodacan.grammer;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.antlr.v4.runtime.tree.ParseTree;
+
 import net.sodacan.grammer.LanguageParser.AddSubExprContext;
 import net.sodacan.grammer.LanguageParser.AndOrWhenContext;
-import net.sodacan.grammer.LanguageParser.AssignExprContext;
 import net.sodacan.grammer.LanguageParser.EqualsExprContext;
-import net.sodacan.grammer.LanguageParser.ExpressionContext;
-import net.sodacan.grammer.LanguageParser.ExpressionsContext;
 import net.sodacan.grammer.LanguageParser.FalseKeywordContext;
 import net.sodacan.grammer.LanguageParser.IntegerLiteralContext;
 import net.sodacan.grammer.LanguageParser.MulDivExprContext;
 import net.sodacan.grammer.LanguageParser.ParenExprContext;
 import net.sodacan.grammer.LanguageParser.StringLiteralContext;
+import net.sodacan.grammer.LanguageParser.ThenExpressionContext;
+import net.sodacan.grammer.LanguageParser.ThenExpressionsContext;
 import net.sodacan.grammer.LanguageParser.TrueKeywordContext;
 import net.sodacan.grammer.LanguageParser.VariableExprContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
@@ -22,20 +23,25 @@ public class EvaluateVisitor extends LanguageBaseVisitor<Value> {
 	private Map<String,Value> variables = new HashMap<>();
 
 	@Override
+	public Value visit(ParseTree tree) {
+		return super.visit(tree);
+	}
+
+	@Override
 	public Value visitWhenStatement(WhenStatementContext ctx) {
 		Value when = visit(ctx.whenExpression());
 		Value then;
 		if (when.getBoolean()) {
-			then = visit(ctx.expressions());
+			then = visit(ctx.thenExpressions());
 			return then;
 		}
 		return new Value();
 	}
 	
 	@Override
-	public Value visitExpressions(ExpressionsContext ctx) {
+	public Value visitThenExpressions(ThenExpressionsContext ctx) {
 		Value value = new Value();
-		for (ExpressionContext ec : ctx.expression()) {
+		for (ThenExpressionContext ec : ctx.thenExpression()) {
 			value = visit(ec);
 		}
 		return value;
@@ -50,7 +56,7 @@ public class EvaluateVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitParenExpr(ParenExprContext ctx) {
-		return visit(ctx.expression());
+		return visit(ctx.thenExpression());
 	}
 
 
@@ -79,8 +85,8 @@ public class EvaluateVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitAddSubExpr(AddSubExprContext ctx) {
-		Value left = visit(ctx.expression(0));
-		Value right = visit(ctx.expression(1));
+		Value left = visit(ctx.thenExpression(0));
+		Value right = visit(ctx.thenExpression(1));
 		if (ctx.op.getType()==LanguageParser.ADD) {
 			return new Value(left.getInteger()+right.getInteger());
 		}
@@ -92,8 +98,8 @@ public class EvaluateVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitMulDivExpr(MulDivExprContext ctx) {
-		Value left = visit(ctx.expression(0));
-		Value right = visit(ctx.expression(1));
+		Value left = visit(ctx.thenExpression(0));
+		Value right = visit(ctx.thenExpression(1));
 		if (ctx.op.getType()==LanguageParser.MUL) {
 			return new Value(left.getInteger()*right.getInteger());
 		}
@@ -112,14 +118,12 @@ public class EvaluateVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitEqualsExpr(EqualsExprContext ctx) {
-		Value left = visit(ctx.expression(0));
-		Value right = visit(ctx.expression(1));
+		Value left = visit(ctx.thenExpression(0));
+		Value right = visit(ctx.thenExpression(1));
 		if (left.isBoolean() && right.isBoolean()) return new Value((left.getBoolean()==right.getBoolean()));
 		if (left.isInteger() && right.isInteger()) return new Value((left.getInteger()==right.getInteger()));
 		if (left.isString() && right.isString()) return new Value(left.toString().equals(right.toString()));
 		if (left.isNull() && right.isNull()) return new Value(true);
 		return new Value(false); 
 	}
-
-
 }

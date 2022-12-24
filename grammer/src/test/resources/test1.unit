@@ -2,11 +2,19 @@
 UNIT lamp1
   EVENT next,on,off	// expands to lamp1.event.next, lamp1.event.on, etc.
   STATE on,off		// expands to lamp1.state.on, etc
-  WHEN event.next -> state
-  WHEN event.on AND NOT state.on -> state=on
-  WHEN event.off AND NOT state.off -> state=off
+  WHEN event.next 
+    THEN state.on
+  WHEN event.on AND NOT state.on 
+  	THEN state.on;state.off
+  WHEN event.off AND NOT state.off 
+    THEN state.off
 
 // Another comment
 UNIT lamp2 LIKE lamp1
+  STATE on,off		// expands to lamp1.state.on, etc
 	EVENT auto
+	WHEN lamp1.state.on
+	  THEN state.off
 
+UNIT lamp3 LIKE lamp2
+	STATE on,off

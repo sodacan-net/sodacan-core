@@ -24,7 +24,7 @@ public class Main {
       CommonTokenStream tokens = new CommonTokenStream(lexer);
       LanguageParser parser = new LanguageParser(tokens);
       ProgContext tree = parser.prog();
-      ParseVisitor visitor = new ParseVisitor();
+      UnitVisitor visitor = new UnitVisitor();
       try {
     	  visitor.visit(tree);
       } catch (Throwable e) {
@@ -59,17 +59,34 @@ public class Main {
             System.out.println("Processing: " + file);
             // Read in the file
             String template = Files.readString(Path.of(DIRBASE + file));
+            // Apply any property references now (lexical substitution)
         	String source = StringSubstitutor.replace(template,properties);
+        	// Lexical analyzer creates a list of tokens
             LanguageLexer lexer = new LanguageLexer(CharStreams.fromString(source));
             CommonTokenStream tokens = new CommonTokenStream(lexer);
+            // Create a parser and do the parse
             LanguageParser parser = new LanguageParser(tokens);
             ProgContext tree = parser.prog();
-            ParseVisitor visitor = new ParseVisitor();
+            // Now extract the units we found from the parse tree
             try {
-          	  visitor.visit(tree);
+            	UnitVisitor unitVisitor = new UnitVisitor();
+          	  	unitVisitor.visit(tree);
+          	  	unitVisitor.dereferenceLikes();
+          	  	// If the parse worked, we have a valid collection of unit objects
+          	  	// At this point we should know declared identifiers used in all units.
+          	  	// In the bind visitor, we visit to verify that all identifiers used in
+          	  	// when statements reference valid declared identifiers
+          	  	BindVisitor bindVisitor = new BindVisitor(unitVisitor.getUnits());
+          	  	bindVisitor.visit(tree);
+          	  	// For debugging, print out the units
+                for (Unit unit : unitVisitor.getUnitList()) {
+                	System.out.println(unit);
+                }
             } catch (Throwable e) {
-          	  System.out.println(file + " error: "  + e.getMessage());
+          	  	System.out.println(file + " error: "  + e.getMessage());
             }
+            // Print the entire parse tree
+            System.out.println(tree.toStringTree(parser));
             // Visit tree and print result
             System.out.println("------");
         }
