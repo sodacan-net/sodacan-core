@@ -53,7 +53,7 @@ public class BindVisitor extends LanguageBaseVisitor<Void> {
 		}
 		// Did this reference match a declaration?
 		if (!localUnit.isValidDeclaration(variable,value)) {
-			throw new RuntimeException("Line: " + ctx.start.getLine() + " - Invalid Identifier " + ctx.getText());
+			throw new RuntimeException("Line: " + ctx.start.getLine() + " Identifier " + ctx.getText() + " is not declared");
 		}
 		return super.visitWhenIdentifier(ctx);
 	}

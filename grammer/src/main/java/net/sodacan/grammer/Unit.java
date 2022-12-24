@@ -15,6 +15,24 @@ public class Unit {
 	private List<WhenStatementContext> whens = new ArrayList<>();
 
 	/**
+	 * This unit is composed of elements of another unit. We simply copy the elements
+	 * At runtime, the contents of the liked unit are inside this unit. 
+	 * DEV NOTE: It's probable not a simple as just copying the contents.
+	 * For example, cross-unit references could be confusing. 
+	 * @param like The unit that is to be copied into this unit
+	 */
+	public void copyFrom(Unit like) {
+		for (String event : like.getEvents()) {
+			addEvent(event);
+		}
+		for (String state: like.getStates()) {
+			addState(state);
+		}
+		whens.addAll(like.getWhens());
+//		System.out.println(getName() + " States: " + states + " including those copied from " + likeName);
+	}
+	
+	/**
 	 * Verify that the supplied name and value are valid
 	 * @param variable
 	 * @param value If non-null, value must match list of valid values
@@ -35,14 +53,18 @@ public class Unit {
 	}
 
 	public void addEvent(String event) {
-		events.add(event);
+		if (!events.contains(event)) {
+			events.add(event);
+		}
 	}
 	public List<String> getStates() {
-		return events;
+		return states;
 	}
 
 	public void addState(String state) {
-		states.add(state);
+		if (!states.contains(state)) {
+			states.add(state);
+		}
 	}
 	public List<String> getEvents() {
 		return events;

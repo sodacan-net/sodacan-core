@@ -51,13 +51,25 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 				graph.addEdge(unit.getLikeName(), unit.getName());
 			}
 		}
+		// If there are cycles, throw an exception
 	    String r = graph.isCyclic();
 	    if(r!=null) {
-            System.out.println("Graph contains cycle at: " + r);
-	    } else {
-		    List<String> sortedList = graph.topologicalSort();
-		    System.out.println(sortedList);
+            throw new RuntimeException("Unit contains cycle at: " + r);
+	    } 
+	    // Sort so that we dereference from broad to narrow
+	    // Some units have no likes but they could still be liked.
+	    List<String> sortedList = graph.topologicalSort();
+	    System.out.println(sortedList);
+	    // Now copy elements from liked units to liking units
+	    for (String unitName: sortedList) {
+	    	Unit u = units.get(unitName);
+	    	String ln = u.getLikeName();
+	    	if (ln!=null) {
+	    		Unit l = units.get(ln);
+	    		u.copyFrom(l);
+	    	}
 	    }
+	    
 
 //	  	for (Unit unit : getSortedList()) {
 //	  		if (unit.getLikeName()!=null) {
@@ -90,13 +102,14 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 //			throw new RuntimeException("Line " + line + " Duplicate unit name: " + unit.getName());
 //		}
 		units.put(unit.getName(), unit);
-		// A unit can be empty, if not, evaluate statements
-		for (DeclarationContext dc : ctx.declaration()) {
-			visit(dc);
-		}
-		for (StatementContext sc : ctx.statement()) {
-			visit(sc);
-		}
+//		// A unit can be empty, if not, evaluate statements
+//		for (DeclarationContext dc : ctx.declaration()) {
+//			visit(dc);
+//		}
+//		for (StatementContext sc : ctx.statement()) {
+//			visit(sc);
+//		}
+//		return null;
 		return super.visitUnit(ctx);
 	}
 	
@@ -114,7 +127,7 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 		String state = ctx.getText();
 		if ("next".contentEquals(state)) {
 			int line = ctx.start.getLine();
-			throw new RuntimeException("Line " + line + " 'next' cannot be a state ");
+			throw new RuntimeException("Line " + line + "reserved word 'next' cannot be a state ");
 		}
 		unit.addState(state);
 		return super.visitState(ctx);

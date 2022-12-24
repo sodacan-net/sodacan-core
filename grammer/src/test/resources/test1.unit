@@ -11,10 +11,14 @@ UNIT lamp1
 
 // Another comment
 UNIT lamp2 LIKE lamp1
-  STATE on,off		// expands to lamp1.state.on, etc
-	EVENT auto
+	STATE auto
 	WHEN lamp1.state.on
 	  THEN state.off
-
+	  
 UNIT lamp3 LIKE lamp2
 	STATE on,off
+	WHEN state.on
+	  THEN state.off
+
+
+	
