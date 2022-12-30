@@ -47,7 +47,11 @@ public class BindVisitor extends LanguageBaseVisitor<Void> {
 			value = ids.get(2).getText();
 		} else if (ids.size()==2) {
 			variable = ids.get(0).getText();
-			value = ids.get(1).getText();			
+			value = ids.get(1).getText();
+		// This means: return true if the variable has changed
+		} else if (ids.size()==1) {
+			variable = ids.get(0).getText();
+			value = null;
 		} else {
 			throw new RuntimeException("Line: " + ctx.start.getLine() + " - Incorrect number of id segments");
 		}

@@ -1,10 +1,28 @@
 // Simple on-off-toggle
 UNIT lamp1		// This names the thing and can be referenced within by $(unit)
+  EVENT next	// expands to lamp1.event.next
+  EVENT on	
+  EVENT off
+  DEFINE state{off,on}
+  DEFINE mode{off,auto,on}
+  DEFINE level{0.0-1.0}
+  WHEN event.next 
+    THEN state.next
+  WHEN event.on AND NOT state.on 
+    THEN state.on
+  WHEN event.off AND NOT state.off 
+    THEN state.off
+
+UNIT lamp1a		// This names the thing and can be referenced within by $(unit)
   state off,on
-  event next,on,off		// implies $(unit).event.next $(unit).event.on, etc which resolves to lamp1.event.next, lamp1.event.on, etc
-  WHEN event.next -> next state
-  WHEN event.on AND NOT state.on -> state.on
-  WHEN event.off AND NOT state.off -> state.off
+  mode on, off
+  event next,on,off		// resolves to lamp1.event.next, lamp1.event.on, in this unit
+  WHEN event.next THEN mode.next
+  WHEN event.on THEN mode.on
+  WHEN event.off THEN mode.off
+  WHEN mode.on AND state.off THEN state.on
+  WHEN mode.off AND state.on THEN state.off
+
 
 // All units derive from this, ABSTRACT means the unit can't receive events
 ABSTRACT UNIT %all
@@ -21,9 +39,9 @@ ABSTRACT UNIT %all
 ABSTRACT UNIT onoff
   state off,on
   event next,on,off		// implies $(unit).event.next $(unit).event.on, etc which resolves to lamp1.event.next, lamp1.event.on, etc
-  WHEN event.next -> NEXT state
-  WHEN event.on AND !state.on -> state.on
-  WHEN event.off AND !state.off -> SET state = off // Same as state.off
+  WHEN event.next THEN NEXT state
+  WHEN event.on AND !state.on THEN state.on
+  WHEN event.off AND !state.off THEN SET state = off // Same as state.off
   SEND state to $(server)$(unit)
 
 ABSTRACT UNIT tank
@@ -35,7 +53,7 @@ UNIT lamp1 LIKE onoff		// This names the thing and can be referenced within by $
 // On-off-toggle with an off-timer after on for 30 minutes
 // Builds on lamp1 configuration. Notice that the send (from lamp1) will now go to ...lamp2
 UNIT lamp2 LIKE lamp1 {
-  +WHEN state.on -> delay 30min, state.off // Add this to the end of the list of whens
+  +WHEN state.on THEN delay 30min, state.off // Add this to the end of the list of whens
   
 // Remove support for next in this variant of lamp1
 UNIT lamp2a LIKE lamp1 {
@@ -50,23 +68,29 @@ UNIT lamp2b LIKE lamp1 {
 // Override event "on" behavior
 UNIT lamp2c LIKE lamp1
   ADD STATE junk
-  WHEN event.on and NOT state.on -> state.off;state.junk
+  WHEN event.on and NOT state.on 
+  	THEN state.off
+  	THEN state.junk
 
 // On-off-toggle with an off-timer after 30 minutes on, with motion sensor that resets the timer
 // Builds on lamp2 configuration
 // Note that on event and movement event reset the timer
 UNIT lamp3 LIKE lamp2
   event movement
-  WHEN state.on -> delay 40min state.off
-  WHEN event.movement and state.on -> delay 30min state.off
+  WHEN state.on 
+    THEN delay 40min state.off
+  WHEN event.movement and state.on 
+    THEN delay 30min state.off
 
-// Reference the state of another thing
+// Reference the state of another unit
 // Cause this lamp to follow the state of lamp1
 UNIT lamp4 {
   state off,on
   REFERENCE lamp1
-  WHEN lamp1.state.on -> state.on
-  WHEN lamp1.state.off -> state.off
+  WHEN lamp1.state.on 
+    THEN state.on
+  WHEN lamp1.state.off 
+    THEN state.off
 }
 
 // Similar to lamp4 but different syntax
@@ -74,7 +98,7 @@ UNIT lamp4 {
 UNIT lamp5 {
   state off,on
   REFERENCE lamp1
-  WHEN lamp1.state -> state
+  WHEN lamp1.state THEN state
 }
 
 // Introduce mode setting in addition to state
@@ -85,27 +109,27 @@ UNIT lamp6 {
   mode mode,auto,on
   event mode-next
   REFERENCE clock
-  WHEN event.mode-next -> next mode
-  WHEN mode.on -> state.on
-  WHEN mode.off -> state.off
-  WHEN mode.auto and clock.event.sunset and state.off -> state.on
-  WHEN mode.auto and clock.event.sunrise and state.on -> state.off
+  WHEN event.mode-next THEN next mode
+  WHEN mode.on THEN state.on
+  WHEN mode.off THEN state.off
+  WHEN mode.auto and clock.event.sunset and state.off THEN state.on
+  WHEN mode.auto and clock.event.sunrise and state.on THEN state.off
 }
 
 // In auto mode, light on at night and off during the day
-// This style is more durable then lamp6: if we miss sunrise or sunset event, the correct action still occurs
+// This style is more durable than lamp6: if we miss sunrise or sunset event, the correct action still occurs
 // because decision based on clock state rather than a clock event.
-UNIT lamp7 {
+UNIT lamp7 
   state off,on
   mode off,auto,on
-  event mode-next
+  event next
   REFERENCE clock
-  WHEN event.mode-next -> next mode
-  WHEN mode.on -> state.on
-  WHEN mode.off -> state.off
-  WHEN mode.auto and clock.state.night and state.off -> state.on
-  WHEN mode.auto and clock.state.day and state.on -> state.off
-}
+  WHEN event.next THEN next mode
+  WHEN mode.on THEN state.on
+  WHEN mode.off THEN state.off
+  WHEN mode.auto and clock.state.night and state.off THEN state.on
+  WHEN mode.auto and clock.state.day and state.on THEN state.off
+
 
 // Notice shorthands
 UNIT lamp8 {
@@ -116,54 +140,39 @@ UNIT lamp8 {
 }
 
 // REFERENCE key word allows a unit to access another unit
-// lhs of -> is always a condition, rhs is a setting
+// lhs of THEN is always a condition, rhs is a setting
 // for example, 
-//    state.on -> state.off
+//    state.on THEN state.off
 // means: if state *is* on, then *set* state to off
 
 // Introduce level (a variation of state)
-// We can directly set the state of a different thing
+// We cannot directly set the state of a different unit
+// But we can send an event to another item
 // A simple pump/tank fill control
-// *** is this example even possible? Setting another thing's state?
-UNIT tank1 LIKE tank{
-	event level
-	level 0.0-1.0
-	REFERENCE pump1
-	WHEN event.level -> level
-	WHEN level < 0.7 -> pump1.state.on
-	WHEN level > 0.9 -> pump1.state.off
-}
-
-// Pump used to fill tank1
-UNIT pump1 {
-	state off, on
-}
+UNIT tank1
+	state 0.0-1.0
+	WHEN event.level THEN state.event.value	// Set the state's value to the value in the event
+	WHEN state < 0.7 AND state.off THEN send.pump1.on
+	WHEN state > 0.9 AND state.on THEN send.pump1.off
 
 // Improved tank and pump to be able to disable the pump
 // In this case, we send an event to the pump rather than setting its state directly
 UNIT tank2
-	level 0.0-1.0 // range can be anything but is internally normalized to 0.0-1.0
-	REFERENCE pump2
-	WHEN event.level -> level
-	WHEN level < 0.7 -> pump2.event.on
-	WHEN level > 0.9 -> pump2.event.off
+	event level,on,auto
+	mode off,auto
+	state 0.0-1.0 							// range can be anything but is internally normalized to 0.0-1.0
+	WHEN event.level THEN state.event.value	// Set the state's value to the value in the event
+	WHEN mode.auto AND state < 0.7 AND pump1.state.off THEN send.pump1.on
+	WHEN mode.auto AND state > 0.9 AND pump1.state.on THEN send.pump1.off
+	WHEN mode.off AND pump1.state.on THEN send.pump1.off
 
-
-//  send only sends when the variable changes (and on startup?)
-
-// The first value for a state, mode, or level is the default value on startup
-
-// Pump used to fill tank2, with an off mode
-UNIT pump2 
-	event on,off,mode-auto,mode-off, mode-next
-	mode auto,off
+// Pump used to fill tank1
+UNIT pump1
+	event on,off
 	state off, on
-	WHEN event.mode-auto -> mode.auto
-	WHEN event.mode-off -> mode.off
-	WHEN event.mode-next -> next mode
-	WHEN mode.auto and event.on and state.off -> state.on
-	WHEN mode.auto and event.off and state.on -> state.off
-    SEND state to http://localhost:4011/pump2
+	WHEN event.on AND state.off THEN state.on
+	WHEN event.off AND state.on THEN state.off
+	WHEN state THEN send.state.${server}/pump1
 
 // Show business
 // Implied priority, first setting of a state wins, all the rest (for that variable) are ignored
@@ -172,11 +181,11 @@ UNIT show1
 	mode auto,manual
 	state off,redeyes,christmas,christmasday
 	event *state // same events as states
-	WHEN event -> state, mode-manual, delay 30min mode-auto
-	WHEN mode.auto and clock.date = dec 25 -> state.christmasday
-	WHEN mode.auto and clock.date >= 12/1 and clock.date < 1/6 -> state.christmas
-	WHEN mode.auto and clock.night -> state.redeyes 
-	WHEN mode.auto and clock.day -> state.off
+	WHEN event THEN state, mode-manual, delay 30min mode-auto
+	WHEN mode.auto AND clock.night AND clock.date == 12/25 THEN state.christmasday
+	WHEN mode.auto and clock.date >= 12/1 and clock.date < 1/6 THEN state.christmas
+	WHEN mode.auto and clock.night THEN state.redeyes 
+	WHEN mode.auto and clock.day THEN state.off
 
 UNIT thermostat1
 	EVENT temperature,setpoint
@@ -184,15 +193,15 @@ UNIT thermostat1
 	MODE off,auto
 	STATE on,off
 	REFERENCE fanUnit1,heater1
-	WHEN event.temperature -> level.temperature 
-	WHEN event.setpoint -> level.setpoint
-	WHEN mode.off -> state.off
-	WHEN mode.auto AND level.temperature < (setpoint-5) -> state.on
-	WHEN level.temperature > (setpoint+2) -> state.off
-	WHEN state.on AND heater1.state.off -> heater1.event.on
-	WHEN state.off AND heater1.state.on -> heater1.event.off
-	WHEN state.off AND fanUnit1.state.on AND fanUnit1.mode.auto -> fanUnit1.event.off
-	WHEN state.on AND fanUnit1.state.off -> delay 5min fanUnit.event.on
+	WHEN event.temperature THEN level.temperature 
+	WHEN event.setpoint THEN level.setpoint
+	WHEN mode.off THEN state.off
+	WHEN mode.auto AND level.temperature < (setpoint-5) THEN state.on
+	WHEN level.temperature > (setpoint+2) THEN state.off
+	WHEN state.on AND heater1.state.off THEN heater1.event.on
+	WHEN state.off AND heater1.state.on THEN heater1.event.off
+	WHEN state.off AND fanUnit1.state.on AND fanUnit1.mode.auto THEN fanUnit1.event.off
+	WHEN state.on AND fanUnit1.state.off THEN delay 5min fanUnit.event.on
 	
 UNIT heater1 LIKE onoff
 	

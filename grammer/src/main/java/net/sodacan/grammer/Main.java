@@ -36,20 +36,6 @@ public class Main {
       return true;
     }
     public static void main(String[] args) throws IOException {
-//    	test("UNIT lamp1 \ntrue\n");
-//    	test("UNIT lamp1\n 1\n");
-//    	test("UNIT lamp1\n 5*8\n");
-//    	test("UNIT lamp1\n a = 1\n 2+a\n");
-//    	test("UNIT lamp1\n UNIT lamp2 \n");
-//    	test("x=7+50*6/3;x+1;");
-//    	test("x;");
-//    	test("7+50*6/3;");
-//      test("7+50*(6/3);");
-//      test("(7+50)*6/3;");
-//      test("114==(7+50)*6/3;");
-//      test("true;");
-//      test("false;");
-//      test("true==false;");
     	// Load properties
     	Properties properties = new Properties(); 
     	properties.load(new FileInputStream( DIRBASE + "unit.properties"));
@@ -67,16 +53,18 @@ public class Main {
             // Create a parser and do the parse
             LanguageParser parser = new LanguageParser(tokens);
             ProgContext tree = parser.prog();
+            BindVisitor bindVisitor = null;
+        	UnitVisitor unitVisitor = null;
             // Now extract the units we found from the parse tree
             try {
-            	UnitVisitor unitVisitor = new UnitVisitor();
+            	unitVisitor = new UnitVisitor();
           	  	unitVisitor.visit(tree);
           	  	unitVisitor.dereferenceLikes();
           	  	// If the parse worked, we have a valid collection of unit objects
           	  	// At this point we should know declared identifiers used in all units.
           	  	// In the bind visitor, we visit to verify that all identifiers used in
           	  	// when statements reference valid declared identifiers
-          	  	BindVisitor bindVisitor = new BindVisitor(unitVisitor.getUnits());
+          	  	bindVisitor = new BindVisitor(unitVisitor.getUnits());
           	  	bindVisitor.visit(tree);
           	  	// For debugging, print out the units
                 for (Unit unit : unitVisitor.getUnitList()) {
@@ -87,8 +75,13 @@ public class Main {
             }
             // Print the entire parse tree
             System.out.println(tree.toStringTree(parser));
+            
+            System.out.println("Execute an event");
+            ExecuteVisitor ex = new ExecuteVisitor(unitVisitor.getUnitList());
+            Event event = new Event("lamp1","on");
+            ex.processEvent(event);
             // Visit tree and print result
-            System.out.println("------");
+            System.out.println("\n------");
         }
     }
 }

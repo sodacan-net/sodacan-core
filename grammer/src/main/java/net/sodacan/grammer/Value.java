@@ -59,11 +59,31 @@ public class Value {
 		return bool;
 	}
 
+	public String getValue() {
+		return toString();
+	}
+	
 	@Override
 	public String toString() {
 		if (integer!=null) return Integer.toString(integer);
 		if (string!=null) return string;
 		if (bool!=null) return Boolean.toString(bool);
 		return "null";
-	}	
+	}
+	
+	@Override
+	public int hashCode() {
+		return string.hashCode();
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Value) {
+			Value other = (Value)obj;
+			return other.toString().contentEquals(this.toString());
+		}
+		return false;
+	}
+
+	
 }

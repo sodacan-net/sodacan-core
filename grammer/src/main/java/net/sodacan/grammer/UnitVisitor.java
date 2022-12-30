@@ -4,20 +4,19 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 
-import net.sodacan.grammer.LanguageParser.DeclarationContext;
 import net.sodacan.grammer.LanguageParser.EventContext;
 import net.sodacan.grammer.LanguageParser.ProgContext;
 import net.sodacan.grammer.LanguageParser.StateContext;
-import net.sodacan.grammer.LanguageParser.StatementContext;
 import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
 
 public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	private Map<String,Unit> units = new HashMap<>();
 	private Unit unit;
-
+	private List<String> sortedList;
 	/**
 	 * Return the map of units discovered
 	 * @return
@@ -31,9 +30,11 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	 * @return
 	 */
 	public List<Unit> getUnitList() {
-		Set<String> names = units.keySet();
+		if (sortedList==null) {
+			throw new RuntimeException("Sorted list is not available until dereferenceLikes has been called");
+		}
 		List<Unit> unitList = new ArrayList<>();
-		for (String name : names) {
+		for (String name : sortedList) {
 			unitList.add(units.get(name));
 		}
 		return unitList;
@@ -46,7 +47,8 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 		// Load up our the Graph with the known nodes (verticies)
 		Graph graph = new Graph(getUnits().keySet());
 		// Now load up the edges 
-		for (Unit unit : getUnitList()) {
+		for (Entry<String,Unit> entry : units.entrySet()) {
+			Unit unit = entry.getValue();
 			if (unit.getLikeName()!=null) {
 				graph.addEdge(unit.getLikeName(), unit.getName());
 			}
@@ -58,8 +60,8 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	    } 
 	    // Sort so that we dereference from broad to narrow
 	    // Some units have no likes but they could still be liked.
-	    List<String> sortedList = graph.topologicalSort();
-	    System.out.println(sortedList);
+	    sortedList = graph.topologicalSort();
+//	    System.out.println(sortedList);
 	    // Now copy elements from liked units to liking units
 	    for (String unitName: sortedList) {
 	    	Unit u = units.get(unitName);
@@ -90,7 +92,7 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 
 	@Override
 	public Void visitUnit(UnitContext ctx) {
-		unit = new Unit();
+		unit = new Unit(ctx);
 		unit.setName(ctx.ID(0).getText());
 //		String likeName = "all";
 		if (ctx.ID(1)!=null) {

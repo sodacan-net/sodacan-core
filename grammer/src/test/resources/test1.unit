@@ -1,24 +1,22 @@
 // A comment
-UNIT lamp1
-  EVENT next,on,off	// expands to lamp1.event.next, lamp1.event.on, etc.
-  STATE on,off		// expands to lamp1.state.on, etc
+UNIT lamp1		// This names the thing and can be referenced within by $(unit)
+  EVENT {next,on,off}		// Defines possible events that this unit can receive
+  DEFINE state{off,on}
   WHEN event.next 
-    THEN state.on
+    THEN state.next
   WHEN event.on AND NOT state.on 
-  	THEN state.on;state.off
-  WHEN event.off AND NOT state.off 
+    THEN state.on
+  WHEN event.off AND NOT state.off
     THEN state.off
 
-// Another comment
-UNIT lamp2 LIKE lamp1
-	STATE auto
-	WHEN lamp1.state.on
-	  THEN state.off
-	  
 UNIT lamp3 LIKE lamp2
-	STATE on,off
+	DEFINE state{on,off}
 	WHEN state.on
 	  THEN state.off
 
-
-	
+// Another comment
+UNIT lamp2 LIKE lamp1
+	DEFINE state {auto}
+	WHEN lamp1.state.on
+	  THEN state.off
+	  

@@ -32,7 +32,7 @@ state
 	;	
 
 statement
-	: WHEN whenExpression THEN thenExpressions		# WhenStatement
+	: WHEN whenExpression (THEN thenExpression)*		# WhenStatement
 	;
 
 whenExpression
@@ -44,9 +44,6 @@ whenExpression
 
 whenIdentifier
 	: ID '.' ID ('.' ID)?
-	;
-thenExpressions
-	: thenExpression (';' thenExpression)*
 	;
 
 thenExpression

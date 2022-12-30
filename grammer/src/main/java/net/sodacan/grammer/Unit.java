@@ -1,10 +1,12 @@
 package net.sodacan.grammer;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
+import java.util.Map.Entry;
 
+import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
 
 public class Unit {
@@ -12,8 +14,88 @@ public class Unit {
 	private String likeName;
 	private List<String> events = new ArrayList<>();
 	private List<String> states = new ArrayList<>();
+	private boolean stateChanged = false;
 	private List<WhenStatementContext> whens = new ArrayList<>();
+	
+	protected Map<String,Value> values = new HashMap<>();
+	
+	// The parseTree that defines this Unit
+	private UnitContext unitCtx;
 
+	public Unit( UnitContext unitCtx) {
+		this.unitCtx = unitCtx;
+	}
+	
+	public UnitContext getUnitCtx() {
+		return unitCtx;
+	}
+
+	public void setUnitCtx(UnitContext unitCtx) {
+		this.unitCtx = unitCtx;
+	}
+
+	public void setWhens(List<WhenStatementContext> whens) {
+		this.whens = whens;
+	}
+
+	/**
+	 * The first value in an enumeration (such as state and event variables) is the default value
+	 * @param variable
+	 * @return
+	 */
+	protected Value getDefault(String variable) {
+		Value d = new Value();
+		if ("state".equals(variable)) {
+			if (states.size()>0) {
+				return new Value(states.get(0));
+			}
+		}
+		return new Value();
+	}
+
+	/**
+	 * We return a boolean value after looking for a variable and comparing its value to the value supplied
+	 * @param variable
+	 * @param value
+	 * @return
+	 */
+	public Value istValueMatch(String variable, String value) {
+		// Since everything is resolved, we can safely assume that the variable is valid
+		// But may not be instantiate as a runtime value yet
+		Value v = getValue( variable );
+		return new Value(v.toString().equals(value));
+	}
+
+	public String getValues() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getName());
+		sb.append(": ");
+		for (Entry<String,Value> entry : values.entrySet()) {
+        	sb.append(entry.getKey());
+        	sb.append("=");
+        	sb.append(entry.getValue());
+        	sb.append(", ");
+        }
+		return sb.toString();
+	}
+	public Value getValue(String variable) {
+		Value v = values.get(variable);
+		if (v==null) {
+			// Initialize the value to the first (default) value
+			v = getDefault(variable);
+			values.put(variable, v);
+		}
+		return v;
+	}
+		/**
+		 * 
+		 * @param variable
+		 * @param value
+		 */
+	public void setValue(String variable, Value value) {
+		values.put(variable, value);
+	}
+	
 	/**
 	 * This unit is composed of elements of another unit. We simply copy the elements
 	 * At runtime, the contents of the liked unit are inside this unit. 
@@ -64,7 +146,9 @@ public class Unit {
 	public void addState(String state) {
 		if (!states.contains(state)) {
 			states.add(state);
+			values.put("state", new Value(state));
 		}
+
 	}
 	public List<String> getEvents() {
 		return events;
