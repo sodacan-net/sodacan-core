@@ -71,7 +71,7 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 				visit(ctx);
 			}
 		}
-    	System.out.println("Ending with variables: ");
+    	System.out.println("\nEnding with variables: ");
         for (Unit unit : units) {
         	System.out.println(unit.getValues());
         }

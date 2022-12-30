@@ -7,9 +7,15 @@ import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
 
-import net.sodacan.grammer.LanguageParser.EventContext;
+import org.antlr.v4.runtime.tree.TerminalNode;
+
+import net.sodacan.grammer.LanguageParser.DefineStatementContext;
+import net.sodacan.grammer.LanguageParser.EnumerationConstraintContext;
+import net.sodacan.grammer.LanguageParser.EnumerationContext;
+import net.sodacan.grammer.LanguageParser.NullContstraintContext;
+import net.sodacan.grammer.LanguageParser.NumericRangeContext;
 import net.sodacan.grammer.LanguageParser.ProgContext;
-import net.sodacan.grammer.LanguageParser.StateContext;
+import net.sodacan.grammer.LanguageParser.RangeContstraintContext;
 import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
 
@@ -17,6 +23,7 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	private Map<String,Unit> units = new HashMap<>();
 	private Unit unit;
 	private List<String> sortedList;
+	private String variable;
 	/**
 	 * Return the map of units discovered
 	 * @return
@@ -71,19 +78,8 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	    		u.copyFrom(l);
 	    	}
 	    }
-	    
-
-//	  	for (Unit unit : getSortedList()) {
-//	  		if (unit.getLikeName()!=null) {
-//	  			Unit likeUnit = units.get(unit.getLikeName());
-//	  			if (likeUnit==null) {
-//	  				throw new RuntimeException("Reference to like unit not found - unit" + unit.getName());
-//	  			}
-//	  		}
-//	  	}
-	  	// Dereference "like" units
-	  	// 
 	}
+	
 	@Override
 	public Void visitProg(ProgContext ctx) {
 		// TODO Auto-generated method stub
@@ -115,24 +111,47 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 		return super.visitUnit(ctx);
 	}
 	
-	/**
-	 * Add an event to the unit
-	 */
+	
 	@Override
-	public Void visitEvent(EventContext ctx) {
-		unit.addEvent(ctx.getText());
-		return super.visitEvent(ctx);
+	public Void visitDefineStatement(DefineStatementContext ctx) {
+		variable = ctx.ID().getText();
+		visit(ctx.constraints());
+		return super.visitDefineStatement(ctx);
+	}
+
+	
+	@Override
+	public Void visitEnumeration(EnumerationContext ctx) {
+		EnumeratedDefinition ed = new EnumeratedDefinition(variable); 
+		for (TerminalNode node : ctx.ID()) {
+			ed.addOption(node.getText());
+		}
+		unit.addDefinition(variable, ed);
+		return null;
 	}
 
 	@Override
-	public Void visitState(StateContext ctx) {
-		String state = ctx.getText();
-		if ("next".contentEquals(state)) {
-			int line = ctx.start.getLine();
-			throw new RuntimeException("Line " + line + "reserved word 'next' cannot be a state ");
-		}
-		unit.addState(state);
-		return super.visitState(ctx);
+	public Void visitNumericRange(NumericRangeContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitNumericRange(ctx);
+	}
+
+	@Override
+	public Void visitEnumerationConstraint(EnumerationConstraintContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitEnumerationConstraint(ctx);
+	}
+
+	@Override
+	public Void visitRangeContstraint(RangeContstraintContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitRangeContstraint(ctx);
+	}
+
+	@Override
+	public Void visitNullContstraint(NullContstraintContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitNullContstraint(ctx);
 	}
 
 	@Override

@@ -11,25 +11,22 @@ unit
 	;
 
 declaration
-	: EVENT events								# EventStatement
-	| STATE states								# StateStatement
+	: DEFINE ID (constraints)			# DefineStatement
 	; 
 
-events
-	: event (',' event)*
+constraints
+	: enumeration					# enumerationConstraint
+	| numericRange					# rangeContstraint
+	|								# nullContstraint
+	;
+	
+enumeration
+	: '{' ID (',' ID)* '}'
 	;
 
-event
-	: ID
+numericRange
+	: '{' REAL '-' REAL '}'
 	;
-
-states
-	: state (',' state)*
-	;
-
-state
-	: ID
-	;	
 
 statement
 	: WHEN whenExpression (THEN thenExpression)*		# WhenStatement
@@ -72,6 +69,7 @@ atom
 	;
 
 COMMENT : '//' ~[\r\n]* '\r'? '\n' -> skip ;
+DEFINE: 'DEFINE';
 PROP: 'PROPERTY';
 UNIT: 'UNIT';
 LIKE: 'LIKE';
@@ -80,8 +78,6 @@ TRUE: 'true';
 FALSE: 'false';
 AND: 'AND';
 OR: 'OR';
-EVENT: 'EVENT';
-STATE: 'STATE';
 WHEN: 'WHEN';
 THEN: 'THEN';
 ADD: '+';
@@ -94,6 +90,7 @@ ASSIGN: '=';
 LPAREN: '(';
 RPAREN: ')';
 INT     : [0-9]+ ;
+REAL	: [0-9]+ ('.' [0-9]+) ;
 ID      : [a-zA-Z][a-zA-Z0-9]* ;
 EOL	    : ';';
 STRING:  '"' ~["\\\r\n]* '"';

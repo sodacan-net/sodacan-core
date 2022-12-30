@@ -12,9 +12,7 @@ import net.sodacan.grammer.LanguageParser.WhenStatementContext;
 public class Unit {
 	private String name;
 	private String likeName;
-	private List<String> events = new ArrayList<>();
-	private List<String> states = new ArrayList<>();
-	private boolean stateChanged = false;
+	private Map<String,Definition> definitions = new HashMap<>();
 	private List<WhenStatementContext> whens = new ArrayList<>();
 	
 	protected Map<String,Value> values = new HashMap<>();
@@ -34,6 +32,11 @@ public class Unit {
 		this.unitCtx = unitCtx;
 	}
 
+	public void addDefinition(String name, Definition definition) {
+		definitions.put(name, definition);
+		values.put(name, getDefault(name));
+	}
+	
 	public void setWhens(List<WhenStatementContext> whens) {
 		this.whens = whens;
 	}
@@ -44,11 +47,10 @@ public class Unit {
 	 * @return
 	 */
 	protected Value getDefault(String variable) {
-		Value d = new Value();
-		if ("state".equals(variable)) {
-			if (states.size()>0) {
-				return new Value(states.get(0));
-			}
+		Definition definition = definitions.get(variable);
+		if (definition instanceof EnumeratedDefinition) {
+			EnumeratedDefinition ed = (EnumeratedDefinition)definition;
+			return new Value(ed.getFirstOption());
 		}
 		return new Value();
 	}
@@ -80,11 +82,11 @@ public class Unit {
 	}
 	public Value getValue(String variable) {
 		Value v = values.get(variable);
-		if (v==null) {
-			// Initialize the value to the first (default) value
-			v = getDefault(variable);
-			values.put(variable, v);
-		}
+//		if (v==null) {
+//			// Initialize the value to the first (default) value
+//			v = getDefault(variable);
+//			values.put(variable, v);
+//		}
 		return v;
 	}
 		/**
@@ -104,11 +106,8 @@ public class Unit {
 	 * @param like The unit that is to be copied into this unit
 	 */
 	public void copyFrom(Unit like) {
-		for (String event : like.getEvents()) {
-			addEvent(event);
-		}
-		for (String state: like.getStates()) {
-			addState(state);
+		for (Entry<String,Definition> entry : like.definitions.entrySet()) {
+			definitions.put(entry.getKey(),entry.getValue());
 		}
 		whens.addAll(like.getWhens());
 //		System.out.println(getName() + " States: " + states + " including those copied from " + likeName);
@@ -121,37 +120,12 @@ public class Unit {
 	 * @return
 	 */
 	public boolean isValidDeclaration( String variable, String value) {
-		if ("state".contentEquals(variable)) {
-			if (value==null || states.contains(value)) {
-				return true;
-			}
-		}
-		if ("event".contentEquals(variable)) {
-			if (value==null || events.contains(value)) {
-				return true;
-			}
-		}
+		Definition d = definitions.get(variable);
+		if (d==null) return false;
+		if (!(d instanceof EnumeratedDefinition)) return false;
+		if (value==null) return true;
+		if (((EnumeratedDefinition)d).hasOption(value)) return true;
 		return false;
-	}
-
-	public void addEvent(String event) {
-		if (!events.contains(event)) {
-			events.add(event);
-		}
-	}
-	public List<String> getStates() {
-		return states;
-	}
-
-	public void addState(String state) {
-		if (!states.contains(state)) {
-			states.add(state);
-			values.put("state", new Value(state));
-		}
-
-	}
-	public List<String> getEvents() {
-		return events;
 	}
 
 	public List<WhenStatementContext> getWhens() {
@@ -192,7 +166,7 @@ public class Unit {
 	
 	@Override
 	public String toString() {
-		return name + " Events: " + events + " States: " + states;
+		return name + ": " + definitions;
 	}
 	
 }
