@@ -55,7 +55,7 @@ simple
 expression
     : atom												# AtomExpr
     | ID		          								# VariableExpr
-    | ID LPAREN p=(parameterList?) RPAREN					# FunctionExpr
+    | ID LPAREN parameterList? RPAREN				# FunctionExpr
 	| (LPAREN expression RPAREN)  		 				# ParenExpr
 	| expression op=(MUL|DIV|MOD) expression			# MulDivExpr
     | expression op=(ADD|SUB) expression		        # AddSubExpr
