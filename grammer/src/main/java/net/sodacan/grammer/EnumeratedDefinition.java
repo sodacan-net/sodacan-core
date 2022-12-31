@@ -24,7 +24,12 @@ public class EnumeratedDefinition extends Definition {
 		}
 		return null;
 	}
-
+	/**
+	 * Get the next option in an enumerated definition, 
+	 * wrapping to the beginning, if needed.
+	 * @param currentOption
+	 * @return the next option
+	 */
 	public String getNextOption( String currentOption ) {
 		if (options.size()==0) {
 			return null;
@@ -33,11 +38,16 @@ public class EnumeratedDefinition extends Definition {
 			if (currentOption.contentEquals(options.get(x))) {
 				int y = x++;
 				if (x>=options.size()) {
-					y = 1;
+					y = 0;
 					return options.get(y);
 				}
 			}
 		}
 		throw new RuntimeException("Option not found in " + getName());
+	}
+
+	@Override
+	public String toString() {
+		return super.toString() + " " + options;
 	}
 }

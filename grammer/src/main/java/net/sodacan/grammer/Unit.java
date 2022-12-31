@@ -32,9 +32,14 @@ public class Unit {
 		this.unitCtx = unitCtx;
 	}
 
+	public Definition getDefinition(String name) {
+		return definitions.get(name);
+	}
 	public void addDefinition(String name, Definition definition) {
 		definitions.put(name, definition);
-		values.put(name, getDefault(name));
+		if (!"event".contentEquals(name)) {
+			values.put(name, getDefault(name));
+		}
 	}
 	
 	public void setWhens(List<WhenStatementContext> whens) {

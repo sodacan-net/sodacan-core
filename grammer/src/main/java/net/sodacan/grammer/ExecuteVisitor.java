@@ -4,20 +4,23 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
 import net.sodacan.grammer.LanguageParser.AddSubExprContext;
 import net.sodacan.grammer.LanguageParser.AndOrWhenContext;
+import net.sodacan.grammer.LanguageParser.AssignExprContext;
 import net.sodacan.grammer.LanguageParser.EqualsExprContext;
+import net.sodacan.grammer.LanguageParser.ExpressionContext;
 import net.sodacan.grammer.LanguageParser.FalseKeywordContext;
+import net.sodacan.grammer.LanguageParser.FunctionExprContext;
 import net.sodacan.grammer.LanguageParser.IntegerLiteralContext;
 import net.sodacan.grammer.LanguageParser.MulDivExprContext;
 import net.sodacan.grammer.LanguageParser.NotWhenContext;
+import net.sodacan.grammer.LanguageParser.ParameterListContext;
+import net.sodacan.grammer.LanguageParser.SimpleContext;
 import net.sodacan.grammer.LanguageParser.StringLiteralContext;
 import net.sodacan.grammer.LanguageParser.ThenExpressionContext;
-import net.sodacan.grammer.LanguageParser.ThenIdentifierContext;
 import net.sodacan.grammer.LanguageParser.TrueKeywordContext;
 import net.sodacan.grammer.LanguageParser.VariableExprContext;
 import net.sodacan.grammer.LanguageParser.WhenIdentifierContext;
@@ -33,7 +36,6 @@ import net.sodacan.grammer.LanguageParser.WhenStatementContext;
  *
  */
 public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
-	private Map<String,Value> variables = new HashMap<>();
 	// This list is in order of how we process units
 	protected List<Unit> units;
 	// We also populate a map of units for fast lookup
@@ -125,11 +127,10 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 	public Value visitWhenStatement(WhenStatementContext ctx) {
 		System.out.print("\n  WHEN ");
 		Value when = visit(ctx.whenExpression());
-		Value then;
 		if (when.getBoolean()) {
 			Value value = new Value();
-			for (ThenExpressionContext ec : ctx.thenExpression()) {
-				value = visit(ec);
+			if (ctx.thenExpression()!=null) {
+				visit(ctx.thenExpression());
 			}
 			return value;
 		}
@@ -143,22 +144,16 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 		return new Value(!r.getBoolean());
 	}
 
-	@Override
-	public Value visitThenExpression(ThenExpressionContext ctx) {
-		System.out.print("\n    THEN ");
-		return super.visitThenExpression(ctx);
-	}
-
-	@Override
-	public Value visitThenIdentifier(ThenIdentifierContext ctx) {
-		List<String> ids = new ArrayList<>();
-		for (TerminalNode node: ctx.ID()) {
-			ids.add(node.getText());
-		}
-		System.out.print(ids + " ");
-		unit.setValue(ids.get(0), new Value(ids.get(1)));
-		return super.visitThenIdentifier(ctx);
-	}
+//	@Override
+//	public Value visitThenIdentifier(ThenIdentifierContext ctx) {
+//		List<String> ids = new ArrayList<>();
+//		for (TerminalNode node: ctx.ID()) {
+//			ids.add(node.getText());
+//		}
+//		System.out.print(ids + " ");
+//		unit.setValue(ids.get(0), new Value(ids.get(1)));
+//		return super.visitThenIdentifier(ctx);
+//	}
 
 	@Override
 	public Value visitAndOrWhen(AndOrWhenContext ctx) {
@@ -175,14 +170,113 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 			return new Value(left.getBoolean() || right.getBoolean());
 		}
 	}
+	@Override
+	public Value visitThenExpression(ThenExpressionContext ctx) {
+		System.out.print("\n    THEN ");
+		return super.visitThenExpression(ctx);
+	}
+
+	public Value nextFunction( FunctionExprContext ctx, Value parameters) {
+		// Verify that parameters is an array of values, size - 1 in this case.
+		if (!parameters.isArray() || parameters.getArray().size()!=1) {
+			throw new RuntimeException("Parameter must name a variable");
+		}
+		Value p1 = parameters.getArray().get(0);
+		if (!p1.isString()) {
+			throw new RuntimeException("Parameter must name a variable");
+		}
+		Definition def = unit.getDefinition(p1.getValue());
+		if (def==null) {
+			throw new RuntimeException("Parameter must name a variable");
+		}
+		if (!(def instanceof EnumeratedDefinition)) {
+			throw new RuntimeException("Parameter to next function must be an enumerated variable");
+		}
+		Value val = unit.getValue(def.getName());
+		EnumeratedDefinition edef = (EnumeratedDefinition)def;
+		val = new Value(edef.getNextOption(val.getValue()));
+		// Set the new value of the variable
+		unit.setValue(def.getName(), val);
+		return val;
+	}
+	
+	/**
+	 * If the value provided is the name of a variable, then return the value of the variable.
+	 * Otherwise, just return the value as supplied.
+	 * @param value
+	 * @return
+	 */
+	public Value resolveVariable(Value value) {
+		if (!value.isVariable()) {
+			return value;
+		}
+		return unit.getValue(value.getValue());
+	}
+	
+	public Value printFunction(FunctionExprContext ctx, Value parameters) {
+		StringBuffer sb = new StringBuffer();
+		if (!parameters.isArray()) {
+			throw new RuntimeException("Parameter must name a variable");
+		}
+		System.out.print("Print From Line ");
+		System.out.print(ctx.start.getLine());
+		System.out.print(": ");
+		for (Value v : parameters.getArray()) {
+			// Evaluate, first
+			v = resolveVariable(v);
+			sb.append(v.toString());
+			System.out.print(v);
+		}
+		System.out.print("\n");
+		return new Value(sb.toString());
+	}
+	public Value executeFunction(FunctionExprContext ctx, String functionName, Value parameters) {
+		if ("next".contentEquals(functionName)) {
+			return nextFunction(ctx,parameters);
+		}
+		if ("print".contentEquals(functionName)) {
+			return printFunction(ctx,parameters);
+		}
+		return new Value();
+	}
+
+	@Override
+	public Value visitFunctionExpr(FunctionExprContext ctx) {
+		String functionName = ctx.ID().getText();
+		Value p = visit(ctx.parameterList());
+		System.out.println("Function:" + functionName + " " + p);
+		// Now execute the function
+		return executeFunction(ctx, functionName,p);
+	}
+
+	/**
+	 * Create an array of values comprising a parameter list
+	 */
+	@Override
+	public Value visitParameterList(ParameterListContext ctx) {
+		List<Value> array = new ArrayList<>(ctx.expression().size());
+		for (ExpressionContext exprCtx : ctx.expression()) {
+			Value v = visit(exprCtx);
+			array.add(v);
+		}
+		return new Value(array);
+	}
+	/**
+	 * If we visit a variable, just return the name of the variable, not it's value.
+	 * Used in functions
+	 */
+	@Override
+	public Value visitVariableExpr(VariableExprContext ctx) {
+		return new Value(ctx.ID().getText(),true);
+	}
 
 	@Override
 	public Value visitStringLiteral(StringLiteralContext ctx) {
 		// Remove the quotes
 		String x = ctx.STRING().getText();
 		x = x.substring(1, x.length()-1);
-		System.out.print(x + " "); 
-		return new Value(x);
+//		System.out.print(x + " "); 
+		return new Value(x,false);
 	}
 	
 	@Override
@@ -202,8 +296,8 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitAddSubExpr(AddSubExprContext ctx) {
-		Value left = visit(ctx.thenExpression(0));
-		Value right = visit(ctx.thenExpression(1));
+		Value left = visit(ctx.expression(0));
+		Value right = visit(ctx.expression(1));
 		if (ctx.op.getType()==LanguageParser.ADD) {
 			return new Value(left.getInteger()+right.getInteger());
 		}
@@ -215,8 +309,8 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitMulDivExpr(MulDivExprContext ctx) {
-		Value left = visit(ctx.thenExpression(0));
-		Value right = visit(ctx.thenExpression(1));
+		Value left = visit(ctx.expression(0));
+		Value right = visit(ctx.expression(1));
 		if (ctx.op.getType()==LanguageParser.MUL) {
 			return new Value(left.getInteger()*right.getInteger());
 		}
@@ -225,22 +319,43 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 		}
 		return new Value();
 	}
-	@Override
-	public Value visitVariableExpr(VariableExprContext ctx) {
-		String id = ctx.getText();
-		Value r = variables.get(id);
-		if (r==null) throw new RuntimeException("Undefined variable " + id);
-		return r;
-	}
+	
+//	@Override
+//	public Value visitVariableExpr(VariableExprContext ctx) {
+//		String id = ctx.getText();
+//		Value r = unit.getValue(id);
+//		if (r==null) throw new RuntimeException("Undefined variable " + id);
+//		return r;
+//	}
 
 	@Override
 	public Value visitEqualsExpr(EqualsExprContext ctx) {
-		Value left = visit(ctx.thenExpression(0));
-		Value right = visit(ctx.thenExpression(1));
+		Value left = visit(ctx.expression(0));
+		Value right = visit(ctx.expression(1));
 		if (left.isBoolean() && right.isBoolean()) return new Value((left.getBoolean()==right.getBoolean()));
 		if (left.isInteger() && right.isInteger()) return new Value((left.getInteger()==right.getInteger()));
 		if (left.isString() && right.isString()) return new Value(left.toString().equals(right.toString()));
 		if (left.isNull() && right.isNull()) return new Value(true);
 		return new Value(false); 
 	}
+
+	@Override
+	public Value visitSimple(SimpleContext ctx) {
+		String variable = ctx.ID(0).getText();
+		Value value = new Value(ctx.ID(1).getText());
+		unit.setValue(variable, value);
+		System.out.print(variable + "." + value);
+		return super.visitSimple(ctx);
+	}
+
+	@Override
+	public Value visitAssignExpr(AssignExprContext ctx) {
+		String variable = ctx.ID().getText();
+		Value v = visit(ctx.expression());
+		unit.setValue(variable, v);
+		System.out.print(variable + "=" + v);
+		return super.visitAssignExpr(ctx);
+	}
+	
+	
 }

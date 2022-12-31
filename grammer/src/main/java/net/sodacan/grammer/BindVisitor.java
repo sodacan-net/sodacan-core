@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import net.sodacan.grammer.LanguageParser.ThenIdentifierContext;
+import net.sodacan.grammer.LanguageParser.AssignExprContext;
 import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.VariableExprContext;
 import net.sodacan.grammer.LanguageParser.WhenIdContext;
@@ -62,32 +62,15 @@ public class BindVisitor extends LanguageBaseVisitor<Void> {
 		return super.visitWhenIdentifier(ctx);
 	}
 
-	/**
-	 * A "then identifier" is always local (cannot change the value of a variable in another unit)
-	 */
-	@Override
-	public Void visitThenIdentifier(ThenIdentifierContext ctx) {
-		List<TerminalNode> ids = ctx.ID();
-		String variable = ids.get(0).getText();
-		String value = ids.get(1).getText();
-		// Did this reference match a declaration?
-		if (!unit.isValidDeclaration(variable,value)) {
-			throw new RuntimeException("Line: " + ctx.start.getLine() + " - Invalid Identifier " + ctx.getText());
-		}
-		return super.visitThenIdentifier(ctx);
-	}
 
-	/**
-	 * A variable on the "then" side is only a reference to a local unit
-	 */
+	
 	@Override
-	public Void visitVariableExpr(VariableExprContext ctx) {
+	public Void visitAssignExpr(AssignExprContext ctx) {
 		String variable = ctx.ID().getText();
 		if (!unit.isValidDeclaration(variable,null)) {
 			throw new RuntimeException("Line: " + ctx.start.getLine() + " - Invalid Identifier " + variable);
 		}
-		return super.visitVariableExpr(ctx);
+		return super.visitAssignExpr(ctx);
 	}
-
 	
 }

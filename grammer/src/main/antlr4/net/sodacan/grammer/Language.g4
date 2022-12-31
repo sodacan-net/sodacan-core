@@ -29,7 +29,7 @@ numericRange
 	;
 
 statement
-	: WHEN whenExpression (THEN thenExpression)*		# WhenStatement
+	: WHEN whenExpression (THEN thenExpression)?	# WhenStatement
 	;
 
 whenExpression
@@ -44,23 +44,29 @@ whenIdentifier
 	;
 
 thenExpression
-	: thenIdentifier
+	: simple
+	| expression (';' expression)*
 	;
 	
-thenIdentifier
+simple
 	: ID '.' ID
 	;
-
+	
 expression
-    : ID		                                # VariableExpr
-    | atom										# AtomExpr
-    | (LPAREN thenExpression RPAREN)                # ParenExpr
-  	| thenExpression op=(MUL|DIV|MOD) thenExpression    # MulDivExpr
-    | thenExpression op=(ADD|SUB) thenExpression        # AddSubExpr
-    | thenExpression EQUALS thenExpression              # EqualsExpr
-    | thenExpression ASSIGN thenExpression              # AssignExpr
-    ;
+    : atom												# AtomExpr
+    | ID		          								# VariableExpr
+    | ID LPAREN p=(parameterList?) RPAREN					# FunctionExpr
+	| (LPAREN expression RPAREN)  		 				# ParenExpr
+	| expression op=(MUL|DIV|MOD) expression			# MulDivExpr
+    | expression op=(ADD|SUB) expression		        # AddSubExpr
+    | expression EQUALS expression						# EqualsExpr
+    | ID ASSIGN expression							# AssignExpr
+	;
 
+parameterList
+	: expression (',' expression)*
+	;
+		
 atom
 	: INT			# IntegerLiteral
 	| STRING		# StringLiteral

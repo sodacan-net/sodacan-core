@@ -1,11 +1,11 @@
 // A comment
-UNIT lamp1		// This names the thing and can be referenced within by $(unit)
-  DEFINE event {next,on,off}		// Defines possible events that this unit can receive
-  DEFINE state{off,on}
+UNIT lamp1							// This names the thing
+  DEFINE event {next,on,off}		// Define possible events that this unit can receive
+  DEFINE state {off,on}				// Define a state variable and possible state values
   WHEN event.next 
-    THEN state.next
+    THEN next(state);print("State=",state)
   WHEN event.on AND NOT state.on 
-    THEN state.on
+    THEN state="on"
   WHEN event.off AND NOT state.off
     THEN state.off
 

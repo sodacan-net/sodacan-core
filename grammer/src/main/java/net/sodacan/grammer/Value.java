@@ -1,12 +1,18 @@
 package net.sodacan.grammer;
 
+import java.util.List;
+
 public class Value {
 	private Integer integer = null;
 	private String string = null;
 	private Boolean bool = null;
-
+	private List<Value> array = null;
+	private boolean variable = false;
 	public Value() {
 		
+	}
+	public Value(List<Value> array) {
+		this.array = array;
 	}
 	public Value(int integer) {
 		this.integer = integer;
@@ -14,8 +20,17 @@ public class Value {
 	public Value(String string) {
 		this.string = string;
 	}
+	public Value(String string, boolean variable) {
+		this.string = string;
+		this.variable = variable;
+	}
 	public Value(Boolean bool) {
 		this.bool = bool;
+	}
+
+	public boolean isArray( ) {
+		if (array!=null) return true;
+		return false;
 	}
 
 	public boolean isInteger() {
@@ -42,9 +57,12 @@ public class Value {
 		if (bool!=null) return true;
 		return false;
 	}
-	
+
+	public boolean isVariable() {
+		return variable;
+	}
 	public boolean isNull() {
-		if (integer==null && string==null && bool==null) return true;
+		if (integer==null && string==null && bool==null && array==null) return true;
 		return false;
 	}
 	
@@ -62,12 +80,16 @@ public class Value {
 	public String getValue() {
 		return toString();
 	}
-	
+
+	public List<Value> getArray() {
+		return array;
+	}
 	@Override
 	public String toString() {
 		if (integer!=null) return Integer.toString(integer);
 		if (string!=null) return string;
 		if (bool!=null) return Boolean.toString(bool);
+		if (array!=null) return array.toString();
 		return "null";
 	}
 	

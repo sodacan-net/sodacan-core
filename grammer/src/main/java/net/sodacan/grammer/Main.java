@@ -78,10 +78,10 @@ public class Main {
             
             System.out.println("Execute an event");
             ExecuteVisitor ex = new ExecuteVisitor(unitVisitor.getUnitList());
-            Event event = new Event("lamp1","on");
-            ex.processEvent(event);
+            ex.processEvent(new Event("lamp1","on"));
             // Visit tree and print result
             System.out.println("\n------");
+            ex.processEvent(new Event("lamp1","next"));
         }
     }
 }
