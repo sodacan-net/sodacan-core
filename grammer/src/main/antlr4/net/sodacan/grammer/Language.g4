@@ -11,7 +11,11 @@ unit
 	;
 
 declaration
-	: DEFINE ID (constraints)			# DefineStatement
+	: ENUM ID (constraints)			# EnumStatement
+	| INTEGER n=ID v=INT?			# IntegerStatement
+	| DATE ID						# DateStatement
+	| TIME ID						# TimeStatement
+	| TIMESTAMP ID					# TimestampStatement
 	; 
 
 constraints
@@ -55,7 +59,7 @@ simple
 expression
     : atom												# AtomExpr
     | ID		          								# VariableExpr
-    | ID LPAREN parameterList? RPAREN				# FunctionExpr
+    | ID LPAREN parameterList? RPAREN					# FunctionExpr
 	| (LPAREN expression RPAREN)  		 				# ParenExpr
 	| expression op=(MUL|DIV|MOD) expression			# MulDivExpr
     | expression op=(ADD|SUB) expression		        # AddSubExpr
@@ -75,7 +79,11 @@ atom
 	;
 
 COMMENT : '//' ~[\r\n]* '\r'? '\n' -> skip ;
-DEFINE: 'DEFINE';
+ENUM: 'ENUM';
+INTEGER: 'INTEGER';
+DATE: 'DATE';
+TIME: 'TIME';
+TIMESTAMP: 'TIMESTAMP';
 PROP: 'PROPERTY';
 UNIT: 'UNIT';
 LIKE: 'LIKE';

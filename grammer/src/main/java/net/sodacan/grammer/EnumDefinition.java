@@ -3,10 +3,10 @@ package net.sodacan.grammer;
 import java.util.ArrayList;
 import java.util.List;
 
-public class EnumeratedDefinition extends Definition {
+public class EnumDefinition extends Definition {
 	List<String> options = new ArrayList<>();
 	
-	public EnumeratedDefinition(String name) {
+	public EnumDefinition(String name) {
 		super(name);
 	}
 

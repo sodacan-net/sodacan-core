@@ -82,6 +82,8 @@ public class Main {
             // Visit tree and print result
             System.out.println("\n------");
             ex.processEvent(new Event("lamp1","next"));
+            System.out.println("\n------");
+            ex.processEvent(new Event("lamp6","on"));
         }
     }
 }

@@ -8,7 +8,11 @@ import java.util.Map.Entry;
 
 import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
-
+/**
+ * An iot component. A lamp, switch, tank, or pump
+ * @author John Churin
+ *
+ */
 public class Unit {
 	private String name;
 	private String likeName;
@@ -35,11 +39,17 @@ public class Unit {
 	public Definition getDefinition(String name) {
 		return definitions.get(name);
 	}
-	public void addDefinition(String name, Definition definition) {
+	
+	public Value addDefinition(String name, Definition definition) {
 		definitions.put(name, definition);
-		if (!"event".contentEquals(name)) {
-			values.put(name, getDefault(name));
+		Value v;
+		if ("event".contentEquals(name)) {
+			v= new Value();
+		} else {
+			v = getDefault(name);
+			values.put(name, v);
 		}
+		return v;
 	}
 	
 	public void setWhens(List<WhenStatementContext> whens) {
@@ -53,8 +63,8 @@ public class Unit {
 	 */
 	protected Value getDefault(String variable) {
 		Definition definition = definitions.get(variable);
-		if (definition instanceof EnumeratedDefinition) {
-			EnumeratedDefinition ed = (EnumeratedDefinition)definition;
+		if (definition instanceof EnumDefinition) {
+			EnumDefinition ed = (EnumDefinition)definition;
 			return new Value(ed.getFirstOption());
 		}
 		return new Value();
@@ -127,9 +137,9 @@ public class Unit {
 	public boolean isValidDeclaration( String variable, String value) {
 		Definition d = definitions.get(variable);
 		if (d==null) return false;
-		if (!(d instanceof EnumeratedDefinition)) return false;
+		if (!(d instanceof EnumDefinition)) return true;
 		if (value==null) return true;
-		if (((EnumeratedDefinition)d).hasOption(value)) return true;
+		if (((EnumDefinition)d).hasOption(value)) return true;
 		return false;
 	}
 

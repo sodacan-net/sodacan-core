@@ -9,9 +9,10 @@ import java.util.Set;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
-import net.sodacan.grammer.LanguageParser.DefineStatementContext;
+import net.sodacan.grammer.LanguageParser.EnumStatementContext;
 import net.sodacan.grammer.LanguageParser.EnumerationConstraintContext;
 import net.sodacan.grammer.LanguageParser.EnumerationContext;
+import net.sodacan.grammer.LanguageParser.IntegerStatementContext;
 import net.sodacan.grammer.LanguageParser.NullContstraintContext;
 import net.sodacan.grammer.LanguageParser.NumericRangeContext;
 import net.sodacan.grammer.LanguageParser.ProgContext;
@@ -113,21 +114,31 @@ public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	
 	
 	@Override
-	public Void visitDefineStatement(DefineStatementContext ctx) {
+	public Void visitEnumStatement(EnumStatementContext ctx) {
 		variable = ctx.ID().getText();
 		visit(ctx.constraints());
-		return super.visitDefineStatement(ctx);
+		return super.visitEnumStatement(ctx);
 	}
 
 	
 	@Override
 	public Void visitEnumeration(EnumerationContext ctx) {
-		EnumeratedDefinition ed = new EnumeratedDefinition(variable); 
+		EnumDefinition ed = new EnumDefinition(variable); 
 		for (TerminalNode node : ctx.ID()) {
 			ed.addOption(node.getText());
 		}
 		unit.addDefinition(variable, ed);
 		return null;
+	}
+
+	@Override
+	public Void visitIntegerStatement(IntegerStatementContext ctx) {
+		variable = ctx.n.getText();
+		Value v  = unit.addDefinition(variable, new IntegerDefinition(variable));
+		if (ctx.v !=null) {
+			unit.setValue(variable, new Value(ctx.v.getText()));
+		}
+		return super.visitIntegerStatement(ctx);
 	}
 
 	@Override

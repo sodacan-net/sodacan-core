@@ -189,11 +189,11 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 		if (def==null) {
 			throw new RuntimeException("Parameter must name a variable");
 		}
-		if (!(def instanceof EnumeratedDefinition)) {
+		if (!(def instanceof EnumDefinition)) {
 			throw new RuntimeException("Parameter to next function must be an enumerated variable");
 		}
 		Value val = unit.getValue(def.getName());
-		EnumeratedDefinition edef = (EnumeratedDefinition)def;
+		EnumDefinition edef = (EnumDefinition)def;
 		val = new Value(edef.getNextOption(val.getValue()));
 		// Set the new value of the variable
 		unit.setValue(def.getName(), val);
@@ -296,8 +296,8 @@ public class ExecuteVisitor extends LanguageBaseVisitor<Value> {
 
 	@Override
 	public Value visitAddSubExpr(AddSubExprContext ctx) {
-		Value left = visit(ctx.expression(0));
-		Value right = visit(ctx.expression(1));
+		Value left = resolveVariable(visit(ctx.expression(0)));
+		Value right = resolveVariable(visit(ctx.expression(1)));
 		if (ctx.op.getType()==LanguageParser.ADD) {
 			return new Value(left.getInteger()+right.getInteger());
 		}

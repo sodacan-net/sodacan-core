@@ -1,22 +1,55 @@
 // A comment
 UNIT lamp1							// This names the thing
-  DEFINE event {next,on,off}		// Define possible events that this unit can receive
-  DEFINE state {off,on}				// Define a state variable and possible state values
+  ENUM event {next,on,off}			// Define possible events that this unit can receive
+  ENUM state {off,on}				// Define a state variable and possible state values
+  INTEGER count 5					// Integer with an initial value
+  INTEGER counter					// Integer without an initial value
   WHEN event.next 
-    THEN next(state);print("State=",state)
+    THEN 
+    	next(state);
+    	print("State=",state);
+//    	count=1;
+    	count=count+1;
+    	print("count: ",count+10)
   WHEN event.on AND NOT state.on 
     THEN state="on"
   WHEN event.off AND NOT state.off
     THEN state.off
-
+  SEND state TO 
 UNIT lamp3 LIKE lamp2
-	DEFINE state{on,off}
+	ENUM state{on,off}
 	WHEN state.on
 	  THEN state.off
 
+// Clock
+UNIT all 
+	DATE date
+	TIME time
+	TIMESTAMP timestamp
+	ENUM day {morning,afternoon,evening,night}
+	ENUM season {winter,spring,summer,fall}
+	ENUM sun {day,night}
+	ENUM week {weekday,weekend}
+	ENUM holiday {christmas,thanksgiving,independence,newYearsEve,newYearsDay}
+
 // Another comment
 UNIT lamp2 LIKE lamp1
-	DEFINE state {auto}
+	ENUM state {auto}
 	WHEN lamp1.state.on
 	  THEN state.off
-	  
+
+UNIT lamp6
+	ENUM event {off,on,auto}
+	ENUM mode {off,on,auto}
+	ENUM state {on,off}
+  	WHEN event.on 
+    	THEN mode="on"
+  	WHEN event.off 
+    	THEN mode.off
+  	WHEN event.auto 
+    	THEN mode="auto"
+	WHEN mode.on AND state.off
+		THEN state.on
+	WHEN mode.off AND state.on
+		THEN state.off
+	

@@ -1,18 +1,270 @@
-// Simple on-off-toggle
-UNIT lamp1		// This names the thing and can be referenced within by $(unit)
-  EVENT next	// expands to lamp1.event.next
-  EVENT on	
-  EVENT off
-  DEFINE state{off,on}
-  DEFINE mode{off,auto,on}
-  DEFINE level{0.0-1.0}
-  WHEN event.next 
-    THEN state.next
-  WHEN event.on AND NOT state.on 
-    THEN state.on
-  WHEN event.off AND NOT state.off 
-    THEN state.off
+// pub-sub model: broker (hidden), topic, publisher/producer, subscriber/consumer
+// All topics must be declared
+// All messages contain a timestamp, a correlationId, and the producer id
+// A simple pub-sub topic with no mention of consumers or producers
+// Declare topics in one file. Wire them up in a separate file. Then add the 
+consumers and producers separately, again.
+// Simple topic, no (null) payload
+TOPIC offAtBedtime
+// Consolidate log output
+// A topic used to record log output. Message contains a timestamp, host, and some text
+TOPIC log TEXT
+// A topic can define one or more message types
+TOPIC clock {sunrise,sunset,morning,afternoon,evening,night,daytime,nighttime}
+// A sensor produces messages and one ore more control UNITs react. In this case,
+// the sensor creates no data, just the event itself. Ex: motion detector.
+TOPIC sensor1
+TOPIC sunriseSunset {sunrise,sunset}
+// Send a timer event when activated
+// 
+TOPIC timer {set,reset,cancel,expire}
+// A, typically repeating, schedule that sends a run message when it's time
+// Also handles priorities when there are scheduling conflicts.
+TOPIC schedule {set,run,cancel}
 
+// While all messages are asynchronous, some are essentially request/response, the
+// response being sent as an independent message. In essence, the message sent contains
+// info that says "...and when it's time, send 'this' message back to me."
+
+// Producers can be external, such as devices, with no mention in this language
+
+// Names are in this format: topic.key.value
+
+// All state variables should be sent to this topic for persistence
+TOPIC state COMPONENT,KEY,VALUE
+
+TOPIC lamps {on,off,toggle}
+
+PRODUCER clock {day,night,morning,afternoon,evening,night}
+  CREATE system.calendar
+// Run a program that produces messages
+PRODUCER sunriseSunset
+  RUN aProgram
+PRODUCER lamp1 {on,off}
+	console
+    
+// Consumers can also be internal (same address space)
+
+// A UNIT typically shadows a real-world thing such as pump, light switch, light, etc
+
+// UNIT topic:key 
+// A consumer of messages to the topic defined by this unit
+// ie UNIT = TOPIC + CONSUMER
+// TOPIC lamp1 {toggle}
+// CONSUMER lamp1 {toggle}
+//  In this unit, {toggle} is a subset of the events supported by the lamps topic.
+
+
+UNIT lamp1 {toggle}			// Simple lamp controlled by toggle button (toggle event)
+  ENUM state {off,on}		// A variable within this unit
+  PUBLISH state AS lamp1.state	// Optional but advised
+  ON toggle					// Take action when toggle event received
+    THEN next(state)		// rotate the state variable
+
+NO: RECEIVE lamp2.toggle FROM http://xxx/lamp2/toggle
+
+// When a message arrives, the first EVENT or AT to evaluate true is executed. This provides a priority
+// mechanism.
+// After the matching EVENT-THEN or AT-THEN is run, the WHENs are evaluated to determine which to run
+// and then the matching WHEN-THENs are run (without reevaluating the WHEN conditions). 
+// This helps prevent silly loops and odd side-effects.
+UNIT lamp2 {toggle,on,off}					// Lamp with off timer unless movement detected
+  LOCAL state {off,on} 	// Declare variable with list of possible values, and...
+    THEN state.off		// ...Initialize to off
+  LOCAL timer system.timer {reset,start, expire} 	// Create a timer, assign alias
+
+  EVENT offAtBedtime OR emergencyOff
+    AND state.on
+    THEN state.off
+  EVENT lamp2.on 
+    AND state.off
+    THEN state.on			// Change state to on
+  EVENT lamp2.off
+    AND state.on
+    THEN state.off
+  EVENT sensor1				// We got movement in the room...
+    AND state.on			// ...and the lamp is on...
+    THEN timer.reset		// ...reset the timer
+  EVENT lamp2.expire			// If timer expires...
+    AND state.on			// ...and, the light is on...
+  	THEN state.off    		// turn light off
+  EVENT lamp2.toggle			// If toggle event arrives...
+    AND state.on			// ... and state is on ...
+    THEN state.off			// ... Change state to off
+  EVENT lamp2.toggle			// If toggle toggle event arrives...
+    AND state.off			// ... and state is off ...
+    THEN state.on			// ... Change state to on
+
+  WHEN state.on						// When state transitions to on...
+    THEN timer.minutes=10			// ...Start a timer
+    THEN timer.onExpire=lamp2.expire	// And send us a message when time is up
+  WHEN state.off					// When state transitions to off...
+    THEN timer.cancel				// ...Cancel the timer
+  
+  PUBLISH state 			//publish updates to state
+
+// Tank level and pump control
+// Maintain a mode setting, too
+UNIT tank1
+  LOCAL mode {off,auto} 	// Declare variable with list of possible values 
+    THEN mode.off
+  LOCAL level {0.0-1.0}		// A decimal number between 0.0 and 1.0...
+    THEN level = 1.0		// ...Initialized to full
+  EVENT tank1.level(value)		// Event tank1.level with formal parameter value
+	THEN level = value
+  EVENT tank1.auto
+	THEN mode.auto
+  EVENT tank1.off
+    AND NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
+	THEN mode.off
+  WHEN mode.auto AND level < 0.7 AND pump1.off 
+	THEN pump1.on
+  WHEN mode.auto AND level > 0.9 AND pump1.on
+	THEN pump1.off
+  WHEN mode.off AND pump1.on
+	THEN pump1.off
+
+// Threshold function compute probability that pump should run
+// If tank full, probability is 0.0.
+// The emptier the tank, the higher the probability to pump 1.0-tank level
+// The emptier the well, the higher the probability 1.0-well level 
+// Night time is preferred over daytime night 1.0 day: 0.5
+// Avoid Friday nights friday: 0.5 otherwise 1.0
+
+// Model the water supply to the well
+GLOBAL aquifer.flowRate 0.5 // GPM
+GLOBAL well.capacity 540 // Gallons
+GLOBAL well.level ExponentialMovingAverage(10) FilterRange(0.0,1.0) 	// well level is an average over 10 readings
+GLOBAL tank1.capacity 750 // Gallons
+GLOBAL tank1.level ExponentialMovingAverage(10) FilterRange(0.0,1.0)	// Tank level is an average over 10 readings
+
+// Note: Well levels behave specially: assigning a value adds that value to a rotating collection
+// referencing the level returns the moving average.
+GLOBAL wellWeight 
+// The well holds a lot of water
+UNIT well
+
+UNIT wellPump
+
+UNIT domesticTank
+
+// A "simple" tank and pump control
+UNIT tank2
+  LOCAL mode {off,auto} 	// Declare variable with list of possible values 
+    THEN mode.off
+  LOCAL level ExponentialMovingAverage(10) FilterRange(0.0,1.0)		// A decimal number between 0.0 and 1.0...
+    THEN level = 1.0		// ...Initialized to full
+  LOCAL pause {true,false}
+    THEN pause.false
+  EVENT tank1.level(value)		// Event tank1.level with formal parameter value
+	THEN level = value
+  EVENT tank1.auto				// Auto message causes...
+	THEN mode.auto			// ...mode to be auto
+  EVENT tank1.off
+    AND NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
+	THEN mode.off
+  WHEN mode.auto AND level < 0.7 AND pump1.off AND pause.false
+	THEN pump1.on
+  WHEN mode.auto AND level > 0.9 AND pump1.on
+	THEN pump1.off
+  WHEN mode.off AND pump1.on
+	THEN pump1.off
+
+// Lighting scenes are managed by a scheduler which sends a message to the eaves when it's time
+UNIT eavesControl {off,auto,tick}
+  LOCAL mode {off,auto}
+    THEN mode.off
+  SUBSCRIBE clock{sunrise,sunset,date,time,...}
+  EVENT eavesControl.off
+    THEN mode.off
+    THEN eaves.off
+  EVENT eavesControl.auto
+    THEN mode.auto
+  AT sunrise 					// AT is like ON but clock/calendar oriented
+	THEN eaves.off				// Ensure the lights are off during the day
+  AT sunset ON January 1st		// ON specifies a day
+	AND mode.auto
+	THEN eaves.redWhiteBlue		// Lights on all night
+  AT sunset ON mondays					// ON specifies a day
+    FROM june 1 THROUGH july 13 	// only within a date range
+	AND mode.auto
+	THEN eaves.blue				// Lights on monday night
+  AT midnight 
+	THEN eaves.off				// Nothing after midnight
+  AT sunset ON july 4th 
+	AND mode.auto
+	THEN eaves.redWhiteBlue
+  AT sunset ON december 24th 
+	OR sunset ON december 25th
+	AND mode.auto
+	THEN eaves.christmasEve
+  AT sunset DURING december 	// during == the whole whatever
+	AND mode.auto
+	THEN eaves.christmas
+  AT sunset FROM december 1st THROUGH january 6th 
+	AND mode.auto
+	THEN eaves.christmas
+  AT 1 hour before sunset ON easter 
+	AND mode.auto
+	THEN eaves.pastel
+  AT sunset 
+	AND mode.auto
+	THEN eaves.redEyes
+  AT OTHERWISE 
+  	THEN eaves.off						// If nothing else qualifies, then lights off
+
+// The message we receive tells us which lights to show
+// Either controlled by the scheduler or manually
+UNIT eaves
+  EVENT eaves.off
+    THEN 
+  EVENT eaves.christmas
+    THEN 
+
+UNIT eaves
+  EVENT eaves.christmas
+	
+UNIT lamp3		// Lamp that has auto mode that turns light on in the evening
+	SUBSCRIBE calendar.sun{sunset,sunrise}		// Info from a system unit (calendar)
+    SUBSCRIBE system.clock {evening} AS clock
+	PUBLISH lamp3.mode{off,auto,on} AS mode
+    EVENT lamp3.toggle
+      THEN next(mode)
+    EVENT lamp3.on
+      THEN mode.on
+    EVENT lamp3.auto
+      THEN mode.auto
+    EVENT lamp3.off
+      THEN mode.off
+	PUBLISH lamp3.state{off,on} AS state
+	WHILE mode.auto AND clock.evening
+	  THEN state.on
+	WHILE mode.auto AND NOT clock.evening
+	  THEN state.off
+
+// Tank level and pump control
+// Maintain a mode setting, too
+UNIT tank1 {level(percent),off,auto}
+	EVENT mode {off,auto}
+	PUBLISH pump1 {on,off}						// We publish this variable as it changes
+	LOCAL count 0								// Only used within this unit
+	WHEN mode.auto AND level < 0.7 AND pump1.off 
+	  THEN pump1.on
+	WHEN mode.auto AND level > 0.9 AND pump1.on
+	  THEN pump1.off
+	WHEN mode.off AND pump1.on
+	  THEN pump1.off
+
+// Pump used to fill tank1, we list for the call
+UNIT pump1
+	EVENT ENUM tank1.pump1 {on,off}
+	LOCAL ENUM state {off, on}
+	WHEN event.on AND state.off THEN state.on
+	WHEN event.off AND state.on THEN state.off
+	PUBLISH ENUM 
+	WHEN state THEN send.state.${server}/pump1
+
+  
 UNIT lamp1a		// This names the thing and can be referenced within by $(unit)
   state off,on
   mode on, off
@@ -145,34 +397,6 @@ UNIT lamp8 {
 //    state.on THEN state.off
 // means: if state *is* on, then *set* state to off
 
-// Introduce level (a variation of state)
-// We cannot directly set the state of a different unit
-// But we can send an event to another item
-// A simple pump/tank fill control
-UNIT tank1
-	state 0.0-1.0
-	WHEN event.level THEN state.event.value	// Set the state's value to the value in the event
-	WHEN state < 0.7 AND state.off THEN send.pump1.on
-	WHEN state > 0.9 AND state.on THEN send.pump1.off
-
-// Improved tank and pump to be able to disable the pump
-// In this case, we send an event to the pump rather than setting its state directly
-UNIT tank2
-	event level,on,auto
-	mode off,auto
-	state 0.0-1.0 							// range can be anything but is internally normalized to 0.0-1.0
-	WHEN event.level THEN state.event.value	// Set the state's value to the value in the event
-	WHEN mode.auto AND state < 0.7 AND pump1.state.off THEN send.pump1.on
-	WHEN mode.auto AND state > 0.9 AND pump1.state.on THEN send.pump1.off
-	WHEN mode.off AND pump1.state.on THEN send.pump1.off
-
-// Pump used to fill tank1
-UNIT pump1
-	event on,off
-	state off, on
-	WHEN event.on AND state.off THEN state.on
-	WHEN event.off AND state.on THEN state.off
-	WHEN state THEN send.state.${server}/pump1
 
 // Show business
 // Implied priority, first setting of a state wins, all the rest (for that variable) are ignored
