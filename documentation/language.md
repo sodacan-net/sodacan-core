@@ -35,10 +35,16 @@ The braces are what identify the declaration of a variable as having having enum
 
 An decimal variable is declared in either of these forms:
 ```	
-PUBLIC count 0
-PUBLIC price 0.00
+	PUBLIC count 0
+	PUBLIC price 0.00
 ```
 with the `0` or `0.0` being the initial value of the variable.
+
+A boolean variable is similar to an enumeration with the possible values limited to `true` and `false`.
+
+```	
+	PUBLIC activated {false,true}
+```
 
 Date and time literals are more complicated and are covered in a separate section, below.
 
@@ -74,7 +80,7 @@ Unlike most other areas of the code, module names are **case sensitive**.
 
 The controller scans the directory or directories specified in the configuration for one or more `module` files with an extension of `.scc`. The name of the module must match the file name (not including the `.scc`). For example, if the module file is named `myModule.scc` then the module should have the name.
 ```
-module myModule
+	module myModule
 ```
 ### Naming
 Every item in a module has a name. For example, the `test` module has a variable named `level`. 
@@ -100,4 +106,26 @@ Within the `lamp1` module, the name `state` is sufficient. And, within the `net.
 ```
 	SUBSCRIBE my.neighor.garageDoor.state {on,off}
 ```
-Notice that the enumeration constraint is specified on the subscription above even though it is your neighbor that defines the state variable. This restatement is used to help ensure that the module is correct during compilation.
+Notice that the enumeration constraint is specified on the subscription above even though it is your neighbor that defines the state variable. This restatement of the constraint is used to help ensure that the module is correct during compilation even if the neighbors system is not, yet, operational.
+
+Two or more modules within the same domain, such as a lamp and the button that controls it can (and should) dispense with domain names completely.
+
+```
+	MODULE lamp1
+		SUBSCRIBE button1.press	// This subscribes to button1.press
+		PUBLIC state
+		ON button1.press
+		  WHEN state==off
+		  THEN state=on
+		ON button1.press
+		  WHEN state==on
+		  THEN state=off
+
+	MODULE button1
+		PUBLIC press
+		PRIVATE pin2
+		ON pin2==true
+		  THEN activate(press)	// This publishes button1.press
+		...
+		
+```
