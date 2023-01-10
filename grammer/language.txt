@@ -73,26 +73,27 @@ UNIT lamp2 {toggle,on,off}					// Lamp with off timer unless movement detected
     THEN state.off		// ...Initialize to off
   LOCAL timer system.timer {reset,start, expire} 	// Create a timer, assign alias
 
-  EVENT offAtBedtime OR emergencyOff
-    AND state.on
+  ON offAtBedtime OR emergencyOff
+    WITH state.on
+    AND mode.auto
     THEN state.off
-  EVENT lamp2.on 
-    AND state.off
+  ON lamp2.on 
+    WITH state.off
     THEN state.on			// Change state to on
-  EVENT lamp2.off
-    AND state.on
+  ON lamp2.off
+    WITH state.on
     THEN state.off
-  EVENT sensor1				// We got movement in the room...
-    AND state.on			// ...and the lamp is on...
+  ON sensor1				// We got movement in the room...
+    WITH state.on			// ...and the lamp is on...
     THEN timer.reset		// ...reset the timer
-  EVENT lamp2.expire			// If timer expires...
-    AND state.on			// ...and, the light is on...
+  ON lamp2.expire			// If timer expires...
+    WITH state.on			// ...and, the light is on...
   	THEN state.off    		// turn light off
-  EVENT lamp2.toggle			// If toggle event arrives...
-    AND state.on			// ... and state is on ...
+  ON lamp2.toggle			// If toggle event arrives...
+    WITH state.on			// ... and state is on ...
     THEN state.off			// ... Change state to off
-  EVENT lamp2.toggle			// If toggle toggle event arrives...
-    AND state.off			// ... and state is off ...
+  ON lamp2.toggle			// If toggle toggle event arrives...
+    WITH state.off			// ... and state is off ...
     THEN state.on			// ... Change state to on
 
   WHEN state.on						// When state transitions to on...
@@ -101,8 +102,9 @@ UNIT lamp2 {toggle,on,off}					// Lamp with off timer unless movement detected
   WHEN state.off					// When state transitions to off...
     THEN timer.cancel				// ...Cancel the timer
   
-  PUBLISH state 			//publish updates to state
-
+  ON state 			//publish updates to state
+	SEND lamp.state
+	
 // Tank level and pump control
 // Maintain a mode setting, too
 UNIT tank1
@@ -110,12 +112,12 @@ UNIT tank1
     THEN mode.off
   LOCAL level {0.0-1.0}		// A decimal number between 0.0 and 1.0...
     THEN level = 1.0		// ...Initialized to full
-  EVENT tank1.level(value)		// Event tank1.level with formal parameter value
+  ON tank1.level(value)		// Event tank1.level with formal parameter value
 	THEN level = value
-  EVENT tank1.auto
+  ON tank1.auto
 	THEN mode.auto
-  EVENT tank1.off
-    AND NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
+  ON tank1.off
+    WITH NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
 	THEN mode.off
   WHEN mode.auto AND level < 0.7 AND pump1.off 
 	THEN pump1.on
@@ -156,12 +158,12 @@ UNIT tank2
     THEN level = 1.0		// ...Initialized to full
   LOCAL pause {true,false}
     THEN pause.false
-  EVENT tank1.level(value)		// Event tank1.level with formal parameter value
+  ON tank1.level(value)		// Event tank1.level with formal parameter value
 	THEN level = value
-  EVENT tank1.auto				// Auto message causes...
+  ON tank1.auto				// Auto message causes...
 	THEN mode.auto			// ...mode to be auto
-  EVENT tank1.off
-    AND NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
+  ON tank1.off
+    WITH NOT mode.off		// not really necessary because the THEN is ignored if mode is already off
 	THEN mode.off
   WHEN mode.auto AND level < 0.7 AND pump1.off AND pause.false
 	THEN pump1.on
@@ -175,40 +177,38 @@ UNIT eavesControl {off,auto,tick}
   LOCAL mode {off,auto}
     THEN mode.off
   SUBSCRIBE clock{sunrise,sunset,date,time,...}
-  EVENT eavesControl.off
+  ON eavesControl.off
     THEN mode.off
-    THEN eaves.off
-  EVENT eavesControl.auto
+    SEND eaves.off
+  ON eavesControl.auto
     THEN mode.auto
   AT sunrise 					// AT is like ON but clock/calendar oriented
-	THEN eaves.off				// Ensure the lights are off during the day
+	SEND eaves.off				// Ensure the lights are off during the day
   AT sunset ON January 1st		// ON specifies a day
-	AND mode.auto
-	THEN eaves.redWhiteBlue		// Lights on all night
-  AT sunset ON mondays					// ON specifies a day
-    FROM june 1 THROUGH july 13 	// only within a date range
-	AND mode.auto
-	THEN eaves.blue				// Lights on monday night
+	WITH mode.auto
+	SEND eaves.redWhiteBlue		// Lights on all night
+  AT sunset ON mondays FROM june 1 THROUGH july 13 	// on specific days within a date range
+	WITH mode.auto
+	SEND eaves.blue				// Lights on monday night
   AT midnight 
 	THEN eaves.off				// Nothing after midnight
   AT sunset ON july 4th 
-	AND mode.auto
+	WITH mode.auto
 	THEN eaves.redWhiteBlue
-  AT sunset ON december 24th 
-	OR sunset ON december 25th
-	AND mode.auto
+  AT sunset ON december 24th OR sunset ON december 25th
+	WITH mode.auto
 	THEN eaves.christmasEve
   AT sunset DURING december 	// during == the whole whatever
-	AND mode.auto
+	WITH mode.auto
 	THEN eaves.christmas
   AT sunset FROM december 1st THROUGH january 6th 
-	AND mode.auto
+	WITH mode.auto
 	THEN eaves.christmas
   AT 1 hour before sunset ON easter 
-	AND mode.auto
+	WITH mode.auto
 	THEN eaves.pastel
   AT sunset 
-	AND mode.auto
+	WITH mode.auto
 	THEN eaves.redEyes
   AT OTHERWISE 
   	THEN eaves.off						// If nothing else qualifies, then lights off
@@ -216,25 +216,25 @@ UNIT eavesControl {off,auto,tick}
 // The message we receive tells us which lights to show
 // Either controlled by the scheduler or manually
 UNIT eaves
-  EVENT eaves.off
+  ON eaves.off
     THEN 
-  EVENT eaves.christmas
+  ON eaves.christmas
     THEN 
 
 UNIT eaves
-  EVENT eaves.christmas
+  ON eaves.christmas
 	
 UNIT lamp3		// Lamp that has auto mode that turns light on in the evening
 	SUBSCRIBE calendar.sun{sunset,sunrise}		// Info from a system unit (calendar)
     SUBSCRIBE system.clock {evening} AS clock
 	PUBLISH lamp3.mode{off,auto,on} AS mode
-    EVENT lamp3.toggle
+    ON lamp3.toggle
       THEN next(mode)
-    EVENT lamp3.on
+    ON lamp3.on
       THEN mode.on
-    EVENT lamp3.auto
+    ON lamp3.auto
       THEN mode.auto
-    EVENT lamp3.off
+    ON lamp3.off
       THEN mode.off
 	PUBLISH lamp3.state{off,on} AS state
 	WHILE mode.auto AND clock.evening
@@ -245,7 +245,7 @@ UNIT lamp3		// Lamp that has auto mode that turns light on in the evening
 // Tank level and pump control
 // Maintain a mode setting, too
 UNIT tank1 {level(percent),off,auto}
-	EVENT mode {off,auto}
+	ON mode {off,auto}
 	PUBLISH pump1 {on,off}						// We publish this variable as it changes
 	LOCAL count 0								// Only used within this unit
 	WHEN mode.auto AND level < 0.7 AND pump1.off 
@@ -257,7 +257,7 @@ UNIT tank1 {level(percent),off,auto}
 
 // Pump used to fill tank1, we list for the call
 UNIT pump1
-	EVENT ENUM tank1.pump1 {on,off}
+	ON ENUM tank1.pump1 {on,off}
 	LOCAL ENUM state {off, on}
 	WHEN event.on AND state.off THEN state.on
 	WHEN event.off AND state.on THEN state.off
