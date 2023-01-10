@@ -8,7 +8,8 @@ The language hierarchy is relatively shallow. While tabs and whitespace improve 
 SCC is line oriented. One statement per line.
 ### Case Insensitive
 In most examples, key words are capitalized. This is simply a convention to aid readability. Statements and other reserved word match regardless of case.
-``` THEN
+``` 
+	THEN
 	then
 	Then
 ``` 
@@ -22,14 +23,16 @@ Are equivalent.
 Quotes strings are, of course, retain the case as specified in the string.
 ### Literal values
 Enumerations are the most commonly used variables. For example:
-```	PUBLIC state {off,on}
+```	
+	PUBLIC state {off,on}
 ```
 describes a variable named 'state' and it has two possible values, `on` and `off`.
 The braces are what alert the declaration of an enumeration variable.
 
 An decimal variable is declared in either of these form:
-```	PUBLIC count 0
-```	PUBLIC price 0.00
+```	
+PUBLIC count 0
+PUBLIC price 0.00
 ```
 with the `0` or `0.00` being the initial value of the variable.
 
