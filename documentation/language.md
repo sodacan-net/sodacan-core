@@ -8,14 +8,18 @@ The language hierarchy is relatively shallow. While tabs and whitespace improve 
 SCC is line oriented. One statement per line.
 ### Case Insensitive
 In most examples, key words are capitalized. This is simply a convention to aid readability.
-### Reserved
-The following are globally reserved words:
+### Reserved Words
+The following are reserved and recognized at the beginning of a line. Elsewhere, they are allowed as identifiers:
 
  | Word        | Description |
  | ----------- | ----------- |
- | MODULE      | Title       |
- | AT          | Text        |
-
+ | MODULE      | Defines a module       |
+ | AT          | Activates when the specified time occurs        |
+ | PUBLIC | Declare a variable that will be published |
+ | PRIVATE | Declare a variable that is not published |
+ | ON | Activates when a variable changes |
+ | SUBSCRIBE | Declares an interest in messages from outside the module|
+ 
 ### Comments
 Comments begin with // and continue to the end of line
 
