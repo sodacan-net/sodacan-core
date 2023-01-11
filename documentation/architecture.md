@@ -1,5 +1,21 @@
 # Architecture
-Components of this system communicate using publish/subscribe semantics. You should be familiar with this design pattern before reading further.
+## Microservice Architecture
+SodaCan is designed as a collection of microservices with an infrastructure to support them. Decision-making microservices in Sodacan are called `Modules`. Microservices that interface with external systems and devices are called `Adapters`.
+In general, SodaCan microservices have the following characteristics:
+- Message Oriented
+- Independently testable and deployable
+- Loosely coupled
+Additionally, SodaCan modules are:
+- Domain-specific
+- Declarative
+- Friendly to non-programmers
+Adapters are technical components that
+- gather input, create messages, and put them on the message bus, or
+- send messages from the bus onto external systems
+The technology used by an adapter varies by adapter, but on one side of the adapter is usually the SodaCan message bus.
+
+## Publish Subscribe
+Components of this system communicate using publish/subscribe semantics. You should be familiar with [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern before reading further.
 
 ### Messages
 In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format and names that format, the topic name.
@@ -75,3 +91,4 @@ Consider, for example, that we want to add a new module to an existing configura
 
 Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
+## Infrastructure

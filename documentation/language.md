@@ -145,7 +145,7 @@ In the following two modules, a message *from* button1 is subscribed to by the `
 		
 ```
 ### Asynchronous
-In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response. In SCC, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
+In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response from another module. In SodaCan, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
 
 In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only **published** information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is `ourDomain.button1.press`. The `lamp1` module then **subscribes** to  that message. The module responds to that message in the `ON` statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. 
 
