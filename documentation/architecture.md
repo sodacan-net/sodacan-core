@@ -10,7 +10,7 @@ All messages contain a `timestamp` which implies a temporal sequence for message
 Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
 
 ```mermaid
-graph BT;
+flowchart BT;
     A[Module A]-->B[Message Bus];
     C-->B;
     D-->B;
