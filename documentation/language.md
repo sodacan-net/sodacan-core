@@ -204,6 +204,7 @@ a module that declares one or more topics should not contain any other type of s
 When a variable is published or subscribed to, SCC can validate that the name is contained in either a module name or a topic name.
 
 ## Statements
+One statement per line. Empty lines are ignored.
 
  | Statement   | Parent Statement |
  | ----------- | ----------- |
@@ -217,7 +218,7 @@ When a variable is published or subscribed to, SCC can validate that the name is
  | [with](#With) | at,on |
  | [then](#Then) | at,on |
  
- ### Module
+### Module Statement {#Module}
  Module...
 ### Topic
 A topic
