@@ -1,13 +1,13 @@
 
 # Sodacan Control (SCC)
 A declarative language for controlling things. 
-The goal of this language is to be concise and and to the extent possible declarative. 
+The goal of this language is to be concise and to the extent possible declarative. 
 ## General lexical rules
-The language hierarchy is relatively shallow. While tabs and whitespace improve human readability, they are ignored in the language.
-### Line oriented
-SCC is line oriented. One statement per line.
+The SCC language is relatively simple. In fact, it is designed to be used by non-programmers. While tabs and whitespace improve human readability, they are ignored in the language. Should more complicated logic be needed, other languages such as Java or C++ can be used.  
+Very few reserved words are needed for any particular statement. Each statement will be described below.
+SCC is line oriented with one statement per line.
 ### Case Insensitive
-In most examples, key words are capitalized. This is simply a convention to aid readability. Statements and other reserved word match regardless of case.
+In most examples, key words are capitalized. This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
 ``` 
 	THEN
 	then
@@ -43,7 +43,7 @@ with the `0` or `0.0` being the initial value of the variable.
 A boolean variable is similar to an enumeration with the possible values limited to `true` and `false`.
 
 ```	
-	PUBLIC activated {false,true}
+	PUBLIC available {false,true}
 ```
 
 Date and time literals are more complicated and are covered in a separate section, below.
@@ -52,6 +52,18 @@ A string literal contains any alphanumeric characters. A variable containing a s
 be initialized with a string literal, even if the string literal is empty:
 ```
 	PUBLIC myName "John"
+```
+Some variables have no value whatsoever. Such a variable is still quite useful. For example, if we declare a variable named
+`bedtime`, the variable can be **activated**. In other words, "it's bedtime". This causes that variable to be published as a message so that other modules
+can subscribe to it. Other than triggering an action, the message does not carry any other useful information.
+```
+	MODULE topics
+		TOPIC myhouse.bedtime
+```
+A simple button can be declared the same way:
+```
+	MODULE livingRoomButton
+		PUBLIC active
 ```
 
 ### Reserved Words
@@ -109,6 +121,7 @@ Within the `lamp1` module, the name `state` is sufficient. And, within the `net.
 Notice that the enumeration constraint is specified on the subscription above even though it is your neighbor that defines the state variable. This restatement of the constraint is used to help ensure that the module is correct during compilation even if the neighbors system is not, yet, operational.
 
 Two or more modules within the same domain, such as a lamp and the button that controls it can (and should) dispense with domain names completely.
+In the following two modules, a message *from* button1 is subscribed to by the `lamp1` module. 
 
 ```
 	MODULE lamp1
@@ -129,3 +142,62 @@ Two or more modules within the same domain, such as a lamp and the button that c
 		...
 		
 ```
+### Asynchronous
+In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response. In SCC, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
+
+In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only **published** information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is `ourDomain.button1.press`. The `lamp1` module then **subscribes** to the that message and thus responds to that message in the `ON` statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. 
+
+Any number of modules (including none) can subscribe to the same message and react how it sees fit. The following is a simple bedtime button setup. Any lamp participating in the bedtime event initiated by the bedtime button does something, usually to turn itself off although some could turn it on as well.
+
+### Topics
+
+
+```
+	MODULE bedtime
+		PUBLIC activate
+		PRIVATE pin2
+		ON pin2==true
+		  THEN activate(activate)	// This publishes button1.press
+		...
+		
+	MODULE lamp1
+		SUBSCRIBE bedtime.activate	// This subscribes to button1.press
+		PUBLIC state
+		ON bedtime.activate
+		  THEN state=off			// Turn off this light
+
+		
+```
+Now, the name of `bedtime` module is a little restrictive. It assumes that there is only one source of the bedtime message which is in the bedtime(button) module. If we had a phone app that could initiate bedtime, we would want it to generate the same message. So, to make this setup more flexible we ignore the lamp1 module name and name a neutral `topic` which will carry the message. This is what the button module looks like now:
+
+```
+	MODULE bedtimeButton
+		PUBLIC activate AS bedtime.activate
+		PRIVATE pin2
+		ON pin2==true
+		  THEN activate(activate)	// This publishes button1.press
+		...	
+```
+Notice that we changed the name of the module to be more descriptive ie `bedtimeButton` and modified 
+the declaration of the activate variable to use the alias `AS bedtime.activate`.
+
+It is important to point out a restriction in this setup: when a public variable uses the `AS` clause, 
+it could, in theory, spoof another module. Or, it could name a topic that has not been defined. 
+To prevent this from happening, a simple check is made that prevents an alias from naming an 
+existing module other than itself. In the above example, there should be no module named 'bedtime' and there isn't 
+but how can we be sure that `bedtime` is reserved so that a future module doesn't use that name?
+
+We reserve the name (`bedtime` in this case) using a **TOPIC** definition. A topic is a channel for messages to
+be exchanged. Each `PUBLIC` variable defines a topic and each `SUBSCRIBE` statement subscribes to a topic.
+This new topic, `bedtime`, is defined explicitly in a `TOPIC` declaration. In most respects, it is the same as a `PUBLIC`
+declaration. The main difference is that the name of a topic does not include the name of the module. By convention,
+a module that defines one or more topics should not contain any other type of statement.
+
+```
+	MODULE topics
+		TOPIC bedtime.activate
+		TOPIC 
+```
+
+When a variable is published or subscribed to, SCC can validate that the name is contained in either a module name or a topic name.
+
