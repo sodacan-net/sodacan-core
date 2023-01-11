@@ -13,7 +13,7 @@ Abstractly, a message bus exits to exchange messages. Ignoring security, anyone 
 flowchart BT;
     A[Module A] -- publish --> B[Message Bus];
     C -- publish --> B[Message Bus];
-    D <-- Subscribe -- B[Message Bus];
+    B[Message Bus] -- Subscribe --> D ;
 ```
 
 ### Message Producer
