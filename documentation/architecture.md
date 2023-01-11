@@ -28,6 +28,7 @@ In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And,
 
 All messages contain a `timestamp` which implies a temporal sequence for messages. The producer is also identified in a message. Messages also contain a `key` and a `payload`, both of which are optional.
 
+
 ### Message Bus
 Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
 
@@ -53,18 +54,18 @@ A `MODULE` that contains one or more `PUBLIC` statements is a message producer. 
 A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consumer. 
 A module is only able to "see" the information it receives via message (or the passage of time). In SodaCan, there is no such thing as peeking into another module to find a value. So, it is important to ensure that information needed by a consumer arrives via message. 
 ### Module Persistence
-Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. This is handled automatically by the infrastructure.
+Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
 
 ```
 	MODULE lamp1
 		SUBSCRIBE mode	{off, auto, on}	
 		PUBLIC state {on,off}
-		AT midnight		// Turn off this light
-		  WHEN mode.auto  // At midnight
-		  THEN state=off	// If mode is auto
+		AT midnight       // Turn off this light
+		  WHEN mode.auto  // at midnight
+		  THEN state=off  // if mode is auto
 		
 ```
-
+Persistence is handled automatically by the infrastructure.
 ### Topic
 In SodaCan, all topics, and therefore, all messages must be formally defined.
 A topic defines a schema, or format, of messages for a specific purpose. 
@@ -101,6 +102,49 @@ MODULE switch1
 
 In the background, SodaCan monitors this variable and, if any changes are made to it by the module due to a an incoming message or due to the passage of time, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
 
+### Module Instantiation
+In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty `key` attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in different locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of
+
+```
+	MODULE JoesOfficeLight
+```
+
+a more appropriate module name in this case might be
+
+```
+	MODULE OficeLight[location]
+```
+which says there is a single office light *class* of module but that a separate *instance* of the module is created for each location.
+Of course in this case we also need to make sure our variables are separated by location. 
+
+```
+	MODULE OficeLight[location]
+		PUBLIC state[location] {on,off}
+		
+```
+which tells SodaCan that the `state` variable is separate for each location.
+
+While the state variable (and consequently messages) are per-location, we might need other variables that apply to the entire class. Consider a company that has a policy of putting all lights into auto mode at a certain time of day requiring motion detecting for the light to remain on. That time is set company-wide. In this case we would like to send a single message to the "OfficeLight" module with the time all offices should go into auto mode. 
+
+```
+	MODULE OficeLight[location]
+		SUBSCRIBE autoModeOnTime 00:00
+		PUBLIC state[location] {on,off}
+		
+```
+Notice that the `autoModeOnTime` variable has no key associated with it. A subsequent `AT statement` will refer to `autoModeOnTime`, without a key qualifier.
+
+```
+	MODULE OficeLight[location]
+		SUBSCRIBE autoModeOnTime 00:00
+		PUBLIC mode[location] {auto,manual}
+		PUBLIC state[location] {on,off}
+		AT autoModeOnTime
+			THEN mode[location].auto
+		...
+		
+```
+
 ### In-Transit messages
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
 There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
@@ -112,3 +156,5 @@ Consider, for example, that we want to add a new module to an existing configura
 Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
 ## Infrastructure
+### Module deployment
+Each module is deployed as an independent program on the host computer. The command line interface provides all the information needed to start and run a module.
