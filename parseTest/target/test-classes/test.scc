@@ -1,0 +1,37 @@
+// Comment
+MODULE test[location]
+//  TOPIC bedtime 
+//	SUBSCRIBE ns.module.mode {on,off} AS <simpleName>	// ns assumed to be us if not specified
+//	SUBSCRIBE bedtime
+	PUBLIC state {off,on}
+//	PRIVATE count 0
+//	PRIVATE price 0.95
+	ON bedtime
+	ON price
+	ON mode.on
+	ON mode.off
+	  THEN state.off
+	AT 10 minutes before sunset
+	  THEN blow.nose
+	AT sunrise	// Another comment
+	AT noon
+	  WITH at.noon
+	AT 10:61 pm
+	  WITH sunset AND d	// Another comment
+	  THEN f.g	// Do something local
+	  THEN m.n	// Publish a message
+	AT sunset ON July 4
+
+	AT 1 hour before midnight
+	AT midnight ON December 31
+	AT midnight ON weekdays
+	AT 1 hour before midnight ON monday
+	  WITH m.n
+	AT noon IN fall
+	AT noon FROM June 1, 2023 THROUGH July 13, 2023
+	AT 1 minute before noon ON tuesday Thursday saturday
+	AT 1 minute after sunset ON tuesday FROM May 1
+	AT 3:00pm FROM June 1, 2023
+	AT sunset THROUGH September 30, 2023
+
+	AT 10:04am
