@@ -209,46 +209,40 @@ One statement per line. Empty lines are ignored.
  | Statement   | Parent Statement |
  | ----------- | ----------- |
  | [module](#Module-Statement)      |  -       | 
- | [topic](#Topic) | module |
- | [subscription](#Subscription) | module|
- | [private](#Private) | module |
- | [public](#Public) | module |
- | [at](#At) | module |
- | [on](#An) | module |
- | [with](#With) | at,on |
- | [then](#Then) | at,on |
+ | [topic](#Topic-Statement) | module |
+ | [subscription](#Subscription-Statement) | module|
+ | [private](#Private-Statement) | module |
+ | [public](#Public-Statement) | module |
+ | [at](#At-Statement) | module |
+ | [on](#An-Statement) | module |
+ | [with](#With-Statement) | at,on |
+ | [then](#Then-Statement) | at,on |
  
 ### Module Statement
  Module...
 
-### Topic
+### Topic Statement
 A topic
 
-### Subscription
+### Subscription Statement
 A subscription declares an interest in a particular type of message. "When you send it, I want to receive it."
-### Public
+### Public Statement
 A public variable will automatically be published when it changes.
-### Private
+### Private Statement
 A private variable is...
-### At
+### At Statement
 With the passage of time, the `AT` statement determines if it is interested in the current time (now). For example,
 ```
 	AT Friday
 ```
 means that at midnight on any particular Friday, the attached `THEN` will be executed.
-### On
+### On Statement
 The `ON` statement reacts a specific message that the module subscribed to.
 ```
 	ON bedtime
 	  THEN ...
 ```
-### With
+### With Statement
 
-### Then
+### Then Statement
 
-```mermaid
-graph TD;
-    A-->B;
-    A-->C;
-    B-->D;
-    C-->D;
