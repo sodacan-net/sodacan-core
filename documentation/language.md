@@ -219,25 +219,26 @@ When a variable is published or subscribed to, SCC can validate that the name is
  
  ### Module
  Module...
-###Topic
+### Topic
 A topic
 ### Subscription
 A subscription declares an interest in a particular type of message. "When you send it, I want to receive it."
-###Public
+### Public
 A public variable will automatically be published when it changes.
-###Private
+### Private
 A private variable is...
-###At
+### At
 With the passage of time, the `AT` statement determines if it is interested in the current time (now). For example,
 ```
 	AT Friday
 ```
 means that at midnight on any particular Friday, the attached `THEN` will be executed.
-###On
+### On
 The `ON` statement reacts a specific message that the module subscribed to.
 ```
 	ON bedtime
 	  THEN ...
 ```
-###With
-###Then
+### With
+
+### Then
