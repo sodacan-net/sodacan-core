@@ -218,10 +218,12 @@ One statement per line. Empty lines are ignored.
  | [with](#With) | at,on |
  | [then](#Then) | at,on |
  
-### Module Statement {#Module}
+### Module Statement #Module
  Module...
+
 ### Topic
 A topic
+
 ### Subscription
 A subscription declares an interest in a particular type of message. "When you send it, I want to receive it."
 ### Public
@@ -243,3 +245,10 @@ The `ON` statement reacts a specific message that the module subscribed to.
 ### With
 
 ### Then
+
+```mermaid
+graph TD;
+    A-->B;
+    A-->C;
+    B-->D;
+    C-->D;
