@@ -7,12 +7,21 @@ In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And,
 All messages contain a `timestamp` which implies a temporal sequence for messages. The producer is also identified in a message. Messages also contain a `key` and a value or `payload`, both of which are optional.
 
 ### Message Bus
-Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
+Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
+
+In the following diagram, messages are produced by Modules A and C without an knowledge of where they will be consumed or even if they will be consumed.
 
 ```mermaid
 flowchart BT;
     A[Module A] -. publish .-> B[Message Bus];
-    C -. publish .-> B[Message Bus];
+    C[Module C] -. publish .-> B[Message Bus];
+```
+When Module D is added, it can consume messages from the message bus as it sees fit.
+
+```mermaid
+flowchart BT;
+    A[Module A] -. publish .-> B[Message Bus];
+    C[Module C] -. publish .-> B[Message Bus];
     B[Message Bus] -. subscribe .-> D[Module D];
 ```
 
@@ -24,18 +33,45 @@ A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consume
 In SodaCan, all topics, and therefore, all messages must be formally defined.
 A topic defines a schema, or format, of messages for a specific purpose. 
 Once defined, a topic usually lasts forever, or until manually deleted.
-A `MODULE` that contains `TOPIC` statements defines independent topics.
+A `MODULE` that contains `TOPIC` statements defines independent topics, that is, a topic that does not include the module name in its name.
+
+### Module behavior
+A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement of the corresponding `ON` or `AT` is executed. Each message or passage of time is processed by a module is called a `cycle`.
+
+The passage of time may not trigger any `ON` statements. That's normal. However, 
+for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
+
+### Message-Variable Duality
+In SodaCan, a variable defined in a module becomes the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
+
+```
+MODULE lamp1
+	SUBSCRIBE switch1.state {on,off}
+	...
+	ON switch1.state.on
+		THEN ...
+```
+Behind the scenes, SodaCan consumes a message and makes a note if its value has changed. If it did, it signals an event which the `ON` statements in the module will react to. 
+
+The publishing side is similar. A `PUBLIC` variable is a message-in-waiting. Once a processing cycle is completed, and `PUBLIC` variables that have been modified will be published.
+
+```
+MODULE switch1
+	PUBLIC state {on,off}
+	...
+	ON ...
+		THEN state.on		// Set the state to on
+```
+
+In the background, SodaCan monitors this variable and, if any changes are made to it by the module due to a an incoming message or due to the passage of time, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
 
 ### In-Transit messages
-When a message is produced, it takes on a life of its own, neither belonging to the producer nor to any of its potential consumers. 
+When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
 There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
 may not exist yet. If resources were infinite, there is no reason SodaCan would need to recover space used by any messages.
 The messages within a topic can come and go. Indeed, most topics define the lifetime of messages contained within that topic.
 
-Consider, for example, a module that reports on the average number of uses of a certain button per month. In a traditional system, the data could be a challenge to create. But in SodaCan, the data already exists in the topic that was used to get the button press notification to the lamp that is controlled by that button press. So, the new module simply subscribes to that same topic and it will get all of the messages from the past and into the future.
+Consider, for example, that we want to add a new module to an existing configuration that reports on the average number of uses of a certain button per month. In a traditional system, the data could be a challenge to create. Historical data may not even exist. But in SodaCan, the data already exists in the topic that was used to get the button press notification to the lamp that is controlled by that button press. (Just because the message was *consumed* by one module does not mean that the message will be discarded). So, the new reporting module simply subscribes to that same topic and it will get all of the messages from the past in chronological order.
 
-Now, SodaCan has several ways to deal with old messages in a topic. It can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, once a topic exceeds a certain size, older messages can be deleted. Finally, we can just let the messages accumulate forever. Consider that most messages in a SodaCan application are quite small. Our button activation message will be about 20 bytes long. If we press that button 100 times per day for a year, that would add up to less than one megabytes. Therefore, it's probably not worth cleaning up this type of message. On the other hand, messages from a security camera are much larger and so the topic should be cleaned up either based on size (a very safe option) or the age of messages.
+Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
-### Module behavior
-A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement of the corresponding `ON` or `AT` is executed. The passage of time may not trigger any `ON` statements. That's normal. However, 
-for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
