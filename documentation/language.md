@@ -115,9 +115,11 @@ Such a simple name would be inappropriate if, for example, two houses (propertie
 The module scope means any variable contained in that module is implicitly named by the module. So, a variable such as `state` within the `lamp1` module which is part of the `net.sodacan.scc` domain has the full, globally unique, name of `net.sodacan.scc.lamp1.state`.
 
 Within the `lamp1` module, the name `state` is sufficient. And, within the `net.sodan.scc` domain, `lamp1.state` is sufficient. In fact, the domain should only be used sparingly. The system will add and remove the outer name scopes as needed. Of course if within a module you subscribe to a variable outside of your local domain, the the full name must be specified.
+
 ```
 	SUBSCRIBE my.neighor.garageDoor.state {on,off}
 ```
+
 Notice that the enumeration constraint is specified on the subscription above even though it is your neighbor that defines the state variable. This restatement of the constraint is used to help ensure that the module is correct during compilation even if the neighbors system is not, yet, operational.
 
 Two or more modules within the same domain, such as a lamp and the button that controls it can (and should) dispense with domain names completely.
@@ -145,7 +147,7 @@ In the following two modules, a message *from* button1 is subscribed to by the `
 ### Asynchronous
 In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response. In SCC, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
 
-In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only **published** information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is `ourDomain.button1.press`. The `lamp1` module then **subscribes** to the that message and thus responds to that message in the `ON` statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. 
+In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only **published** information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is `ourDomain.button1.press`. The `lamp1` module then **subscribes** to  that message. The module responds to that message in the `ON` statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. 
 
 Any number of modules (including none) can subscribe to the same message and react how it sees fit. The following is a simple bedtime button setup. Any lamp participating in the bedtime event initiated by the bedtime button does something, usually to turn itself off although some could turn it on as well.
 
@@ -172,10 +174,10 @@ Now, the name of `bedtime` module is a little restrictive. It assumes that there
 
 ```
 	MODULE bedtimeButton
-		PUBLIC activate AS bedtime.activate
+		PUBLIC activate AS bedtime
 		PRIVATE pin2
 		ON pin2==true
-		  THEN activate(activate)	// This publishes button1.press
+		  THEN activate(activate)	// This publishes bedtime
 		...	
 ```
 Notice that we changed the name of the module to be more descriptive ie `bedtimeButton` and modified 
@@ -191,13 +193,26 @@ We reserve the name (`bedtime` in this case) using a **TOPIC** definition. A top
 be exchanged. Each `PUBLIC` variable defines a topic and each `SUBSCRIBE` statement subscribes to a topic.
 This new topic, `bedtime`, is defined explicitly in a `TOPIC` declaration. In most respects, it is the same as a `PUBLIC`
 declaration. The main difference is that the name of a topic does not include the name of the module. By convention,
-a module that defines one or more topics should not contain any other type of statement.
+a module that declares one or more topics should not contain any other type of statement.
 
 ```
 	MODULE topics
 		TOPIC bedtime.activate
-		TOPIC 
+		TOPIC ...
 ```
 
 When a variable is published or subscribed to, SCC can validate that the name is contained in either a module name or a topic name.
 
+## Statements
+
+ | Statement   | Parent Statement |
+ | ----------- | ----------- |
+ | module      |  -       |
+ | topic | module |
+ | subscription | module|
+ | private | module |
+ | public | module |
+ | at | module |
+ | on | module |
+ | with | at,on |
+ | then | at,on |
