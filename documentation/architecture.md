@@ -1,26 +1,32 @@
 # Architecture
 ## Microservice Architecture
-SodaCan is designed as a collection of microservices with an infrastructure to support them. Decision-making microservices in Sodacan are called `Modules`. Microservices that interface with external systems and devices are called `Adapters`.
+SodaCan is designed as a collection of microservices with an infrastructure to support them. Decision-making microservices in Sodacan are called `Modules`. Microservices that interface with external systems and devices are called "Message Adapters".
 In general, SodaCan microservices have the following characteristics:
+
 - Message Oriented
 - Independently testable and deployable
 - Loosely coupled
+
 Additionally, SodaCan modules are:
+
 - Domain-specific
 - Declarative
 - Friendly to non-programmers
-Adapters are technical components that
+
+Message adapters are technical components that
 - gather input, create messages, and put them on the message bus, or
 - send messages from the bus onto external systems
+
 The technology used by an adapter varies by adapter, but on one side of the adapter is usually the SodaCan message bus.
 
 ## Publish Subscribe
-Components of this system communicate using publish/subscribe semantics. You should be familiar with [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) design pattern before reading further.
+Components of this system communicate using publish/subscribe semantics. You should be at least a little familiar with 
+<a href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern" target="_blank">publish-subscribe</a> design pattern before reading further.
 
 ### Messages
-In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format and names that format, the topic name.
+In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format. That format is then the topic name.
 
-All messages contain a `timestamp` which implies a temporal sequence for messages. The producer is also identified in a message. Messages also contain a `key` and a value or `payload`, both of which are optional.
+All messages contain a `timestamp` which implies a temporal sequence for messages. The producer is also identified in a message. Messages also contain a `key` and a `payload`, both of which are optional.
 
 ### Message Bus
 Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
@@ -45,6 +51,20 @@ flowchart BT;
 A `MODULE` that contains one or more `PUBLIC` statements is a message producer. Each `PUBLIC` variable is sent onto the message bus.
 ### Message Consumer
 A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consumer. 
+A module is only able to "see" the information it receives via message (or the passage of time). In SodaCan, there is no such thing as peeking into another module to find a value. So, it is important to ensure that information needed by a consumer arrives via message. 
+### Module Persistence
+Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. This is handled automatically by the infrastructure.
+
+```
+	MODULE lamp1
+		SUBSCRIBE mode	{off, auto, on}	
+		PUBLIC state {on,off}
+		AT midnight		// Turn off this light
+		  WHEN mode.auto  // At midnight
+		  THEN state=off	// If mode is auto
+		
+```
+
 ### Topic
 In SodaCan, all topics, and therefore, all messages must be formally defined.
 A topic defines a schema, or format, of messages for a specific purpose. 
