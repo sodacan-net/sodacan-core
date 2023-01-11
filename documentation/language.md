@@ -208,7 +208,7 @@ One statement per line. Empty lines are ignored.
 
  | Statement   | Parent Statement |
  | ----------- | ----------- |
- | [module](#Module)      |  -       | 
+ | [module](#Module-Statement)      |  -       | 
  | [topic](#Topic) | module |
  | [subscription](#Subscription) | module|
  | [private](#Private) | module |
@@ -218,7 +218,7 @@ One statement per line. Empty lines are ignored.
  | [with](#With) | at,on |
  | [then](#Then) | at,on |
  
-### Module Statement #Module
+### Module Statement
  Module...
 
 ### Topic
