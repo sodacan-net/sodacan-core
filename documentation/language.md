@@ -207,7 +207,7 @@ When a variable is published or subscribed to, SCC can validate that the name is
 
  | Statement   | Parent Statement |
  | ----------- | ----------- |
- | [module](#Module)      |  -       | 
+ | (#Module)      |  -       | 
  | topic | module |
  | subscription | module|
  | private | module |
