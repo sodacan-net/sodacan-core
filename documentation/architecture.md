@@ -11,11 +11,11 @@ Abstractly, a message bus exits to exchange messages. Ignoring security, anyone 
 
 ```mermaid
 flowchart BT;
-    A[Module A]-->B[Message Bus];
-    C-->B;
-    D-->B;
-    E-->B;
-
+    A[Module A] --> B[Message Bus];
+    C --> B[Message Bus];
+    D --> B[Message Bus];
+    E --> B[Message Bus];
+```
 
 ### Message Producer
 A `MODULE` that contains one or more `PUBLIC` statements is a message producer. Each `PUBLIC` variable is sent onto the message bus.
