@@ -11,10 +11,9 @@ Abstractly, a message bus exits to exchange messages. Ignoring security, anyone 
 
 ```mermaid
 flowchart BT;
-    A[Module A] --> B[Message Bus];
-    C --> B[Message Bus];
-    D --> B[Message Bus];
-    E --> B[Message Bus];
+    A[Module A] -- publish --> B[Message Bus];
+    C -- publish --> B[Message Bus];
+    D <-- Subscribe -- B[Message Bus];
 ```
 
 ### Message Producer
