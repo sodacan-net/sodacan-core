@@ -39,5 +39,3 @@ current configuration as is.
 - make a copy of the default mode to a new mode name
 - deploy one or more new modules with *-m <mode>* option
 - Using the cli, you can send and receive messages to this new mode by including option:
-
-` -m <mode>` 

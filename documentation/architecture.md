@@ -181,4 +181,5 @@ SodaCan uses an administrative topic to deploy modules and adapters to the appro
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
 The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
-
+### Deployment Modes
+When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-something". 
