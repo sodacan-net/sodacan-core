@@ -174,6 +174,9 @@ Consider, for example, that we want to add a new module to an existing configura
 
 Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
+### Other Messages
+The messaging system is also used for administrative and operational purposes. Any agent running a module or an adapter routes error messages to a log topic.
+SodaCan uses an administrative topic to deploy modules and adapters to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
