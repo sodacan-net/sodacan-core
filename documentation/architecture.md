@@ -164,8 +164,8 @@ Flow of control:
 When the state of the lamp in the `lampModule` changes, another message containing the new state is published to the `messageBus`.
 4. The `lampAdapter`, running on a microcontroller subscribes to lamp's state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.
 
-### In-Transit messages
-When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
+### Message Persistence
+When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned and stored (persisted) by the message bus. 
 There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
 may not exist yet. If resources were infinite, there is no reason SodaCan would need to recover space used by any messages.
 The messages within a topic can come and go. Indeed, most topics define the lifetime of messages contained within that topic.
@@ -176,4 +176,6 @@ Now, SodaCan has several ways to deal with old messages in a topic. One can set 
 
 ## Infrastructure
 ### Module deployment
-Each module is deployed as an independent program on the host computer. The command line interface provides all the information needed to start and run a module.
+Each module and adapter is deployed as an independent program on a host computer. 
+The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
+
