@@ -27,7 +27,6 @@ import net.sodacan.parseTest.SccParser.SpecificDateContext;
 import net.sodacan.parseTest.SccParser.SpecificTimeExpressionContext;
 import net.sodacan.parseTest.SccParser.StatementContext;
 import net.sodacan.parseTest.SccParser.StatementListContext;
-import net.sodacan.parseTest.SccParser.SubIdentifierContext;
 import net.sodacan.parseTest.SccParser.SubscribeStatementContext;
 import net.sodacan.parseTest.SccParser.ThenIdentifierContext;
 import net.sodacan.parseTest.SccParser.ThenStatementContext;
@@ -135,14 +134,6 @@ public class SccListener extends SccParserBaseListener {
 		System.out.print("SUBSCRIBE");
 		super.enterSubscribeStatement(ctx);
 	}
-
-	@Override
-	public void exitSubIdentifier(SubIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitSubIdentifier(ctx);
-	}
-	
 
 	@Override
 	public void enterAtStatement(AtStatementContext ctx) {

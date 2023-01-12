@@ -43,6 +43,12 @@ public interface SccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitStatement(SccParser.StatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SccParser#topicStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTopicStatement(SccParser.TopicStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SccParser#publicStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result
@@ -102,42 +108,6 @@ public interface SccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 * @return the visitor result
 	 */
 	T visitSubscribeStatement(SccParser.SubscribeStatementContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subType}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubType(SccParser.SubTypeContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subEnum}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubEnum(SccParser.SubEnumContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subEnumList}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubEnumList(SccParser.SubEnumListContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subInt}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubInt(SccParser.SubIntContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subBool}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubBool(SccParser.SubBoolContext ctx);
-	/**
-	 * Visit a parse tree produced by {@link SccParser#subIdentifier}.
-	 * @param ctx the parse tree
-	 * @return the visitor result
-	 */
-	T visitSubIdentifier(SccParser.SubIdentifierContext ctx);
 	/**
 	 * Visit a parse tree produced by {@link SccParser#atStatement}.
 	 * @param ctx the parse tree

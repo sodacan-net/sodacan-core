@@ -25,6 +25,10 @@ statement
 	| atStatement withStatement? thenStatement? sendStatement?
 	| onStatement withStatement? thenStatement? sendStatement?
 	;
+	
+topicStatement
+	: TOPIC varIdentifier varType VarEOL
+	;
 
 publicStatement
 	: PUBLIC varIdentifier varType (VarAS varIdentifier) VarEOL
@@ -68,36 +72,9 @@ varEVENT
 	;
 	
 subscribeStatement
-	: SUBSCRIBE subIdentifier subType SubEOL
+	: SUBSCRIBE varIdentifier varType VarEOL
 	;
 	
-subType
-	: subEnum
-	| subInt
-	| subBool
-	;
-	
-subEnum
-	: SubLBRACE subEnumList+ SubRBRACE
-	;
-
-subEnumList
-	: SubID (SubCOMMA SubID)*
-	;
-
-subInt
-	: VarINT
-	;
-
-subBool
-	: SubTRUE
-	| SubFALSE
-	;
-
-subIdentifier
-	: SubID (SubDOT SubID)*
-	;
-		
 atStatement
 	: AT dayExpression dateExpression? dateRange AtEOL 
 	;

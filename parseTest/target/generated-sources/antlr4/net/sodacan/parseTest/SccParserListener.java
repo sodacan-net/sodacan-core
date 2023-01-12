@@ -62,6 +62,16 @@ public interface SccParserListener extends ParseTreeListener {
 	 */
 	void exitStatement(SccParser.StatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SccParser#topicStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterTopicStatement(SccParser.TopicStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SccParser#topicStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitTopicStatement(SccParser.TopicStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SccParser#publicStatement}.
 	 * @param ctx the parse tree
 	 */
@@ -161,66 +171,6 @@ public interface SccParserListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitSubscribeStatement(SccParser.SubscribeStatementContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subType}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubType(SccParser.SubTypeContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subType}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubType(SccParser.SubTypeContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subEnum}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubEnum(SccParser.SubEnumContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subEnum}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubEnum(SccParser.SubEnumContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subEnumList}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubEnumList(SccParser.SubEnumListContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subEnumList}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubEnumList(SccParser.SubEnumListContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subInt}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubInt(SccParser.SubIntContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subInt}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubInt(SccParser.SubIntContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subBool}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubBool(SccParser.SubBoolContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subBool}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubBool(SccParser.SubBoolContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link SccParser#subIdentifier}.
-	 * @param ctx the parse tree
-	 */
-	void enterSubIdentifier(SccParser.SubIdentifierContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link SccParser#subIdentifier}.
-	 * @param ctx the parse tree
-	 */
-	void exitSubIdentifier(SccParser.SubIdentifierContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link SccParser#atStatement}.
 	 * @param ctx the parse tree

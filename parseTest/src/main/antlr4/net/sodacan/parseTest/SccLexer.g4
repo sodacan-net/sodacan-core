@@ -4,6 +4,11 @@ options { caseInsensitive=true; }
 MODULE
 	: 'MODULE' -> pushMode(ModuleMode)
 	;
+
+TOPIC
+	: 'TOPIC' -> pushMode(VarMode)
+	;
+		
 PUBLIC
 	: 'PUBLIC' -> pushMode(VarMode)
 	;
@@ -12,10 +17,6 @@ PRIVATE
 	: 'PRIVATE' -> pushMode(VarMode)
 	;
 		
-PUBLISH
-	: 'PUBLISH' -> pushMode(PublishMode)
-	;
-
 SUBSCRIBE
 	: 'SUBSCRIBE' -> pushMode(SubscribeMode)
 	;
@@ -71,7 +72,10 @@ VarRBRACE
 	
 VarTRUE
 	: 'TRUE'
-	| 'FALSE'
+	;
+	
+VarFALSE
+	: 'FALSE'
 	;
 
 VarAS
@@ -123,24 +127,6 @@ ModWS
 	: [ \t\r]+ -> skip
 	;
 
-mode PublishMode;
-PubID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-PubCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-PubEOL
-	: [\n] -> popMode
-	;
-	
-PubWS
-	: [ \t\r]+ -> skip
-	;
-	
 mode SubscribeMode;
 SubDOT
 	: '.'
