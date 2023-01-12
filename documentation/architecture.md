@@ -158,11 +158,11 @@ sequenceDiagram
     
 ```
 Flow of control:
-1. button adapter running on a microcontroller such as a Raspberry PI, monitors a *digital in* pin and when it goes positive (ignoring debounce logic), a message is published to SodaCan.
-2. The message is delivered to the lamp module which has subscribed to this type of message.
-3. The lamp module determines if the button press is and off or on transition (it keeps track of the state of the lamp).
-When the state of the lamp in the lamp module changes, another message is published.
-4. The lamp adapter, running on a microcontroller subscribes to this lamps state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.
+1. button adapter running on a microcontroller such as a Raspberry PI, monitors a *digital in* pin and when it goes positive (ignoring debounce logic), a message is published to the SodaCan `message bus`.
+2. The message is delivered to the `lamp module` which has subscribed to this type of message.
+3. The `lamp module` determines if the button press is and off or on transition (it keeps track of the state of the lamp).
+When the state of the lamp in the `lamp module` changes, another message containing the new state is published to the `message bus`.
+4. The `lamp adapter`, running on a microcontroller subscribes to lamp's state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.
 
 ### In-Transit messages
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
