@@ -147,16 +147,22 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 ### Adapters
 A SodaCan adapter is an end node in the SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can be a consumer and producer at the same time. 
 By design, adapters have no persistence. They are stateless. 
-The following is a very simple implementation of a lamp and a switch and a module that controls the behavior of the lamp (on or off) and a switch (on or off). A real-world example would likely have additional capabilities but we keep it simple at first:
+The following is a very simple implementation of a lamp and a button and a module that controls the behavior of the lamp (on or off). A real-world example would likely have additional capabilities but we keep it simple here:
 
 ```mermaid
-flowchart BT;
-    A[Switch Adapter] -. publish .-> B[Message Bus];
-    C[Lamp Module] -. publish .-> B[Message Bus];
-    B[Message Bus] -. subscribe .-> D[Lamp Adapter];
+sequenceDiagram
+    buttonAdapter->>messageBus: button.press
+    messageBus-->>lampModule: button.press
+    lampModule-->>messageBus: lamp.on
+    messageBus-->>lampAdapter: lamp.on
+    
 ```
-
-
+Flow of control:
+1. button adapter running on a microcontroller such as a Raspberry PI, monitors a *digital in* pin and when it goes positive (ignoring debounce logic), a message is published to SodaCan.
+2. The message is delivered to the lamp module which has subscribed to this type of message.
+3. The lamp module determines if the button press is and off or on transition (it keeps track of the state of the lamp).
+When the state of the lamp in the lamp module changes, another message is published.
+4. The lamp adapter, running on a microcontroller subscribes to this lamps state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.
 
 ### In-Transit messages
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
