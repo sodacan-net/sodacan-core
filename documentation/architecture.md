@@ -144,6 +144,19 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 		...
 		
 ```
+### Adapters
+A SodaCan adapter is an end node in the SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can be a consumer and producer at the same time. 
+By design, adapters have no persistence. They are stateless. 
+The following is a very simple implementation of a lamp and a switch and a module that controls the behavior of the lamp (on or off) and a switch (on or off). A real-world example would likely have additional capabilities but we keep it simple at first:
+
+```mermaid
+flowchart BT;
+    A[Switch Adapter] -. publish .-> B[Message Bus];
+    C[Lamp Module] -. publish .-> B[Message Bus];
+    B[Message Bus] -. subscribe .-> D[Lamp Adapter];
+```
+
+
 
 ### In-Transit messages
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned by the message bus.
