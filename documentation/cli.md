@@ -37,5 +37,14 @@ This is often used for testing. For a new or updated module, for example, you ma
 current configuration as is.
 
 - make a copy of the default mode to a new mode name
-- deploy one or more new modules with *-m <mode>* option
-- Using the cli, you can send and receive messages to this new mode by including option:
+- deploy one or more new modules with `-m <mode>` option
+- Using the cli, you can send and receive messages to this new mode by including option `-m <mode>`
+
+In this way, the live system is unaffected by the testing mode.
+
+Once the testing is complete:
+ 
+- delete the testing mode to reclaim its space
+- apply the changes to the default mode
+
+At this point, the live system if using the new or updated component.

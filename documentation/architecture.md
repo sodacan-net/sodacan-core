@@ -53,8 +53,30 @@ A `MODULE` that contains one or more `PUBLIC` statements is a message producer. 
 ### Message Consumer
 A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consumer. 
 A module is only able to "see" the information it receives via message (or the passage of time). In SodaCan, there is no such thing as peeking into another module to find a value. So, it is important to ensure that information needed by a consumer arrives via message. 
+### Topic Structure
+Each module has it's own topic. More specifically, topics are named as follows:
+
+ | Component        | Description |
+ | ----------- | ----------- |
+ | mode      | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
+ | domain | The full domain name of the local SodaCan broker |
+ | module | The module name |
+
+### Message Format
+Messages are organized by topic as described above. Within a topic, individual message contain several component:
+
+ | Component  |Location|  Description |
+ | ----------- | ----- | ----------- |
+ | Offset      | internal | A permanent incrementing non-repeating count within the topic |
+ | Timestamp  | internal | When the message was published |
+ | mode      | key | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
+ | domain | key | The full domain name of the local SodaCan broker |
+ | instance | key | The module's instance, if any |
+ | variable | key | The variable (or event name) | 
+ | value | value | The value of the variable, if any|
+ 
 ### Module Persistence
-Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
+Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of the mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
 
 ```
 	MODULE lamp1
@@ -65,7 +87,33 @@ Since messages arrive at a module one by-one, it is important to maintain state 
 		  THEN state=off  // if mode is auto
 		
 ```
-Persistence is handled automatically by the infrastructure.
+Persistence is handled automatically by the infrastructure. Underneath, a key-value database is used to save and restore module state. The key of each row includes the following:
+
+ | Key Component        | Description |
+ | ----------- | ----------- |
+ | mode      | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
+ | domain | The full domain name of the local SodaCan broker |
+ | module | The module name |
+ | instance | The instance key (for example, location of a light switch) |
+ | variable | The name of the variable
+ 
+ The value associated with this key is, of course, the value in the variable.
+ 
+ Now, this key-value database in completely redundant. Why? Because the variables in the module
+ instance were populated by messages. And only messages. And, the messages that were consumed by a module that resulted in 
+ the variables current values are still around! 
+ That means that, one way to restore the current state of a variable is to simply replay the message stream
+ into that module (the output of the module can be tossed during this recovery).
+
+So, the key-value store is really just there for performance. It would take much longer to replay messages, 
+sequentially, in order to recover module state than to simply load state from an indexed database optimized for random access.
+
+The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. 
+
+So, the module code itself is also stored in this database under the special variable name `%%code%%`.
+
+The SodaCan agent is free to completely remove rarely used Modules from memory and restore them as messages arrive.
+
 ### Topic
 In SodaCan, all topics, and therefore, all messages must be formally defined.
 A topic defines a schema, or format, of messages for a specific purpose. 
@@ -77,6 +125,43 @@ A module waits quietly for either the passage of time or a message to arrive. If
 
 The passage of time may not trigger any `ON` statements. That's normal. However, 
 for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
+
+### Module Time
+The passage of time is important to automation problem. Within a module, the `AT` statement demonstrates the need for time based events, however, the infrastructure has a huge responsibility to interpret the requirements and respond accordingly. And do it efficiently. One particularly complex aspect is being able to reproduce the passage of time in the future. In other words, we need to be able to look back in time and see that an `AT` event was actually triggered. 
+Conceptually, it looks like this (but don't try this at home). The lines with * are imaginary.
+
+```
+	MODULE lamp
+		*PUBLIC AtNoonOnFridays
+		...
+		AT noon ON fridays // Raise an event at noon on Fridays
+			*THEN activate(AtNoonOnFridays)
+			THEN ... what happens at noon on Fridays
+		*ON AtNoonOnFridays
+			*THEN ... what happens at noon on Fridays
+```
+ 
+
+Here's how this works in Sodacan: Unlike `ON` statements, which respond to explicit messages, `AT`statements are simply watching a clock looking for a match. To make these time-based events auditable and reproducible, the `AT` statements do watch the clock, but when one matches, it doesn't take action directly. Rather, a special message is sent to the module (itself) which then reacts as if it were an `ON` statement (This special message is invisible to the module author).
+
+1. "AT noon ON Fridays" matches the current time (it is noon and it is a Friday. 
+2. The agent running the module constructs and sends a special message with the id of the `AT` statement. 
+3. The special message is then processed as usual a moment later. Should the module currently be busy with a different message, then the special message will be processes after that one is done. At this point, `ON` message flow and `AT` message flow have been synchronized.
+4. When the special message is processed but the module, the `THEN` statement of the corresponding `AT` is executed. If there is a `WHEN` statement as part of the `AT` statement, it is also evaluated and may result in the special message being ignored.
+5. At this point, the module can go back to listening for new messages.
+
+Then, when needed, there is a complete audit trail in the message stream including hard `ON` events and timed `AT` events in the order in which they were processed.
+
+### Module Instance Time
+
+A slight complication in modules involves `AT` statements. If a module is declared as having an instance key and one ore more `AT` statements, such as:
+
+```
+	MODULE lamp[location]
+		...
+		AT noon ON fridays
+			THEN ...
+``` 
 
 ### Message-Variable Duality
 In SodaCan, a variable defined in a module becomes the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
@@ -182,4 +267,6 @@ SodaCan uses an administrative topic to deploy modules and adapters to the appro
 Each module and adapter is deployed as an independent program on a host computer. 
 The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
 ### Deployment Modes
-When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-something". 
+When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-new-light-control". Subsequent actions can also also supply the mode so that the action affects that mode only, not the current live modules.
+
+The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended.Modules are also renamed with the mode appended to the modules and adapters.
