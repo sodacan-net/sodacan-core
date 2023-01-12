@@ -110,7 +110,7 @@ sequentially, in order to recover module state than to simply load state from an
 
 The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. 
 
-So, the module code itself is also stored in this database under the special variable name `%%code%%`.
+So, the module code itself is also stored in this database under the special variable name `%%code%%` with a null instance key.
 
 The SodaCan agent is free to completely remove rarely used Modules from memory and restore them as messages arrive.
 
@@ -126,6 +126,50 @@ A module waits quietly for either the passage of time or a message to arrive. If
 The passage of time may not trigger any `ON` statements. That's normal. However, 
 for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
 
+### Module Instance
+When a module has instances, a mechanism must be devised to create such instances. Instance creation is done by the Module under which the instances will exist. Here's an example of a module that has instances, in this case, location. And you'll notice that the `SUBSCRIPTION` statement shown is qualified by the instance. In other words, that subscription will listen for messages by location (with a variable name of `event`.
+
+```
+	MODULE lamp[location]
+		SUBSCRIPTION event[location] {toggle}
+		...
+		ON event.toggle
+		...
+			
+```
+In order to safely create an instance, a message will be published that this module will listen for and create the instance. To do that, we add another `SUBSCRIPTION` and `ON` as follows:
+
+```
+	MODULE lamp[location]
+		SUBSCRIPTION event[location] {toggle}
+		SUBSCRIPTION instance
+		...
+		ON event.toggle
+		...
+		ON instance
+			THEN create(instance)
+		...
+			
+```
+The `instance` subscription in this case does not mention location meaning that the message is handled by the module itself, not one of its instances. 
+The `create` function is what creates the new instance. Typically, nothing else should happen as a consequence of this event since there is no instance in this cycle. However, it is possible to populate other non-instance oriented variables. For example, we could keep a count of instances created:
+
+
+```
+	MODULE lamp[location]
+		SUBSCRIPTION event[location] {toggle}
+		SUBSCRIPTION instance
+		PRIVATE instanceCount 0
+		...
+		ON event.toggle
+		...
+		ON instance
+			THEN create(instance)
+			THEN instanceCount++
+		...
+			
+```
+ 
 ### Module Time
 The passage of time is important to automation problem. Within a module, the `AT` statement demonstrates the need for time based events, however, the infrastructure has a huge responsibility to interpret the requirements and respond accordingly. And do it efficiently. One particularly complex aspect is being able to reproduce the passage of time in the future. In other words, we need to be able to look back in time and see that an `AT` event was actually triggered. 
 Conceptually, it looks like this (but don't try this at home). The lines with * are imaginary.
@@ -144,14 +188,17 @@ Conceptually, it looks like this (but don't try this at home). The lines with * 
 
 Here's how this works in Sodacan: Unlike `ON` statements, which respond to explicit messages, `AT`statements are simply watching a clock looking for a match. To make these time-based events auditable and reproducible, the `AT` statements do watch the clock, but when one matches, it doesn't take action directly. Rather, a special message is sent to the module (itself) which then reacts as if it were an `ON` statement (This special message is invisible to the module author).
 
-1. "AT noon ON Fridays" matches the current time (it is noon and it is a Friday. 
-2. The agent running the module constructs and sends a special message with the id of the `AT` statement. 
+1. "AT noon ON Fridays" matches the current time (it is noon and it is a Friday). 
+2. The agent running the module constructs and sends a special message with the id of the matching `AT` statement. 
 3. The special message is then processed as usual a moment later. Should the module currently be busy with a different message, then the special message will be processes after that one is done. At this point, `ON` message flow and `AT` message flow have been synchronized.
 4. When the special message is processed but the module, the `THEN` statement of the corresponding `AT` is executed. If there is a `WHEN` statement as part of the `AT` statement, it is also evaluated and may result in the special message being ignored.
 5. At this point, the module can go back to listening for new messages.
 
 Then, when needed, there is a complete audit trail in the message stream including hard `ON` events and timed `AT` events in the order in which they were processed.
 
+#### ALERT: Race Condition
+The special message originates from an instance of the module which may be different from the instance of the module when the special message is processed, due to an intervening update to the module. The time gap is very small and their are most likely no ill effects with one exception: If updating a module results in a deletion of the AT statement, then the special message has nothing to match and will simply be dropped. It would be ice to insure that the special message could synchronously get in front of the queue, but that's not how message serialization works.
+ 
 ### Module Instance Time
 
 A slight complication in modules involves `AT` statements. If a module is declared as having an instance key and one ore more `AT` statements, such as:
@@ -161,7 +208,18 @@ A slight complication in modules involves `AT` statements. If a module is declar
 		...
 		AT noon ON fridays
 			THEN ...
-``` 
+```
+
+that means that there is actually one module per instance. And that means that if a time event is triggered, it will be sent to each "instance" of the module. And that may be exactly what is desired. For example, at the time of the time event, the special message is sent to all known instance **at that time**. Looking back in time, it will be obvious that a newly added instance would not have received the special message.
+
+### Module Instance Topic
+How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
+
+ | Key Component        | Description |
+ | ----------- | ----------- |
+ | instance | The instance key (for example, location of a light switch) |
+ 
+This approach is very efficient and does not cause any concurrency issues. 
 
 ### Message-Variable Duality
 In SodaCan, a variable defined in a module becomes the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
