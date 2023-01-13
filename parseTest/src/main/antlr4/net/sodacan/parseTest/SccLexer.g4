@@ -17,6 +17,10 @@ PRIVATE
 	: 'PRIVATE' -> pushMode(VarMode)
 	;
 		
+TIMER
+	: 'TIMER' -> pushMode(VarMode)
+	;
+	
 SUBSCRIBE
 	: 'SUBSCRIBE' -> pushMode(SubscribeMode)
 	;

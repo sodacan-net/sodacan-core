@@ -237,7 +237,7 @@ UNIT lamp3		// Lamp that has auto mode that turns light on in the evening
     ON lamp3.off
       THEN mode.off
 	PUBLISH lamp3.state{off,on} AS state
-	WHILE mode.auto AND clock.evening
+	WHEN mode.auto AND clock.evening
 	  THEN state.on
 	WHILE mode.auto AND NOT clock.evening
 	  THEN state.off

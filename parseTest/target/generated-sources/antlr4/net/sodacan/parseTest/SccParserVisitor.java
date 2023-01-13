@@ -49,6 +49,12 @@ public interface SccParserVisitor<T> extends ParseTreeVisitor<T> {
 	 */
 	T visitTopicStatement(SccParser.TopicStatementContext ctx);
 	/**
+	 * Visit a parse tree produced by {@link SccParser#timerStatement}.
+	 * @param ctx the parse tree
+	 * @return the visitor result
+	 */
+	T visitTimerStatement(SccParser.TimerStatementContext ctx);
+	/**
 	 * Visit a parse tree produced by {@link SccParser#publicStatement}.
 	 * @param ctx the parse tree
 	 * @return the visitor result

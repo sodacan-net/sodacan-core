@@ -233,9 +233,10 @@ A private variable is...
 ### At Statement
 With the passage of time, the `AT` statement determines if it is interested in the current time (now). For example,
 ```
-	AT Friday
+	AT Noon
+		THEN ...
 ```
-means that at midnight on any particular Friday, the attached `THEN` will be executed.
+means that at noon on any particular day, something should happen. In other words, the attached `THEN` will be executed.
 ### On Statement
 The `ON` statement reacts a specific message that the module subscribed to.
 ```
@@ -246,3 +247,4 @@ The `ON` statement reacts a specific message that the module subscribed to.
 
 ### Then Statement
 
+### When Statement

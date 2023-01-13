@@ -72,6 +72,16 @@ public interface SccParserListener extends ParseTreeListener {
 	 */
 	void exitTopicStatement(SccParser.TopicStatementContext ctx);
 	/**
+	 * Enter a parse tree produced by {@link SccParser#timerStatement}.
+	 * @param ctx the parse tree
+	 */
+	void enterTimerStatement(SccParser.TimerStatementContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link SccParser#timerStatement}.
+	 * @param ctx the parse tree
+	 */
+	void exitTimerStatement(SccParser.TimerStatementContext ctx);
+	/**
 	 * Enter a parse tree produced by {@link SccParser#publicStatement}.
 	 * @param ctx the parse tree
 	 */

@@ -89,6 +89,18 @@ public class SccParserBaseListener implements SccParserListener {
 	 *
 	 * <p>The default implementation does nothing.</p>
 	 */
+	@Override public void enterTimerStatement(SccParser.TimerStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTimerStatement(SccParser.TimerStatementContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
 	@Override public void enterPublicStatement(SccParser.PublicStatementContext ctx) { }
 	/**
 	 * {@inheritDoc}

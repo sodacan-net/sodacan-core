@@ -20,6 +20,7 @@ statements
 statement
 	: topicStatement
 	| subscribeStatement
+	| timerStatement
 	| publicStatement
 	| privateStatement
 	| atStatement withStatement? thenStatement? sendStatement?
@@ -30,6 +31,10 @@ topicStatement
 	: TOPIC varIdentifier varType VarEOL
 	;
 
+timerStatement
+	: TIMER varIdentifier VarEOL
+	;
+	
 publicStatement
 	: PUBLIC varIdentifier varType (VarAS varIdentifier) VarEOL
 	;

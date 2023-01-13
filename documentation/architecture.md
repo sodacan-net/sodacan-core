@@ -1,5 +1,4 @@
 # Architecture
-## Microservice Architecture
 SodaCan is designed as a collection of microservices with an infrastructure to support them. Decision-making microservices in Sodacan are called `Modules`. Microservices that interface with external systems and devices are called "Message Adapters".
 In general, SodaCan microservices have the following characteristics:
 
@@ -17,22 +16,32 @@ Message adapters are technical components that
 - gather input, create messages, and put them on the message bus, or
 - send messages from the bus onto external systems
 
-The technology used by an adapter varies by adapter, but on one side of the adapter is usually the SodaCan message bus.
+The technology used by an adapter varies by adapter, but on one side of the adapter is usually the SodaCan message bus. The other side being whatever behavior is needed to interface to message, database, or similar.
 
-## Publish Subscribe
+### Message Oriented
+A message oriented architecture, if taken to its extreme, means that there is a complete decoupling between components. SodaCan attempts to do just that. The cost of a message oriented architecture is that there is an overhead to using messages. An actual message is created by a producer, published to a broker (message bus) and subscribed to by zero or more consumers. In SodaCan terms, modules, which provide the decision making, and adapters, which interface to the outside world, are the components.
+
+### Publish Subscribe
 Components of this system communicate using publish/subscribe semantics. You should be at least a little familiar with 
 <a href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern" target="_blank">publish-subscribe</a> design pattern before reading further.
+
+### Module Testablility
+Modules are 100% standalone with no dependencies on any other modules. Knowing this, the author of a module should not need to be concerned with anything other than what that module needs and what it produces. And, because it is message oriented, there is no restriction on where messages originate from (or where they go).
+
+To unit test a module only requires a collection of messages to be fed to the module and a way to verify that the resulting messages, if any, contain the expected results. There is no need for a mock database to be provided. And, with the use of "deployment mode", a module can be integration tested in a "live" environment with no effect on the real live environment.
 
 ### Messages
 In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format. That format is then the topic name.
 
-All messages contain a `timestamp` which implies a temporal sequence for messages. The producer is also identified in a message. Messages also contain a `key` and a `payload`, both of which are optional.
+All messages contain a `timestamp` which implies a temporal sequence for messages. Messages contain an "offset" attribute which uniquely describes each individual message within a topic.
+
+The producer is also identified in a message. Messages also contain a `key` and a `payload`, both of which are optional.
 
 
 ### Message Bus
-Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives is produced. This is the essence of decoupling in a microservice architecture.
+Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives are produced. This is the essence of decoupling in a microservice architecture.
 
-In the following diagram, messages are produced by Modules A and C without an knowledge of where they will be consumed or even if they will be consumed.
+In the following diagram, messages are produced by Modules A and C without any knowledge of where they will be consumed or even if they will be consumed.
 
 ```mermaid
 flowchart BT;
@@ -69,6 +78,7 @@ Messages are organized by topic as described above. Within a topic, individual m
  | ----------- | ----- | ----------- |
  | Offset      | internal | A permanent incrementing non-repeating count within the topic |
  | Timestamp  | internal | When the message was published |
+ | Producer | internal | The module that gave rise to this message |
  | mode      | key | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
  | domain | key | The full domain name of the local SodaCan broker |
  | instance | key | The module's instance, if any |
@@ -121,10 +131,45 @@ Once defined, a topic usually lasts forever, or until manually deleted.
 A `MODULE` that contains `TOPIC` statements defines independent topics, that is, a topic that does not include the module name in its name.
 
 ### Module behavior
-A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement of the corresponding `ON` or `AT` is executed. Each message or passage of time is processed by a module is called a `cycle`.
+A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement(s) of the corresponding `ON` or `AT` is then executed. At this point, no further checks are made of the `AT`s and `ON`s. Each message or passage of time that is processed by a module is called a `cycle`.
 
-The passage of time may not trigger any `ON` statements. That's normal. However, 
-for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
+Processing then continues to the `WHEN` statements. These `WHEN` statements are not tied to any message in particular but they do react to changes made from the `THEN`s executed above. `WHEN` statements are optional but can greatly improve the maintainability of a module. First, a bad example, without using a `WHEN`:
+
+
+```
+	MODULE lamp1
+		SUBSCRIBE mode {off,auto,on}	
+		SUBSCRIBE event	{toggle}
+		PUBLIC state {on,off}
+		AT midnight ON Fridays   // If it's midnight Friday
+		  WITH mode.auto   		// And auto mode is on
+		  THEN state.on  			// set the lamp state to on
+	->	  THEN log("Lamp is on")	// Say so
+		AT sunset ON Thursdays   // If it's sunset on Thursdays
+		  WITH mode.auto   		// and in auto mode
+		  THEN state.on  			// set lamp state to on
+	->	  THEN log("Lamp is on")	// Say so
+		  
+```
+The "lamp is on" message is duplicated. Cleaning this up with a `WHEN`
+
+```
+	MODULE lamp1
+		SUBSCRIBE mode {off,auto,on}	
+		SUBSCRIBE event	{toggle}
+		PUBLIC state {on,off}
+		AT midnight ON Fridays   // If it's midnight Friday
+		  WITH mode.auto   		// And auto mode is on
+		  THEN state.on  			// set the lamp state to on
+		AT sunset ON Thursdays   // If it's sunset on Thursdays
+		  WITH mode.auto   		// and in auto mode
+		  THEN state.on  			// set lamp state to on
+		WHEN state.on				// If state is (now) on
+		  THEN log("Lamp is on")	// say so.
+		  
+```
+
+The passage of time may not trigger any `ON` statements. That's normal. However, for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
 
 ### Module Instance
 When a module has instances, a mechanism must be devised to create such instances. Instance creation is done by the Module under which the instances will exist. Here's an example of a module that has instances, in this case, location. And you'll notice that the `SUBSCRIPTION` statement shown is qualified by the instance. In other words, that subscription will listen for messages by location (with a variable name of `event`.
@@ -210,7 +255,29 @@ A slight complication in modules involves `AT` statements. If a module is declar
 			THEN ...
 ```
 
-that means that there is actually one module per instance. And that means that if a time event is triggered, it will be sent to each "instance" of the module. And that may be exactly what is desired. For example, at the time of the time event, the special message is sent to all known instance **at that time**. Looking back in time, it will be obvious that a newly added instance would not have received the special message.
+that means that there is actually one module per instance. And that means that if a time event is triggered, it will be sent to each "instance" of the module. And that may be exactly what is desired. For example, at the time of the time event, the special message is sent to all known instances **at that time**. Looking back in time, it will be obvious that a newly added instance would not have received the special message.
+
+### Module Timers
+A timer is used when an action is to be taken in the future. And in many cases, one should be able to cancel or reset the timer. Here's an example:
+
+```
+	MODULE lamp1
+		...
+		SUBSCRIBE state {off, on}
+		TIMER offTimer
+		...
+		ON offTimer
+			THEN state.off
+		WHEN state.on							// When state becomes on	
+			IN 30 minutes SEND OffTimer 		// Set a timer to turn it off
+			
+```
+Of course this example is overly simplified but it does explain the basic mechanism.
+
+What is actually happening? The `WHEN` is saying: When the state variable become on, do the `THEN`.
+The `THEN` then says to set the `state` to `off` but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer witch will send a message to the module which will behave like any other message. In this case changing the state to off.
+
+By the way, if for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any other `WHEN`s in the module that react to that state change will trigger.
 
 ### Module Instance Topic
 How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
@@ -233,7 +300,7 @@ MODULE lamp1
 ```
 Behind the scenes, SodaCan consumes a message and makes a note if its value has changed. If it did, it signals an event which the `ON` statements in the module will react to. 
 
-The publishing side is similar. A `PUBLIC` variable is a message-in-waiting. Once a processing cycle is completed, and `PUBLIC` variables that have been modified will be published.
+The publishing side is similar. A `PUBLIC` variable is a message-in-waiting. Once a processing cycle is completed, `PUBLIC` variables that have been modified will be published.
 
 ```
 MODULE switch1
@@ -246,18 +313,18 @@ MODULE switch1
 In the background, SodaCan monitors this variable and, if any changes are made to it by the module due to a an incoming message or due to the passage of time, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
 
 ### Module Instantiation
-In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty `key` attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in different locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of
+In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty `key` attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in all (or most) locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of
 
 ```
 	MODULE JoesOfficeLight
 ```
 
-a more appropriate module name in this case might be
+a more appropriate module name in this case will be
 
 ```
 	MODULE OficeLight[location]
 ```
-which says there is a single office light *class* of module but that a separate *instance* of the module is created for each location.
+which says there is a single office light *class* of module but that a separate *instances* of the module are created for each location.
 Of course in this case we also need to make sure our variables are separated by location. 
 
 ```
@@ -327,4 +394,44 @@ The SodaCan command line interface provides all the information needed to start 
 ### Deployment Modes
 When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-new-light-control". Subsequent actions can also also supply the mode so that the action affects that mode only, not the current live modules.
 
-The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended.Modules are also renamed with the mode appended to the modules and adapters.
+The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended. Modules are also renamed with the mode appended to the modules and adapters.
+
+### Comparisons to Conventional Approaches
+Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.
+
+Module Persistence in SodaCan is not unlike systems such as Apache Flink which, like SodaCan, stores persistent data with the end-point rather than having to connect to a database. This approach, along with messaging, virtually eliminates the need to deal with database concurrency, locking and similar problems.
+
+The module language is line oriented, similar to Python but without its indent sensitivity. Unlike many languages in use today, SodaCan module language is case insensitive.
+
+Aliases are used in modules and they look like a SQL alias:
+
+```
+	SELECT primaryPhoneNumber AS ppn FROM ...
+	
+```
+In a SodaCan Module
+
+```
+	MODULE lamp1
+		PUBLIC mydomain.verylongname AS shortName
+		...
+```
+
+They also work the same as in SQL and follow the expression or variable as in SQL.
+
+The module language is closer to a domain-specific language than a true programming language for several reasons:
+
+- It has very little technical chatter. Only a few very broad data types. No such thing as int, int_32, BigDecimal, etc. Just a number (Sodacan uses the term DECIMAL).
+- The hierarchy is shallow. There are modules and variables within modules and that's about it. Traditional `IF` statements and code blocks (begin-end-style) are not used to keep the module shallow. This is similar to the way some rule languages control the depth of statements.
+- Invocation is different from traditional programming languages. No such thing as a function or method call. When a message arrives in a module, it is immediately stored in a variable. This activates the module for one cycle. The module then waits for the next message to arrive. This means that open/close/loops etc are unnecessary.
+
+The `THEN` statement might seem novel. If there is more than one thing to do as a consequence of a conditional expression, then the `THEN` is repeated.
+
+```
+		...
+		THEN do the first thing
+		THEN do the second thing
+```
+
+This extra bit of typing (THEN) eliminates the need for expression separators such as a semi-colon.
+

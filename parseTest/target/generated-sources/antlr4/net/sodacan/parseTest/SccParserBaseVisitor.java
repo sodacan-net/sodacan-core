@@ -60,6 +60,13 @@ public class SccParserBaseVisitor<T> extends AbstractParseTreeVisitor<T> impleme
 	 * <p>The default implementation returns the result of calling
 	 * {@link #visitChildren} on {@code ctx}.</p>
 	 */
+	@Override public T visitTimerStatement(SccParser.TimerStatementContext ctx) { return visitChildren(ctx); }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation returns the result of calling
+	 * {@link #visitChildren} on {@code ctx}.</p>
+	 */
 	@Override public T visitPublicStatement(SccParser.PublicStatementContext ctx) { return visitChildren(ctx); }
 	/**
 	 * {@inheritDoc}
