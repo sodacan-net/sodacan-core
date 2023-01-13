@@ -26,9 +26,11 @@ Components of this system communicate using publish/subscribe semantics. You sho
 <a href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern" target="_blank">publish-subscribe</a> design pattern before reading further.
 
 ### Module Testablility
-Modules are 100% standalone with no dependencies on any other modules. Knowing this, the author of a module should not need to be concerned with anything other than what that module needs and what it produces. And, because it is message oriented, there is no restriction on where messages originate from (or where they go).
+Modules are 100% standalone with no dependencies on any other modules. Knowing this, the author of a module should not need to be concerned with anything other than what messages that module receives and what messages it produces. And, because it is message oriented, there is no restriction on where messages originate from (or where they go). A module does not need to be "wired up" at any time.
 
-To unit test a module only requires a collection of messages to be fed to the module and a way to verify that the resulting messages, if any, contain the expected results. There is no need for a mock database to be provided. And, with the use of "deployment mode", a module can be integration tested in a "live" environment with no effect on the real live environment.
+To unit test a module only requires a collection of messages to be fed to the module and a way to verify that the resulting messages, if any, contain the expected results. There is no need for a mock database to be provided. 
+
+With the use of "deployment mode", a module can be integration tested in a "live" environment with no effect on the real live environment.
 
 ### Messages
 In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format. That format is then the topic name.
@@ -72,9 +74,9 @@ Each module has it's own topic. More specifically, topics are named as follows:
  | module | The module name |
 
 ### Message Format
-Messages are organized by topic as described above. Within a topic, individual message contain several component:
+Messages are organized by topic as described above. Within a topic, individual messages contain these fields:
 
- | Component  |Location|  Description |
+ | Field  |Location|  Description |
  | ----------- | ----- | ----------- |
  | Offset      | internal | A permanent incrementing non-repeating count within the topic |
  | Timestamp  | internal | When the message was published |
@@ -84,9 +86,14 @@ Messages are organized by topic as described above. Within a topic, individual m
  | instance | key | The module's instance, if any |
  | variable | key | The variable (or event name) | 
  | value | value | The value of the variable, if any|
- 
+
+### Message Delivery
+When a message is published, it is immediately delivered to any subscribing consumers, baring hardware difficulties. If a consumer (module) is unavailable, the message will be delivered when the component is restored.
+
+Latency between a message being published and being consumed should be in the neighborhood of 1-20 milliseconds, depending on the underlying hardware. Any application that depends on faster delivery should seek another solution.
+
 ### Module Persistence
-Since messages arrive at a module one by-one, it is important to maintain state in a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of the mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
+Since messages arrive at a module one by-one, it is important to maintain state within a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of the mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
 
 ```
 	MODULE lamp1
@@ -124,11 +131,64 @@ So, the module code itself is also stored in this database under the special var
 
 The SodaCan agent is free to completely remove rarely used Modules from memory and restore them as messages arrive.
 
-### Topic
-In SodaCan, all topics, and therefore, all messages must be formally defined.
-A topic defines a schema, or format, of messages for a specific purpose. 
-Once defined, a topic usually lasts forever, or until manually deleted.
-A `MODULE` that contains `TOPIC` statements defines independent topics, that is, a topic that does not include the module name in its name.
+### Topics and Variables
+In SodaCan, all topics, and therefore, all messages must be formally defined before it can be used. Furthermore, all variables carried by messages in a topic must be defined as well. 
+
+A topic defines a schema (or format) of messages for a specific purpose. You can think of a topic as a channel for information flow of similarly formatted messages. Once defined, a topic usually lasts forever, or until manually deleted.
+
+In a simple configuration topics can be created close to where they are commonly published. 
+
+```
+	MODULE lamp1Control
+		PUBLIC livingRoom.lamp1 {off,on} AS lamp1
+		
+		...
+			THEN lamp1.on
+```
+
+In the example above, the topic `livingRoom` and its one variable `lamp1` are created automatically with the declaration of the `PUBLIC` variable. The module is then free to publish to that topic immediately as shown in the example. In this case, `lamp1.on` causes the on value to be published.
+
+But this approach is somewhat restrictive because one module seems to own the topic even though the topic in fact is defined globally. 
+
+We can make this much tidier if we create a separate module that defines all or at least some of the topics and variables needed. Nothing else changes in either the producer or consumer. However, a neutral module can be thought of at the owner of the declaration thus allowing the other modules to come and go.
+
+
+```
+	MODULE livingRoomVariables
+		PUBLISH livingRoom.lamp1 {off,on}
+		// No other logic in this module
+```
+
+In the above, "livingRoom" is the topic and "lamp1" is a variable that will be exchanged via this topic. The `{off,on}` syntax means that the variable will hold an enumerated value of either "on" or "off". 
+
+Next, we define a module that produces a message in this topic. In this case, the message is conveying the state of lamp1 as "on" in a message to this topic.
+
+
+```
+	MODULE button23
+		PUBLISH livingRoom.lamp1 {on,off} AS lamp
+		ON <some condition>
+			THEN lamp.on
+			
+```
+
+And, a consumer module interested in this kind of message:
+
+
+```
+	MODULE lamp1
+		SUBSCRIBE livingRoom.lamp1 {on,off} as lamp
+		ON lamp.on
+			THEN <do something>
+
+```
+ 
+A `PUBLISH` declaration has behavior in addition to defining a topic and variable. When the module changes the value of a PUBLISH variable, that variable will be automatically published at the end of the cycle.
+
+A `SUBSCRIBE` variable will automatically subscribe to messages with that topic and variable. When a message arrives, the value of that variable will be changed in the module. Then, any `ON` statements matching that variable will be executed.
+
+Declaring both a publish and subscribe for the same variable will cause a compile error.
+
 
 ### Module behavior
 A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement(s) of the corresponding `ON` or `AT` is then executed. At this point, no further checks are made of the `AT`s and `ON`s. Each message or passage of time that is processed by a module is called a `cycle`.
@@ -361,9 +421,8 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 		
 ```
 ### Adapters
-A SodaCan adapter is an end node in a SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can also be a consumer and producer at the same time. 
-By design, adapters have no persistence. They are stateless. 
-The following is a very simple implementation of a lamp and a button and a module that controls the behavior of the lamp (on or off). A real-world example would likely have additional capabilities but we keep it simple here:
+A SodaCan adapter is an end node in a SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can also be both a consumer and producer at the same time. 
+The following is a very simple interaction between a lamp and a button and a module that controls the behavior of the lamp (on or off). A real-world example would likely have additional capabilities but we keep it simple here:
 
 ```mermaid
 sequenceDiagram
@@ -380,6 +439,26 @@ Flow of control:
 When the state of the lamp in the `lampModule` changes, another message containing the new state is published to the `messageBus`.
 4. The `lampAdapter`, running on a microcontroller subscribes to lamp's state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.
 
+If there is no need for logic in the lampModule, then it can be eliminated and the message published by the button read directly by the adapter module, like this:
+
+```mermaid
+sequenceDiagram
+    buttonAdapter->>messageBus: lamp.on
+    messageBus->>lampAdapter: lamp.on
+    
+```
+
+Technically, an adapter is really just another module that has a bit of low-level code attached to it. It is also may be tied to a specific host if necessary. The low-level code (C, Java, etc) handles the details of device access: DIGITAL IN, OUT, SPI, D-A, A-D, etc. It also can do database IO or whatever else one can imagine. In the example below, the adapter module waits for a message about the state of the `lamp`. As usual, the `ON` detects the message, updates the variable with the new value and `THEN` makes a function call:
+
+```
+	MODULE lamp3
+		SUBSCRIBE livingRoom.lamp AS lamp
+		EXTERNAL someFunction
+		ON lamp
+			THEN someFunction
+```
+The function in the custom code attached to the module can then access any variables in the module. When the `someFunction` function call returns, the cycle is complete. The module then waits for the next message.
+
 ### Message Persistence
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned and stored (persisted) by the message bus. 
 There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
@@ -392,7 +471,7 @@ Now, SodaCan has several ways to deal with old messages in a topic. One can set 
 
 ### Other Messages
 The messaging system is also used for administrative and operational purposes. Any agent running a module or an adapter routes error messages to a log topic.
-SodaCan uses an administrative topic to deploy modules and adapters to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
+SodaCan uses an administrative topic to deploy modules to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
@@ -400,7 +479,7 @@ The SodaCan command line interface provides all the information needed to start 
 ### Deployment Modes
 When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-new-light-control". Subsequent actions can also also supply the mode so that the action affects that mode only, not the current live modules.
 
-The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended. Modules are also renamed with the mode appended to the modules and adapters.
+The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended. Modules are also renamed with the mode appended to the modules.
 
 ### Comparisons to Conventional Approaches
 Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.

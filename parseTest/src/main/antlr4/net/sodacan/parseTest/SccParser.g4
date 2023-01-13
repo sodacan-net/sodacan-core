@@ -19,9 +19,9 @@ statements
 
 statement
 	: topicStatement
-	| subscribeStatement
 	| timerStatement
-	| publicStatement
+	| subscribeStatement
+	| publishStatement
 	| privateStatement
 	| atStatement withStatement? thenStatement? sendStatement?
 	| onStatement withStatement? thenStatement? sendStatement?
@@ -35,12 +35,16 @@ timerStatement
 	: TIMER varIdentifier VarEOL
 	;
 	
-publicStatement
-	: PUBLIC varIdentifier varType (VarAS varIdentifier) VarEOL
+publishStatement
+	: PUBLISH varIdentifier varType (VarAS varIdentifier) VarEOL
+	;
+
+subscribeStatement
+	: SUBSCRIBE varIdentifier varType (VarAS varIdentifier) VarEOL
 	;
 
 privateStatement
-	: PUBLIC varIdentifier varType VarEOL
+	: PRIVATE varIdentifier varType VarEOL
 	;
 
 

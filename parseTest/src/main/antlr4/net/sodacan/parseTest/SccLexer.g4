@@ -9,10 +9,14 @@ TOPIC
 	: 'TOPIC' -> pushMode(VarMode)
 	;
 		
-PUBLIC
-	: 'PUBLIC' -> pushMode(VarMode)
+PUBLISH
+	: 'PUBLISH' -> pushMode(VarMode)
 	;
 		
+SUBSCRIBE
+	: 'SUBSCRIBE' -> pushMode(VarMode)
+	;
+
 PRIVATE
 	: 'PRIVATE' -> pushMode(VarMode)
 	;
@@ -21,10 +25,6 @@ TIMER
 	: 'TIMER' -> pushMode(VarMode)
 	;
 	
-SUBSCRIBE
-	: 'SUBSCRIBE' -> pushMode(SubscribeMode)
-	;
-
 AT
 	: 'AT' -> pushMode(AtMode)
 	;
