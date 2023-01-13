@@ -264,20 +264,26 @@ A timer is used when an action is to be taken in the future. And in many cases, 
 	MODULE lamp1
 		...
 		SUBSCRIBE state {off, on}
-		TIMER offTimer
+		SUBSCRIBE livingRoom.motion AS motion
+		TIMER offTimer 30 minutes
 		...
 		ON offTimer
 			THEN state.off
-		WHEN state.on							// When state becomes on	
-			IN 30 minutes SEND OffTimer 		// Set a timer to turn it off
-			
+		ON state.on					// When state becomes on	
+			THEN offTimer.start 		// Set a timer to turn it off
+		ON state.off					// When lamp1 goes off, time is no longer needed
+			THEN offTimer.cancel
+		ON motion						// On motion, reset the timer
+			THEN offTimer.reset
 ```
-Of course this example is overly simplified but it does explain the basic mechanism.
+This example is simplified but it does explain the basic timer mechanism.
 
-What is actually happening? The `WHEN` is saying: When the state variable become on, do the `THEN`.
-The `THEN` then says to set the `state` to `off` but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer witch will send a message to the module which will behave like any other message. In this case changing the state to off.
+What is actually happening? The `WHEN` is saying: When the state variable transitions to  on, do the `THEN` statement.
+The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer witch will send a message to the module which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an on that picks it up and its `THEN` says to set the `state` to `off` 
 
 By the way, if for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any other `WHEN`s in the module that react to that state change will trigger.
+
+Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages. This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).
 
 ### Module Instance Topic
 How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
