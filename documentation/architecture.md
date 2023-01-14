@@ -33,7 +33,7 @@ To unit test a module only requires a collection of messages to be fed to the mo
 With the use of "deployment mode", a module can be integration tested in a "live" environment with no effect on the real live environment.
 
 ### Messages
-In SodaCan, `PUBLIC` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format. That format is then the topic name.
+In SodaCan, `PUBLISH` variables are essentially messages waiting to be sent. And, `SUBSCRIBE` variables are messages waiting to be received. Messages are exchanged through what is called a **topic** which is defined in more detail below. Simply put, a topic groups together messages of a specific format. That format is then the topic name.
 
 All messages contain a `timestamp` which implies a temporal sequence for messages. Messages contain an "offset" attribute which uniquely describes each individual message within a topic.
 
@@ -60,7 +60,7 @@ flowchart BT;
 ```
 
 ### Message Producer
-A `MODULE` that contains one or more `PUBLIC` statements is a message producer. Each `PUBLIC` variable is sent onto the message bus.
+A `MODULE` that contains one or more `PUBLISH` statements is a message producer. Each `PUBLISH` variable is sent onto the message bus.
 ### Message Consumer
 A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consumer. 
 A module is only able to "see" the information it receives via message (or the passage of time). In SodaCan, there is no such thing as peeking into another module to find a value. So, it is important to ensure that information needed by a consumer arrives via message. 
@@ -146,7 +146,7 @@ Since messages arrive at a module one by-one, it is important to maintain state 
 ```
 	MODULE lamp1
 		SUBSCRIBE mode	{off, auto, on}	
-		PUBLIC state {on,off}
+		PUBLISH state {on,off}
 		AT midnight       // Turn off this light
 		  WHEN mode.auto  // at midnight
 		  THEN state=off  // if mode is auto
@@ -188,13 +188,13 @@ In a simple configuration topics can be created close to where they are commonly
 
 ```
 	MODULE lamp1Control
-		PUBLIC livingRoom.lamp1 {off,on} AS lamp1
+		PUBLISH livingRoom.lamp1 {off,on} AS lamp1
 		
 		...
 			THEN lamp1.on
 ```
 
-In the example above, the topic `livingRoom` and its one variable `lamp1` are created automatically with the declaration of the `PUBLIC` variable. The module is then free to publish to that topic immediately as shown in the example. In this case, `lamp1.on` causes the on value to be published.
+In the example above, the topic `livingRoom` and its one variable `lamp1` are created automatically with the declaration of the `PUBLISH` variable. The module is then free to publish to that topic immediately as shown in the example. In this case, `lamp1.on` causes the on value to be published.
 
 But this approach is somewhat restrictive because one module seems to own the topic even though the topic in fact is defined globally. 
 
@@ -248,7 +248,7 @@ Processing then continues to the `WHEN` statements. These `WHEN` statements are 
 	MODULE lamp1
 		SUBSCRIBE mode {off,auto,on}	
 		SUBSCRIBE event	{toggle}
-		PUBLIC state {on,off}
+		PUBLISH state {on,off}
 		AT midnight ON Fridays   // If it's midnight Friday
 		  WITH mode.auto   		// And auto mode is on
 		  THEN state.on  			// set the lamp state to on
@@ -265,7 +265,7 @@ The "lamp is on" message is duplicated. Cleaning this up with a `WHEN`
 	MODULE lamp1
 		SUBSCRIBE mode {off,auto,on}	
 		SUBSCRIBE event	{toggle}
-		PUBLIC state {on,off}
+		PUBLISH state {on,off}
 		AT midnight ON Fridays   // If it's midnight Friday
 		  WITH mode.auto   		// And auto mode is on
 		  THEN state.on  			// set the lamp state to on
@@ -329,7 +329,7 @@ Conceptually, it looks like this (but don't try this at home). The lines with * 
 
 ```
 	MODULE lamp
-		*PUBLIC AtNoonOnFridays
+		*PUBLISH AtNoonOnFridays
 		...
 		AT noon ON fridays // Raise an event at noon on Fridays
 			*THEN activate(AtNoonOnFridays)
@@ -414,11 +414,11 @@ MODULE lamp1
 ```
 Behind the scenes, SodaCan consumes a message and makes a note if its value has changed. If it did, it signals an event which the `ON` statements in the module will react to. 
 
-The publishing side is similar. A `PUBLIC` variable is a message-in-waiting. Once a processing cycle is completed, `PUBLIC` variables that have been modified will be published.
+The publishing side is similar. A `PUBLISH` variable is a message-in-waiting. Once a processing cycle is completed, `PUBLISH` variables that have been modified will be published.
 
 ```
 MODULE switch1
-	PUBLIC state {on,off}
+	PUBLISH state {on,off}
 	...
 	ON ...
 		THEN state.on		// Set the state to on
@@ -443,7 +443,7 @@ Of course in this case we also need to make sure our variables are separated by 
 
 ```
 	MODULE OficeLight[location]
-		PUBLIC state[location] {on,off}
+		PUBLISH state[location] {on,off}
 		
 ```
 which tells SodaCan that the `state` variable is separate for each location.
@@ -453,7 +453,7 @@ While the state variable (and consequently messages) are per-location, we might 
 ```
 	MODULE OficeLight[location]
 		SUBSCRIBE autoModeOnTime 00:00
-		PUBLIC state[location] {on,off}
+		PUBLISH state[location] {on,off}
 		
 ```
 Notice that the `autoModeOnTime` variable has no key associated with it. A subsequent `AT statement` will refer to `autoModeOnTime`, without a key qualifier.
@@ -461,8 +461,8 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 ```
 	MODULE OficeLight[location]
 		SUBSCRIBE autoModeOnTime 00:00
-		PUBLIC mode[location] {auto,manual}
-		PUBLIC state[location] {on,off}
+		PUBLISH mode[location] {auto,manual}
+		PUBLISH state[location] {on,off}
 		AT autoModeOnTime
 			THEN mode[location].auto
 		...
@@ -548,7 +548,7 @@ In a SodaCan Module
 
 ```
 	MODULE lamp1
-		PUBLIC mydomain.verylongname AS shortName
+		PUBLISH mydomain.verylongname AS shortName
 		...
 ```
 

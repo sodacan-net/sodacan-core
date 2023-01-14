@@ -1,0 +1,46 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>net.sodacan</groupId>
+  <artifactId>top</artifactId>
+  <version>0.0.1</version>
+  <description>Top-level (parent)  maven project for SodaCan</description>
+  <packaging>pom</packaging>
+      <properties>
+        <antlr4.version>4.11.1</antlr4.version>
+        <java.version>17</java.version>
+        <junit.version>4.11</junit.version>
+        <kafka.version>3.3.1</kafka.version>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+    <dependencies>
+		<dependency>
+		    <groupId>org.slf4j</groupId>
+		    <artifactId>slf4j-api</artifactId>
+		    <version>1.7.32</version>
+		</dependency>
+		<dependency>
+		    <groupId>ch.qos.logback</groupId>
+		    <artifactId>logback-classic</artifactId>
+		    <version>1.2.6</version>
+		</dependency>
+	    <dependency>
+	      <groupId>junit</groupId>
+	      <artifactId>junit</artifactId>
+	      <version>${junit.version}</version>
+	      <scope>test</scope>
+	    </dependency>
+    </dependencies>
+    <build>
+        <plugins>
+			 <plugin>
+			    <groupId>org.apache.maven.plugins</groupId>
+			    <artifactId>maven-compiler-plugin</artifactId>
+			    <version>3.8.0</version>
+			    <configuration>
+			        <release>${java.version}</release>
+			    </configuration>
+			</plugin>
+        </plugins>
+    </build>
+
+</project>
