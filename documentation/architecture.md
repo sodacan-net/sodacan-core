@@ -64,6 +64,54 @@ A `MODULE` that contains one or more `PUBLIC` statements is a message producer. 
 ### Message Consumer
 A `MODULE` that contains one or more `SUBSCRIBE` statements is a message consumer. 
 A module is only able to "see" the information it receives via message (or the passage of time). In SodaCan, there is no such thing as peeking into another module to find a value. So, it is important to ensure that information needed by a consumer arrives via message. 
+
+### Topology
+The underlying messaging technology will determine the topology of a working SodaCan installation and how application components are deployed.
+The following table show the application components and where each resides in different configurations:
+#### Stand-alone
+A SodaCan stand-alone configuration is useful for simple demonstrations and some development. It uses no communication except for a web server and it would be difficult to connect to real devices. Persistence is done explicitly to a flat file in JSON format. Communication between modules and the message bus all occur in a single address space. Keep in mind that performance in this simple configuration will be very fast. But it won't scale well. Don't try to draw conclusions about performance from this configuration.
+#### Single-node
+A Single-node configuration uses Apache Kafka in a more-or-less real configuration but has no redundancy and does not scale. All of the components are the same as a distributed configuration though communication between components may still be faster because they are all on the same node. For a smaller installation without the need for high-availability and fault tolerance, the single-node configuration may be sufficient. Almost all unit and integration testing will work fine in this configuration. The part that isn't covered will be specific to Kafka.
+#### Distributed
+A distributed configuration also uses Apache Kafka but with multiple brokers and topic partitioning. This configuration provides the highest throughput, scalability and best reliability. The transition from single-node to a distributed configuration is possible without having to start-stop the system. However, it does require careful planning and execution.
+
+### System Components
+#### SodaCan API
+The SodaCan API provides a way to perform administrative, operational, and application functions. Many of its functions are passed through messages to other components including the SodaCan web server, the underlying Kafka system, and mostly to SodaCan agents.
+The API in SodaCan is separate from the RESTful API in the web browser. Both provide similar capabilities but the SodaCan API talks directly to the message bus whereas the RESTful API is, of course, HTML-based which in turn uses the SodaCan API. The RESTful API is useful when the SodaCan message bus is behind a firewall.
+
+#### Command Line Tool
+
+The SodaCan command line tool provides a number of administrative functions including stating and stopping the server(s), creating topics, compiling and deploying modules, creating and managing modes, etc. It uses the Sodacan API.
+
+#### Web Server
+The web server provides the same capabilities as the command line tool but in a graphical format. It also includes a dashboard for monitoring a running system. It uses the SodaCan API. The web server is also what exposes the SodaCan RESTful API. SodaCan uses static web pages, which it serves, which in turn call the same APIs which remote applications can use independent of web page, subject to authentication and authorization.
+
+#### Message Bus
+The Message Bus is a wrapper around Apache Kafka. Kafka is accessed only through Kafka's client APIs. An existing Kafka (and Zookeeper) installation can be used if necessary. A docker-based Kafka installation is also usable but be certain to externalize the storage. The message bus wrapper (in Java) is needed to support the stand alone configuration and for unit testing SodaCan core code. It also allows plugin of an alternate message bus although no such plugins are available, yet.
+
+The message bus in SodaCan is responsible for reliably storing messages for however long is needed. This is the primary means of storage in SodaCan. When the Message Bus is Kafka, each Kafka broker stores these messages close to where the broker is running. If Kafka is running with replica > 1, then there will be multiple copies of messages on different brokers.
+
+If the stand alone configuration is used, then messages are not stored reliably. They are simply stored in a "flat file" in Json format.
+#### ModuleAgent
+The module agent(s) are the workhorse of SodaCan. These agents host one or more modules and provide the timer, clock, persistence, and interface to the Message Bus.
+#### Module Persistence
+
+#### LoggingAgent
+
+ | Component         | stand-alone | Single Node | Distributed |
+ | :----             |  :--------: | :---------: | :---------: |
+ | Command Line Tool | The entire system runs inside the tool. | 
+ | WebServer	     | N/A         |   
+ | MessageBus	     | N/A 
+ | LoggingAgent	     | N/A 
+ | ModuleAgent	     | N/A 
+ | ModulePersistence | N/A 
+ | LoggingAgent	     | N/A 
+ 
+The smallest configuration will have a single agent that runs all modules in all modes.
+The command line administrative tool 
+
 ### Topic Structure
 Each module has it's own topic. More specifically, topics are named as follows:
 
@@ -469,17 +517,19 @@ Consider, for example, that we want to add a new module to an existing configura
 
 Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
-### Other Messages
+### System Messages
 The messaging system is also used for administrative and operational purposes. Any agent running a module or an adapter routes error messages to a log topic.
 SodaCan uses an administrative topic to deploy modules to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
+
+| Topic | Description |
+| ----- | ------------|
+| xxx  | All mode commands are broadcast on this topic, see CLI for details |
+| module | 
+
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
 The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
-### Deployment Modes
-When its time to roll out a new or updated module or adapter, you might want to do a final test on the live system without affecting the live system. To do this, the soda administrative tool can be used to initiate a "copy" of the current (default) mode to a separate mode, probably named something like "test-new-light-control". Subsequent actions can also also supply the mode so that the action affects that mode only, not the current live modules.
-
-The copy operation is quite comprehensive. In particular, new topics with the same name as before with the mode appended. Modules are also renamed with the mode appended to the modules.
 
 ### Comparisons to Conventional Approaches
 Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.

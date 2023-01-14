@@ -7,22 +7,23 @@ soda <cmd> [args]
 Commands:
   soda broker startup --config
   soda broker shutdown --config
-  soda module compile --deploy   	Compile one or more modules
-  soda module deploy	<module> -m <mode>				Deploy module(s)
-  soda module test					Test modules
-  soda create instance <module> <key>
-  soda copy mode from <mode> to <mode>	The destination mode cannot exist
-  soda delete mode <mode>            The named mode is completely removed from the system	
-  soda list modules <pattern>
-  soda list instances <module> <pattern>
-  soda create topic <params>     	Create a new topic
-  soda list topics <pattern>		
-  soda normalize  normalize markdown in a sample (parse & draft)
-  soda publish <topic> <key> <payload>
-  soda subscribe	<topicPattern>		Wait for messages to arrive, ctrl-c to stop
-  soda rewind <topic> <time>        Replay messages from a specific time
-  soda delete topic <topic>
-  soda delete messages <topic> before/after <timestamp> Delete messages either before or after the specified time
+  soda broker status
+  soda module compile <mode> <moduleFile>   	Compile one or more modules
+  soda module deploy	<mode> <module>          Compile and deploy
+  soda module create instance <mode> <module> <key>
+  soda module list <mode> <pattern>
+  soda module instance list <mode> <module> <pattern>
+  soda mode create <mode>
+  soda mode copy from <mode> to <mode>	The destination mode cannot exist
+  soda mode clock <mode> live | <date> <time>
+  soda mode delete <mode>            The named mode is completely removed from the system	
+  soda topic publish <mode> <topic> <key> <payload>
+  soda topic subscribe <mode> <topicPattern>		Wait for messages to arrive, ctrl-c to stop
+  soda topic rewind <mode> <topic> <time>        Replay messages from a specific time
+  soda topic create <mode> <params>     	Create a new topic
+  soda topic list <mode> <pattern>		
+  soda topic delete <mode> <topic>
+  soda topic message delete <mode> <topic> before/after <timestamp> Delete messages either before or after the specified time
 
 Options:
   --mode <mode>  Specify which mode this action affects                 [string]
