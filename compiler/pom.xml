@@ -2,9 +2,16 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
-    <artifactId>grammer</artifactId>
+    <artifactId>compiler</artifactId>
     <name>compiler</name>
     <packaging>jar</packaging>
+    <parent>
+    	<groupId>net.sodacan</groupId>
+    	<version>0.0.1</version>
+    	<artifactId>sodacan</artifactId>
+    	<relativePath>../sodacan/pom.xml</relativePath>
+    </parent>
+    <description>Compile a source module into a module structure</description>
     <properties>
     </properties>
     <dependencies>
@@ -19,6 +26,11 @@
 		    <version>1.10.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>net.sodacan</groupId>
+			<artifactId>module</artifactId>
+			<version>0.0.1</version>
+		</dependency>
 		<dependency>
 			<groupId>net.sodacan</groupId>
 			<artifactId>utility</artifactId>
@@ -51,11 +63,4 @@
             </plugin>
         </plugins>
     </build>
-    <parent>
-    	<groupId>net.sodacan</groupId>
-    	<version>0.0.1</version>
-    	<artifactId>top</artifactId>
-    	<relativePath>../top/pom.xml</relativePath>
-    </parent>
-    <description>Compile a source module into a module structure</description>
 </project>
