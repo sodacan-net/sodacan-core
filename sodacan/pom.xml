@@ -12,11 +12,12 @@
   	<module>../compiler</module>
   	<module>../message</module>
   	<module>../runtime</module>
+  	<module>../utility</module>
   </modules>
   <packaging>pom</packaging>
       <properties>
         <antlr4.version>4.11.1</antlr4.version>
-        <java.version>17</java.version>
+        <java.version>11</java.version>
         <junit.version>4.11</junit.version>
         <kafka.version>3.3.1</kafka.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

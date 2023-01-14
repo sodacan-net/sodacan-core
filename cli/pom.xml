@@ -12,4 +12,11 @@
   	<artifactId>sodacan</artifactId>
   	<relativePath>../sodacan/pom.xml</relativePath>
   </parent>
+  <dependencies>
+  	<dependency>
+  		<groupId>net.sodacan</groupId>
+  		<artifactId>api</artifactId>
+  		<version>0.0.1</version>
+  	</dependency>
+  </dependencies>
 </project>
