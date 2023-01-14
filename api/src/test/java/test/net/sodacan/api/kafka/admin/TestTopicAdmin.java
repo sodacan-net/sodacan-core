@@ -1,4 +1,4 @@
-package test.net.sodacan.admin;
+package test.net.sodacan.api.kafka.admin;
 
 
 
@@ -28,7 +28,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sodacan.admin.TopicAdmin;
+import net.sodacan.api.kafka.admin.TopicAdmin;
 
 
 public class TestTopicAdmin {

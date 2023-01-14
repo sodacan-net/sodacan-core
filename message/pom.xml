@@ -1,12 +1,22 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>net.sodacan</groupId>
-    <artifactId>top</artifactId>
-    <version>0.0.1</version>
-  </parent>
-  <groupId>net.sodacan</groupId>
   <artifactId>message</artifactId>
-  <version>0.0.1</version>
+    <name>compiler</name>
+    <packaging>jar</packaging>
+    <properties>
+    </properties>
+  <parent>
+  	<groupId>net.sodacan</groupId>
+  	<version>0.0.1</version>
+  	<artifactId>top</artifactId>
+  	<relativePath>../top/pom.xml</relativePath>
+  </parent>
   <description>Message bus and message format</description>
+  <dependencies>
+		<dependency>
+		    <groupId>org.apache.kafka</groupId>
+		    <artifactId>kafka-clients</artifactId>
+		    <version>${kafka.version}</version>
+		</dependency>
+  </dependencies>
 </project>

@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.Set;
 
 import org.antlr.v4.runtime.tree.TerminalNode;
 
@@ -19,6 +18,7 @@ import net.sodacan.grammer.LanguageParser.ProgContext;
 import net.sodacan.grammer.LanguageParser.RangeContstraintContext;
 import net.sodacan.grammer.LanguageParser.UnitContext;
 import net.sodacan.grammer.LanguageParser.WhenStatementContext;
+import net.sodacan.utility.Graph;
 
 public class UnitVisitor extends LanguageBaseVisitor<Void> {
 	private Map<String,Unit> units = new HashMap<>();

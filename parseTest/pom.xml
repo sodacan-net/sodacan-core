@@ -15,11 +15,6 @@
             <version>${antlr4.version}</version>
         </dependency>
 		<!-- https://mvnrepository.com/artifact/org.apache.kafka/kafka-clients -->
-		<dependency>
-		    <groupId>org.apache.kafka</groupId>
-		    <artifactId>kafka-clients</artifactId>
-		    <version>${kafka.version}</version>
-		</dependency>
     </dependencies>
     <build>
         <plugins>

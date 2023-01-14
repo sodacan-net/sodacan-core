@@ -1,4 +1,4 @@
-package net.sodacan.admin;
+package net.sodacan.api.kafka.admin;
 
 import java.util.ArrayList;
 import java.util.Arrays;
