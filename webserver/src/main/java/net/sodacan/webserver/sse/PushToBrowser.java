@@ -1,4 +1,4 @@
-package net.sodacan.sse;
+package net.sodacan.webserver.sse;
 
 
 import java.util.Arrays;

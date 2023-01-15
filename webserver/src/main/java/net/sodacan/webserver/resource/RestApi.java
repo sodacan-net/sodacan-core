@@ -1,4 +1,4 @@
-package net.sodacan.resource;
+package net.sodacan.webserver.resource;
 
 import java.time.Instant;
 import java.time.ZonedDateTime;
@@ -20,12 +20,17 @@ import net.sodacan.config.Config;
 
 @Path("")
 public class RestApi {
-	Logger logger = LogManager.getLogger(RestApi.class);
+	private final static Logger logger = LogManager.getLogger();
 	private static ObjectMapper objectMapper = new ObjectMapper();;
 	
 	public RestApi() {
 	}
-
+	@Path("time")
+	@GET
+	public String getTime() {
+		logger.info("The time is nye");
+		return "It's time";
+	}
 //	/**
 //	 * Specify the current time.
 //	 * Used only in test mode, see configuration file

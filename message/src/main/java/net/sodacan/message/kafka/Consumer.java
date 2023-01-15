@@ -4,19 +4,18 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 
 import org.apache.kafka.clients.consumer.ConsumerRebalanceListener;
 import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.apache.kafka.clients.consumer.ConsumerRecords;
 import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 public class Consumer implements ConsumerRebalanceListener {
 	private KafkaConsumer<String, String> consumer = null;
-	static Logger logger = LoggerFactory.getLogger(Consumer.class);
+	private final static Logger logger = LogManager.getLogger();
 	List<String> topics = new ArrayList<String>();
 	List<String> rewindTopics = new ArrayList<String>();
 

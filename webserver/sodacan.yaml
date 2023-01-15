@@ -1,0 +1,17 @@
+location:
+    latitude: 42.5583482
+    longitude: -123.3968023
+    address: 123 Elm Street
+    timezone: America/Los_Angeles
+# If missing, no web server is started
+webServer:
+    listen: http://localhost:4011
+
+agent:
+    consumer:
+        sessionTimeoutSec: 30
+        url: soda6:9092
+    producer:
+        url: soda6:9092
+
+        

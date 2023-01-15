@@ -1,4 +1,4 @@
-package net.sodacan.log;
+package net.sodacan.webserver.log;
 
 
 import java.io.Serializable;
@@ -22,7 +22,7 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import net.sodacan.SodacanException;
-import net.sodacan.sse.PushToBrowser;
+import net.sodacan.webserver.sse.PushToBrowser;
 
 @Plugin(
 		  name = "LogAppender", 

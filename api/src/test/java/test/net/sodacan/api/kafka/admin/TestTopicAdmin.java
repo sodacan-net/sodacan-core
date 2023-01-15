@@ -24,15 +24,15 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 import org.junit.Test;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import net.sodacan.api.kafka.admin.TopicAdmin;
 
 
 public class TestTopicAdmin {
-	static Logger logger = LoggerFactory.getLogger(TestTopicAdmin.class);
+	private final static Logger logger = LogManager.getLogger();
 	List<String> brokers = new ArrayList<>();
 
 	

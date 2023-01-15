@@ -21,13 +21,13 @@ import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.config.ConfigResource;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 
 public class TopicAdmin extends Admin {
-    private static Logger logger = LoggerFactory.getLogger(TopicAdmin.class);
+	private final static Logger logger = LogManager.getLogger();
     private static final int PARTITIONS = 1;
 	private static final short REPLICAS = 3;
 	private static final int NUMBER_OF_TRIES = 5;
