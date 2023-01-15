@@ -13,9 +13,15 @@ If you are looking for something that has all of the scale, reliability, and fau
 ## How It Works
 SodaCan is comprised of several key components. Arguably the most crucial is a message bus. The underlying technology uses Apache Kafka. Connected to this message bus are agents that run SodaCan `modules`. Some modules, called `adapters`, connect messages from the outside world into the message bus and others connect from the message bus to the outside world. Modules provide the decision making capability of SodaCan. SodaCan is distributed; Each module can be in a separate program and modules do not need to be on a single server. In fact, for many devices, an adapter module for that device might run directly on the microcontroller where that device is connected. 
 
-A SodaCan module compiler converts the SodaCan module language into structures needed by the SodaCan runtime system. Strict decoupling is enforced by the SodaCan architecture. For example, one module is not allowed to "see" into another module. In fact, a module cannot even call into another module. Doing so would require the called module to exist prior to deploying the module calling it. This decoupling is accomplished using a message-passing approach. That is, and data coming into or going out of a module is done via asynchronous messages. While a module will usually have some state variables, persisting that state is transparent to the module developer. The developer never has to "go get" data. Messages deliver data to modules proactively in order to ensure minimum processing time.
+A SodaCan module compiler converts the SodaCan module language into structures needed by the SodaCan runtime system. Strict decoupling is enforced by the SodaCan architecture. For example, one module is not allowed to "see" into another module. In fact, a module cannot even call into another module. Doing so would require the called module to exist prior to deploying the module calling it. This decoupling is accomplished using a message-passing approach. That is, and data coming into or going out of a module is done via asynchronous messages. While a module will usually have some state variables, persisting that state is transparent to the module developer. The developer never has to "go get" data. Messages deliver data to modules proactively in order to ensure minimum processing time. 
 
-From a black-box perspective, modules simply send and receive messages. A few other services are provided by the infrastructure and can be enhanced or overridden with plugins: Module persistence, messaging. The variables defined in a module will be saved and restored automatically. A clock source is also provided by the infrastructure: Modules have a built-in capability to react to the passage of time. This make it very easy to implement time-based control logic (for example: *at sunset: turn light on*).
+From a black-box perspective, modules simply send and receive messages. A few other services are provided by the infrastructure and can be enhanced or overridden with plugins: Module persistence means that the variables defined in a module will be saved and restored automatically. A clock source is also provided by the infrastructure: Modules have a built-in capability to react to the passage of time. This make it very easy to implement time-based control logic (for example: *at sunset: turn light on*).
+
+## Security
+[tbd]
+
+## Logging
+[tbd]
 
 ## More Details
 
