@@ -28,7 +28,7 @@ Components of this system communicate using publish/subscribe semantics. You sho
 ### Module Testablility
 Modules are 100% standalone with no dependencies on any other modules. Knowing this, the author of a module should not need to be concerned with anything other than what messages that module receives and what messages it produces. And, because it is message oriented, there is no restriction on where messages originate from (or where they go). A module does not need to be "wired up" at any time.
 
-To unit test a module only requires a collection of messages to be fed to the module and a way to verify that the resulting messages, if any, contain the expected results. There is no need for a mock database to be provided. 
+To unit test a module only requires a collection of messages to be fed to the SodaCan runtime and a way to verify that the resulting messages, if any, contain the expected results. The message source will contain the module itself as well as any input messages.
 
 With the use of "deployment mode", a module can be integration tested in a "live" environment with no effect on the real live environment.
 
