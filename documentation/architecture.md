@@ -209,6 +209,8 @@ We can make this much tidier if we create a separate module that defines all or 
 
 In the above, "livingRoom" is the topic and "lamp1" is a variable that will be exchanged via this topic. The `{off,on}` syntax means that the variable will hold an enumerated value of either "on" or "off". 
 
+> Syntactic Sugar: SodaCan really blurs the lines between string literals and identifiers. For example, no quotes are needed in the list of possible values of an enumerated variable. Likewise, the identifier expression `variable.value` is a shortcut. In `ON` and `WHEN` statements, it means the same as `variable == "value"` (if variable equals the value). In a `THEN` statement, it means the same as `variable = "value"` (assign "value" to variable). 
+
 Next, we define a module that produces a message in this topic. In this case, the message is conveying the state of lamp1 as "on" in a message to this topic.
 
 
@@ -450,7 +452,7 @@ MODULE lamp1
 	ON switch1.state.on
 		THEN ...
 ```
-Behind the scenes, SodaCan consumes a message and makes a note if its value has changed. If it did, it signals an event which the `ON` statements in the module will react to. 
+Behind the scenes, SodaCan consumes a message and makes a note that its value has changed. In that case, it signals an event which the `ON` statements in the module will react to. 
 
 The publishing side is similar. A `PUBLISH` variable is a message-in-waiting. Once a processing cycle is completed, `PUBLISH` variables that have been modified will be published.
 
@@ -462,7 +464,12 @@ MODULE switch1
 		THEN state.on		// Set the state to on
 ```
 
+> Syntactic Sugar: `state.on` in a `THEN` statement means the same thing as `state = "on"`. Both mean that the value of the state variable should be changed to `on`.
+
+
 In the background, SodaCan monitors this variable and, if any changes are made to it by the module due to a an incoming message or due to the passage of time, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
+
+> You cannot `SUBSCRIBE` and `PUBLISH` the same variable. 
 
 ### Module Instantiation
 In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty `key` attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in all (or most) locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of
