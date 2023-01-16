@@ -395,11 +395,6 @@ SodaCan uses an administrative topic to deploy modules to the appropriate agent/
 | xxx  | All mode commands are broadcast on this topic, see CLI for details |
 | module | 
 
-## Infrastructure
-### Module deployment
-Each module and adapter is deployed as an independent program on a host computer. 
-The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
-
 ### Comparisons to Conventional Approaches
 Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.
 

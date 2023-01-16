@@ -160,7 +160,7 @@ Since messages arrive at a module one by-one, it is important to maintain state 
 		  THEN state=off  // if mode is auto
 		
 ```
-Persistence is handled automatically by the infrastructure. Underneath, a key-value database is used to save and restore module state. The key of each row includes the following:
+Persistence is handled automatically by the infrastructure. Underneath is a key-value data store that is used to save and restore module state. The key of each row includes the following:
 
  | Key Component        | Description |
  | ----------- | ----------- |
@@ -170,19 +170,30 @@ Persistence is handled automatically by the infrastructure. Underneath, a key-va
  | instance | The instance key (for example, location of a light switch) |
  | variable | The name of the variable
  
- The value associated with this key is, of course, the value in the variable.
+The value associated with this key is, of course, the value in the variable.
  
- Now, this key-value database in completely redundant. Why? Because the variables in the module
- instance were populated by messages. And only messages. And, the messages that were consumed by a module that resulted in 
- the variables current values are still around! 
- That means that, one way to restore the current state of a variable is to simply replay the message stream
- into that module (the output of the module can be tossed during this recovery).
+Now, this key-value data store is completely redundant. Why? Because the variables in the module
+instance were populated by messages... and only messages. And, the messages that were consumed by a module that resulted in 
+the variables current values are still around (in the message bus)! 
+That means one way to restore the current state of a variable is to simply replay the message stream
+into that module (the output of the module can be ignored during this recovery).
 
-So, the key-value store is really just there for performance. It would take much longer to replay messages, 
-sequentially, in order to recover module state than to simply load state from an indexed database optimized for random access.
+So, the key-value store is really just there for performance reasons. It would take much longer to replay messages, 
+sequentially, in order to recover a module's state than to simply load state from an indexed database optimized for random access.
 
-The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. 
+The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. The message stream might look like this:
 
-So, the module code itself is also stored in this database under the special variable name `%%code%%` with a null instance key.
+```mermaid
+flowchart LR;
+    variable a --> variable b --> module update --> variable a;
+```
+
+So, the module code itself is also stored in this data store under the special variable name `%%code%%` with a null instance key.
 
 The SodaCan agent is free to completely remove rarely used Modules from memory and restore them as messages arrive.
+## Infrastructure
+### Module deployment
+Each module and adapter is deployed as an independent program on a host computer. 
+The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
+
+
