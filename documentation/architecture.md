@@ -424,7 +424,7 @@ The `THEN` statement says to publish the `offTimer` message, but not immediately
 
 Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages). This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).
 
-> If for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any o`WHEN`s in the module that react to that state change will trigger as usual.
+> If for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any `WHEN`s in the module that react to that state change will trigger as usual.
 
 ### Module Processing Cycle
 `ON` and `WHEN` statements may seem to work the same way. While it is true that the contents of the statement can look the same, the behavior is very different. During a processing cycle, the first 'AT' to match a change in the module state "wins" and all other `AT`s are ignored for that cycle. Conversely, *all* of the `WHEN`s that *match* during that same cycle are executed. 
