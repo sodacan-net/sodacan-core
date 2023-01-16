@@ -40,8 +40,8 @@ import net.sodacan.compiler.SccParser.ToDateContext;
 import net.sodacan.compiler.SccParser.WithIdentifierContext;
 import net.sodacan.compiler.SccParser.WithStatementContext;
 import net.sodacan.compiler.SccParser.YearContext;
-import net.sodacan.module.ModuleComponent;
-import net.sodacan.module.SodacanModule;
+import net.sodacan.module.statement.ModuleComponent;
+import net.sodacan.module.statement.SodacanModule;
 
 public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 

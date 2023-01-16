@@ -12,8 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module;
+package net.sodacan.module.variable;
 
-public class WhenStatement  extends Statement {
+import java.util.HashMap;
+import java.util.Map;
 
+/**
+ * A structure holding all variables for a module
+ * @author John Churin
+ *
+ */
+public class Variables {
+	Map<String,Variable> variables = new HashMap<>();
+	/**
+	 * Reset the changed flag in all variables
+	 */
+	public void resetChanged() {
+		variables.forEach((name,variable)-> variable.resetChanged());
+	}
 }

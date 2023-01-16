@@ -102,7 +102,6 @@ The message bus in SodaCan is responsible for reliably storing messages for howe
 If the stand alone configuration is used, then messages are not stored reliably. They are simply stored in a "flat file" in Json format.
 #### ModuleAgent
 Module agent(s) are the workhorse of SodaCan. These agents host one or more modules and provide the timer, clock, persistence, and interface to the Message Bus.
-#### Module Persistence
 
 #### LoggingAgent
 
@@ -160,19 +159,19 @@ Since messages arrive at a module one by-one, it is important to maintain state 
 		  THEN state=off  // if mode is auto
 		
 ```
-Persistence is handled automatically by the infrastructure. Underneath is a key-value data store that is used to save and restore module state. The key of each row includes the following:
+Persistence is handled automatically by the infrastructure. Underneath is a directory structure with a text file that is used to save and restore module state for each module and instance. 
 
- | Key Component        | Description |
- | ----------- | ----------- |
- | mode      | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
- | domain | The full domain name of the local SodaCan broker |
- | module | The module name |
- | instance | The instance key (for example, location of a light switch) |
- | variable | The name of the variable
+```
+	<agent working directory>
+		<mode name>
+			<domain name>
+				<module name>
+					<instanceName>.scc.json
+```
  
-The value associated with this key is, of course, the value in the variable.
+The content of the .scc.json file is a json representation of the module's variables, including the AST and source code of the module.
  
-Now, this key-value data store is completely redundant. Why? Because the variables in the module
+Now, this .scc.json file is completely redundant. Why? Because the variables in the module
 instance were populated by messages... and only messages. And, the messages that were consumed by a module that resulted in 
 the variables current values are still around (in the message bus)! 
 That means one way to restore the current state of a variable is to simply replay the message stream
@@ -181,15 +180,17 @@ into that module (the output of the module can be ignored during this recovery).
 So, the key-value store is really just there for performance reasons. It would take much longer to replay messages, 
 sequentially, in order to recover a module's state than to simply load state from an indexed database optimized for random access.
 
+The module agent creates a snapshot for the module periodically and stores it in the data store.
+
 The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. The flow of messages into a module might look like this:
 
 ```mermaid
 flowchart TB;
    subgraph MB[Message Bus]
         direction LR
-        a[variable a] -.- 
-        b[variable b] -.- 
-        c[module update] -.- 
+        a[variable a] -.-> 
+        b[variable b] -.-> 
+        c[module update] -.-> 
         d[variable c];
    end
     MB --> MA

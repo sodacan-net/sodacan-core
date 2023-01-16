@@ -12,12 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module;
-/**
- * An AT statement responds to the passage of time
- * @author John Churin
- *
- */
-public class AtStatement extends Statement {
+package net.sodacan.module.statement;
+
+public class PublishStatement extends Statement {
 
 }

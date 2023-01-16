@@ -22,8 +22,8 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
-import net.sodacan.module.ErrorComponent;
-import net.sodacan.module.SodacanModule;
+import net.sodacan.module.statement.ErrorComponent;
+import net.sodacan.module.statement.SodacanModule;
 
 public class SccErrorListener extends BaseErrorListener {
 	SodacanModule module;

@@ -12,10 +12,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module;
+package net.sodacan.module.statement;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
+public class OnStatement  extends Statement {
+
 }

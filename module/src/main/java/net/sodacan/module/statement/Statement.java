@@ -12,8 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module;
-
-public class OnStatement  extends Statement {
+package net.sodacan.module.statement;
+/**
+ * Abstract class for all statement types
+ * @author John Churin
+ *
+ */
+public abstract class Statement extends ModuleComponent {
 
 }

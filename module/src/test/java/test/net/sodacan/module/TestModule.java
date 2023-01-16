@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import net.sodacan.module.SodacanModule;
+import net.sodacan.module.statement.SodacanModule;
 
 public class TestModule {
 

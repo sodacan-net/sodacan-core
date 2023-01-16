@@ -51,7 +51,7 @@ import net.sodacan.compiler.SccParser.ToDateContext;
 import net.sodacan.compiler.SccParser.VarIdentifierContext;
 import net.sodacan.compiler.SccParser.WithIdentifierContext;
 import net.sodacan.compiler.SccParser.WithStatementContext;
-import net.sodacan.module.SodacanModule;
+import net.sodacan.module.statement.SodacanModule;
 /**
  * This listener does some semantic check. In a separate pass, we'll create the AST.
  * However, the nascent SodacanModule is partially populated and passed into this listener to 

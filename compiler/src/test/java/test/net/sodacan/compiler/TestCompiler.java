@@ -28,7 +28,7 @@ import java.util.stream.Stream;
 import org.junit.Test;
 
 import net.sodacan.compiler.ModuleCompiler;
-import net.sodacan.module.SodacanModule;
+import net.sodacan.module.statement.SodacanModule;
 
 public class TestCompiler {
     private static final String EXTENSION = ".scc";
