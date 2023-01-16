@@ -420,14 +420,14 @@ This example is simplified but it does explain the basic timer mechanism.
 What is actually happening? The `ON state.on` is saying: When the state variable transitions to  `on`, do the `THEN` statement that follows it.
 The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer that will send a message to the module (itself) which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an `ON state.on` that picks it up and its `THEN` says to set the `state` to `off`.
 
-> By the way: you'll notice a subtlety in the module compiler: the keyword `ON` begins a statement but it is no longer a keyword *within* the statement so you are free to use a state name such as `on` without conflict.  
+> You'll notice a subtlety in the module compiler: the keyword `ON` begins a statement but it is no longer a keyword *within* the statement so you are free to use a state name such as `on` without conflict.  
 
-By the way, if for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any other `WHEN`s in the module that react to that state change will trigger.
+Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages). This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).
 
-Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages. This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).
+> If for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any o`WHEN`s in the module that react to that state change will trigger as usual.
 
 ### Module Processing Cycle
-`ON` and `WHEN` statements may seem to work the same way. While it is true that the contents of the statement can look the same, the behavior is very different. During a processing cycle, the first 'AT' to match a change in the module state "wins" and all other `AT`s are ignored for that cycle. Conversely, all of the `WHEN` that *match* during that same cycle are executed. 
+`ON` and `WHEN` statements may seem to work the same way. While it is true that the contents of the statement can look the same, the behavior is very different. During a processing cycle, the first 'AT' to match a change in the module state "wins" and all other `AT`s are ignored for that cycle. Conversely, *all* of the `WHEN`s that *match* during that same cycle are executed. 
 
 > In a procedural language, the `ON`s are like a series of `IF THEN ELSE` statements and the `WHEN`s are like a series of `IF THEN` statements following the `IF THEN ELSE` statements.
 
