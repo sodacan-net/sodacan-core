@@ -181,16 +181,28 @@ into that module (the output of the module can be ignored during this recovery).
 So, the key-value store is really just there for performance reasons. It would take much longer to replay messages, 
 sequentially, in order to recover a module's state than to simply load state from an indexed database optimized for random access.
 
-The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. The message stream might look like this:
+The final aspect of module persistence is the module "code" itself. When a new version of a module is compiled and then deployed, it is published as a message which the agent hosting the module intercepts and replaces the existing module code. This has a very nice effect: the point at which a module was changed in the stream of messages it processes is preserved in the message stream. In other words, a full audit trail is created. It also means that there is no need to manually deploy new modules as they are created or modified. The flow of messages into a module might look like this:
 
 ```mermaid
-flowchart LR;
-    variable a --> variable b --> module update --> variable a;
+flowchart TB;
+   subgraph MB[Message Bus]
+        direction LR
+        a[variable a] -.- 
+        b[variable b] -.- 
+        c[module update] -.- 
+        d[variable c];
+   end
+    MB --> MA
+   subgraph MA[Module Agent]
+        direction TB
+        e[module]<-- Save/Restore -->ds[data store]
+    end
+
 ```
 
 So, the module code itself is also stored in this data store under the special variable name `%%code%%` with a null instance key.
 
-The SodaCan agent is free to completely remove rarely used Modules from memory and restore them as messages arrive.
+The SodaCan agent is free to completely remove rarely used Modules from memory and restore the module's variables as messages arrive.
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
