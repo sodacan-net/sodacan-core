@@ -18,10 +18,36 @@ package net.sodacan.module.variable;
  * @author John Churin
  */
 public abstract class Variable {
-	String name;
-	boolean changedInCycle;
-	
+	private String name;
+	private boolean changedInCycle;
+	protected enum variableType {publishVariable,subscribeVariable,privateVariable,module};
+
+	public Variable() {
+		
+	}
+
 	public void resetChanged() {
 		changedInCycle = false;
 	}
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof Variable) {
+			Variable other = (Variable)obj;
+			if (name.equalsIgnoreCase(other.name)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	@Override
+	public int hashCode() {
+		return name.hashCode();
+	}
+	
+	@Override
+	public String toString() {
+		return name;
+	}
+	
+	
 }

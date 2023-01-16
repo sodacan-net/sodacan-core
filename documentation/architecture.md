@@ -201,9 +201,9 @@ flowchart TB;
 
 ```
 
-So, the module code itself is also stored in this data store under the special variable name `%%code%%` with a null instance key.
+So, the module code itself is also stored in this data store under the special variable name `%%code%%`
 
-The SodaCan agent is free to completely remove rarely used Modules from memory and restore the module's variables as messages arrive.
+The SodaCan agent is free to completely remove rarely used modules from memory and restore the module's code and variables as messages arrive.
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
