@@ -28,7 +28,7 @@ Components of this system communicate using publish/subscribe semantics. You sho
 ```mermaid
 flowchart LR;
     A[Message Bus] -. subscribe .-> B[Component];
-    C[Component] -. publish .-> B[Message Bus];
+    B[Component] -. publish .-> A[Message Bus];
 ```
 
 
