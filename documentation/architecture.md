@@ -306,7 +306,7 @@ Here is an over-simplified example of an individual button that is not an instan
 		    THEN mode["hallway"].auto
 ```
 
-If a module can be useful for many different devices but the behavior of each device is the same, then rather than making copies of the module with s slight name change, the module can be written to have module instances.  
+If a module can be useful for many different devices but the behavior of each device is the same, then rather than making copies of the module with a slight name change, the module can be written to have module instances.  
 When a module has instances, a mechanism is needed to create and keep track of such instances. Here is an example of a module that has instances. In this case, location is what differentiates each instance. And you'll notice that the `SUBSCRIBE` statement shown is qualified by the name of the instance. In other words, that subscription will listen for messages by location (with a variable name of `event`.
 
 ```
@@ -317,7 +317,7 @@ When a module has instances, a mechanism is needed to create and keep track of s
 		...
 			
 ```
-Instance creation is done by the command-line interface, the SodacanAPI or the web-based control panel. You cannot create an instance from a module.
+Instance creation is done by the command-line interface, the SodacanAPI or the browser-based control panel. You cannot create an instance from a module.
 However, the creation process, as usual, is done via message and we can be notified after the new instance is created:
 For that, you simply subscribe to the instance event. In this case, named "location". This event is sent to the module itself, not an instance.
 
@@ -329,8 +329,28 @@ For that, you simply subscribe to the instance event. In this case, named "locat
 		ON event.toggle
 		...
 		ON location			// Respond to a new instance being created
-		    THE state.off
+		    THEN state.off
 		    THEN print(location)
+			
+```
+
+Now, a module can also keep and publish variables and messages module-wide. Think of the module as having a special instance that represents the whole module (A 'static' variable in some languages). But there's a problem: SodaCan never allows peeking into another module which means no peeking into another instance. To solve this problem, we simply send a hidden message from one instance to another including from the top-level instance to it's instances. This is all handled transaparently.
+
+Why so strict even in this situation? Because all instances of one module, including the top-level module, don't necessarily run in the same agent and maybe not even the same server. 
+
+This approach works great when the top-level module makes a change that needs to be propagated to the children. 
+However, children to parent is not so obvious. Basically, this should be avoided unless the purpose is to collect statistics such as a count. From an instance, in the following. When the 'count` variable is modified, it is broadcast, as usual. 
+
+
+```
+	MODULE lamp[location]
+		SUBSCRIBE state[location] {off,on}
+		SUBSCRIBE new.location	  // Respond to a new instance being created
+		PUBLISH count 0			  // published by the top-level module
+		SUBSCRIBE count[location]  // received by each instance
+		ON new.location
+			THEN count++
+		...
 			
 ```
  
@@ -342,7 +362,7 @@ Conceptually, it looks like this (but don't try this at home). The lines with * 
 	MODULE lamp
 		*PUBLISH AtNoonOnFridays
 		...
-		AT noon ON fridays // Raise an event at noon on Fridays
+		AT noon ON Fridays // Raise an event at noon on Fridays
 			*THEN activate(AtNoonOnFridays)
 			THEN ... what happens at noon on Fridays
 		*ON AtNoonOnFridays
@@ -352,7 +372,7 @@ Conceptually, it looks like this (but don't try this at home). The lines with * 
 
 Here's how this works in Sodacan: Unlike `ON` statements, which respond to explicit messages, `AT`statements are simply watching a clock looking for a match. To make these time-based events auditable and reproducible, the `AT` statements do watch the clock, but when one matches, it doesn't take action directly. Rather, a special message is sent to the module (itself) which then reacts as if it were an `ON` statement (This special message is invisible to the module author).
 
-1. "AT noon ON Fridays" matches the current time (it is noon and it is a Friday). 
+1. "AT noon ON Fridays" matches the current time (it *is* noon and it *is* a Friday). 
 2. The agent running the module constructs and sends a special message with the id of the matching `AT` statement. 
 3. The special message is then processed as usual a moment later. Should the module currently be busy with a different message, then the special message will be processes after that one is done. At this point, `ON` message flow and `AT` message flow have been synchronized.
 4. When the special message is processed but the module, the `THEN` statement of the corresponding `AT` is executed. If there is a `WHEN` statement as part of the `AT` statement, it is also evaluated and may result in the special message being ignored.
@@ -360,8 +380,7 @@ Here's how this works in Sodacan: Unlike `ON` statements, which respond to expli
 
 Then, when needed, there is a complete audit trail in the message stream including hard `ON` events and timed `AT` events in the order in which they were processed.
 
-#### ALERT: Race Condition
-The special message originates from an instance of the module which may be different from the instance of the module when the special message is processed, due to an intervening update to the module. The time gap is very small and their are most likely no ill effects with one exception: If updating a module results in a deletion of the AT statement, then the special message has nothing to match and will simply be dropped. It would be ice to insure that the special message could synchronously get in front of the queue, but that's not how message serialization works.
+> Race Condition (not a bug): The special message originates from an instance of the module which may be different from the instance of the module when the special message is processed, due to an intervening update to the module. The time gap is very small and their are most likely no ill effects with one exception: If updating a module results in a deletion of the AT statement, then the special message has nothing to match and will simply be dropped. It would be nice to insure that the special message could synchronously get in front of the queue, but that's not how message serialization works.
  
 ### Module Instance Time
 
@@ -386,23 +405,31 @@ A timer is used when an action is to be taken in the future. And in many cases, 
 		SUBSCRIBE livingRoom.motion AS motion
 		TIMER offTimer 30 minutes
 		...
-		ON offTimer
-			THEN state.off
+		ON offTimer					// If we get a message from the offTimer
+			THEN state.off				// Turn the light off
 		ON state.on					// When state becomes on	
 			THEN offTimer.start 		// Set a timer to turn it off
-		ON state.off					// When lamp1 goes off, time is no longer needed
-			THEN offTimer.cancel
 		ON motion						// On motion, reset the timer
 			THEN offTimer.reset
+		WHEN state.off					// When lamp1 goes off, time is no longer needed
+			THEN offTimer.cancel
 ```
+
 This example is simplified but it does explain the basic timer mechanism.
 
-What is actually happening? The `WHEN` is saying: When the state variable transitions to  on, do the `THEN` statement.
-The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer witch will send a message to the module which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an on that picks it up and its `THEN` says to set the `state` to `off` 
+What is actually happening? The `ON state.on` is saying: When the state variable transitions to  `on`, do the `THEN` statement that follows it.
+The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer that will send a message to the module (itself) which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an `ON state.on` that picks it up and its `THEN` says to set the `state` to `off`.
+
+> By the way: you'll notice a subtlety in the module compiler: the keyword `ON` begins a statement but it is no longer a keyword *within* the statement so you are free to use a state name such as `on` without conflict.  
 
 By the way, if for any reason the state is already "off" when the `OffTimer` message is processed, then the `state.off` action has no effect. If the state does transition to off, then any other `WHEN`s in the module that react to that state change will trigger.
 
 Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages. This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).
+
+### Module Processing Cycle
+`ON` and `WHEN` statements may seem to work the same way. While it is true that the contents of the statement can look the same, the behavior is very different. During a processing cycle, the first 'AT' to match a change in the module state "wins" and all other `AT`s are ignored for that cycle. Conversely, all of the `WHEN` that *match* during that same cycle are executed. 
+
+> In a procedural language, the `ON`s are like a series of `IF THEN ELSE` statements and the `WHEN`s are like a series of `IF THEN` statements following the `IF THEN ELSE` statements.
 
 ### Module Instance Topic
 How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
