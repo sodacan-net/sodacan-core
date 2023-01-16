@@ -2,17 +2,20 @@ parser grammar SccParser;
 
 options { tokenVocab = SccLexer; }
 start
-	:  module statements EOF	#EofStatement
+	:  module statements EOF	#ModuleStatement
 	;
 
 module
-	: MODULE moduleIdentifier ModEOL
+	: MODULE moduleName moduleInstance? (ModEOL|EOL)
 	;
 
-moduleIdentifier
+moduleName
 	: ModID
 	;
-			
+moduleInstance
+	: ModLBRACKET ModID ModRBRACKET
+	;
+				
 statements
 	: statement* 				#statementList
 	; 
@@ -28,30 +31,33 @@ statement
 	;
 	
 topicStatement
-	: TOPIC varIdentifier varType VarEOL
+	: TOPIC varIdentifier varType (VarEOL|EOF)
 	;
 
 timerStatement
-	: TIMER varIdentifier VarEOL
+	: TIMER varIdentifier (VarEOL|EOF)
 	;
 	
 publishStatement
-	: PUBLISH varIdentifier varType (VarAS varIdentifier) VarEOL
+	: PUBLISH varIdentifier varType (VarAS varIdentifier)? (VarEOL|EOF)
 	;
 
 subscribeStatement
-	: SUBSCRIBE varIdentifier varType (VarAS varIdentifier) VarEOL
+	: SUBSCRIBE varIdentifier varType (VarAS varIdentifier)? (VarEOL|EOF)
 	;
 
 privateStatement
-	: PRIVATE varIdentifier varType VarEOL
+	: PRIVATE varIdentifier varInstance? varType (VarEOL|EOF)
 	;
-
 
 varIdentifier
-	: VarID
+	: VarID (VarDOT VarID)*
 	;
 
+varInstance
+	: VarLBRACKET VarID VarRBRACKET
+	;
+	
 varType
 	: varEnum
 	| varInt
@@ -81,11 +87,11 @@ varEVENT
 	;
 	
 atStatement
-	: AT dayExpression dateExpression? dateRange AtEOL 
+	: AT dayExpression dateExpression? dateRange (AtEOL|EOF) 
 	;
 
 onStatement
-	: ON onExpression OnEOL 
+	: ON onExpression (OnEOL|EOF) 
 	;
 
 onExpression
@@ -97,7 +103,7 @@ onIdentifier
 	;
 		
 withStatement
-	: WITH withExpression WithEOL
+	: WITH withExpression (WithEOL|EOF)
 	;
 
 withExpression
@@ -113,7 +119,7 @@ withIdentifier
 	;
 
 thenStatement
-	: THEN thenExpression ThenEOL
+	: THEN thenExpression (ThenEOL|EOF)
 	;
 
 thenExpression
@@ -129,7 +135,7 @@ thenIdentifier
 	;
 
 sendStatement
-	: SEND sendExpression SendEOL
+	: SEND sendExpression (SendEOL|EOF)
 	;
 
 sendExpression

@@ -22,11 +22,11 @@ import net.sodacan.compiler.SccParser.DateExpressionContext;
 import net.sodacan.compiler.SccParser.DateRangeContext;
 import net.sodacan.compiler.SccParser.DayContext;
 import net.sodacan.compiler.SccParser.DowContext;
-import net.sodacan.compiler.SccParser.EofStatementContext;
 import net.sodacan.compiler.SccParser.FromDateContext;
 import net.sodacan.compiler.SccParser.HolidayContext;
 import net.sodacan.compiler.SccParser.ModuleContext;
-import net.sodacan.compiler.SccParser.ModuleIdentifierContext;
+import net.sodacan.compiler.SccParser.ModuleNameContext;
+import net.sodacan.compiler.SccParser.ModuleStatementContext;
 import net.sodacan.compiler.SccParser.OnIdentifierContext;
 import net.sodacan.compiler.SccParser.OnStatementContext;
 import net.sodacan.compiler.SccParser.OrWithContext;
@@ -51,14 +51,21 @@ import net.sodacan.compiler.SccParser.ToDateContext;
 import net.sodacan.compiler.SccParser.VarIdentifierContext;
 import net.sodacan.compiler.SccParser.WithIdentifierContext;
 import net.sodacan.compiler.SccParser.WithStatementContext;
-
+import net.sodacan.module.SodacanModule;
+/**
+ * This listener does some semantic check. In a separate pass, we'll create the AST.
+ * However, the nascent SodacanModule is partially populated and passed into this listener to 
+ * support the semantic checks.
+ * @author john
+ *
+ */
 public class SccListener extends SccParserBaseListener {
 
-	SccParser parser;
-	String filename;
-	public SccListener( SccParser parser, String filename ) {
+	protected SodacanModule module;
+	protected SccParser parser;
+	public SccListener( SccParser parser, SodacanModule module ) {
 		this.parser = parser;
-		this.filename = filename;
+		this.module = module;
 	}
 
 	
@@ -70,22 +77,35 @@ public class SccListener extends SccParserBaseListener {
 
 
 	@Override
-	public void exitModuleIdentifier(ModuleIdentifierContext ctx) {
+	public void exitModuleName(ModuleNameContext ctx) {
 		System.out.print(" ");
 		final String moduleName = ctx.getText();
-		final String extendedModuleName = moduleName + ".scc";
+		// Load up the module name
+		module.setName(moduleName);
+		// Do an additional check that the file name is the same as the module name
+		if (module.getOriginalFileName()!=null) {
+			int sc = module.getOriginalFileName().indexOf('.');
+			String fileName;
+			if (sc>0) {
+				fileName = module.getOriginalFileName().substring(0, sc);
+			} else {
+				fileName = module.getOriginalFileName();
+
+			}
+			if (!module.getName().equalsIgnoreCase(fileName)) {
+				parser.notifyErrorListeners("The file name " + module.getOriginalFileName() + " and module name " + module.getName() + " must be the same");
+			}
+		}
+
 		System.out.print(moduleName);
 		System.out.println();
-		if (!extendedModuleName.contentEquals(filename)) {
-			parser.notifyErrorListeners("The file name " + filename + " and module name " + moduleName + " must be the same");
-		}
-		super.exitModuleIdentifier(ctx);
+		super.exitModuleName(ctx);
 	}
 
 	@Override
-	public void exitEofStatement(EofStatementContext ctx) {
+	public void exitModuleStatement(ModuleStatementContext ctx) {
 		System.out.println("\nEnd Of Module");
-		super.exitEofStatement(ctx);
+		super.exitModuleStatement(ctx);
 	}
 
 

@@ -74,6 +74,14 @@ VarRBRACE
 	: '}'
 	;
 	
+VarLBRACKET
+	: '['
+	;
+
+VarRBRACKET
+	: ']'
+	;
+
 VarTRUE
 	: 'TRUE'
 	;
@@ -113,6 +121,14 @@ VarWS
 
 
 mode ModuleMode;
+
+ModLBRACKET
+	: '['
+	;
+
+ModRBRACKET
+	: ']'
+	;
 
 ModID
 	: [a-z][a-z0-9]* 

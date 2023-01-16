@@ -23,6 +23,7 @@ import net.sodacan.compiler.SccParser.DowContext;
 import net.sodacan.compiler.SccParser.DurationExpressionContext;
 import net.sodacan.compiler.SccParser.FromDateContext;
 import net.sodacan.compiler.SccParser.HolidayContext;
+import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.MonthContext;
 import net.sodacan.compiler.SccParser.OnIdentifierContext;
 import net.sodacan.compiler.SccParser.RelativeTimeExpressionContext;
@@ -39,33 +40,40 @@ import net.sodacan.compiler.SccParser.ToDateContext;
 import net.sodacan.compiler.SccParser.WithIdentifierContext;
 import net.sodacan.compiler.SccParser.WithStatementContext;
 import net.sodacan.compiler.SccParser.YearContext;
+import net.sodacan.module.ModuleComponent;
+import net.sodacan.module.SodacanModule;
 
-public class SccVisitor extends SccParserBaseVisitor<Void> {
+public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
+
+	protected SodacanModule module;
+
+	public SccModuleVisitor(SodacanModule module) {
+		this.module = module;
+	}
+	
+	public SodacanModule getModule() {
+		return module;
+	}
 
 	@Override
-	public Void visitStatementList(StatementListContext ctx) {
+	public ModuleComponent visitModule(ModuleContext ctx) {
+		ctx.moduleName();
+		if (ctx.moduleInstance()!=null) {
+			module.setInstanceName(ctx.moduleInstance().getText());
+		}
+		return super.visitModule(ctx);
+	}
+
+	@Override
+	public ModuleComponent visitStatementList(StatementListContext ctx) {
 		for (StatementContext sc : ctx.statement()) {
 			visit(sc);
 		}
 		return null;
 	}
 
-//	@Override
-//	public Void visitEventStatement(EventStatementContext ctx) {
-//		System.out.print("Event ");
-//		System.out.println();
-//		return null;
-//	}
-//
-//	
-//	@Override
-//	public Void visitEventBooleanExpression(EventBooleanExpressionContext ctx) {
-//		System.out.print(ctx.getText());
-//		return null;
-//	}
-
 	@Override
-	public Void visitAtStatement(AtStatementContext ctx) {
+	public ModuleComponent visitAtStatement(AtStatementContext ctx) {
 		System.out.print("AT");
 		visit(ctx.dayExpression());
 		if (ctx.dateExpression()!=null) {
@@ -79,7 +87,7 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 	
 	@Override
-	public Void visitWithStatement(WithStatementContext ctx) {
+	public ModuleComponent visitWithStatement(WithStatementContext ctx) {
 		System.out.print("  WITH");
 		visit(ctx.withExpression());
 		System.out.println();
@@ -87,7 +95,7 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitThenStatement(ThenStatementContext ctx) {
+	public ModuleComponent visitThenStatement(ThenStatementContext ctx) {
 		System.out.print("  THEN");
 		visit(ctx.thenExpression());
 		System.out.println();
@@ -95,7 +103,7 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitSendStatement(SendStatementContext ctx) {
+	public ModuleComponent visitSendStatement(SendStatementContext ctx) {
 		System.out.print("  SEND");
 		visit(ctx.sendExpression());
 		System.out.println();
@@ -103,19 +111,19 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitWithIdentifier(WithIdentifierContext ctx) {
+	public ModuleComponent visitWithIdentifier(WithIdentifierContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 	@Override
-	public Void visitOnIdentifier(OnIdentifierContext ctx) {
+	public ModuleComponent visitOnIdentifier(OnIdentifierContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 	@Override
-	public Void visitDayExpression(DayExpressionContext ctx) {
+	public ModuleComponent visitDayExpression(DayExpressionContext ctx) {
 		if (ctx.durationExpression()!=null) {
 			visit(ctx.durationExpression());
 		}
@@ -125,13 +133,13 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitRelativeTimeExpression(RelativeTimeExpressionContext ctx) {
+	public ModuleComponent visitRelativeTimeExpression(RelativeTimeExpressionContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return super.visitRelativeTimeExpression(ctx);
 	}
 
 	@Override
-	public Void visitDurationExpression(DurationExpressionContext ctx) {
+	public ModuleComponent visitDurationExpression(DurationExpressionContext ctx) {
 		System.out.print(" ");
 		System.out.print(ctx.quantity().getText());
 		System.out.print(" ");
@@ -141,27 +149,27 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitTimeUnitExpression(TimeUnitExpressionContext ctx) {
+	public ModuleComponent visitTimeUnitExpression(TimeUnitExpressionContext ctx) {
 		System.out.print(ctx.getText());
 		return null;
 	}
 
 
 	@Override
-	public Void visitTime(TimeContext ctx) {
+	public ModuleComponent visitTime(TimeContext ctx) {
 //		System.out.print(ctx.getText());
 		return null;
 	}
 
 
 	@Override
-	public Void visitSpecificTimeExpression(SpecificTimeExpressionContext ctx) {
+	public ModuleComponent visitSpecificTimeExpression(SpecificTimeExpressionContext ctx) {
 		System.out.print(ctx.getText());
 		return super.visitSpecificTimeExpression(ctx);
 	}
 
 	@Override
-	public Void visitDateExpression(DateExpressionContext ctx) {
+	public ModuleComponent visitDateExpression(DateExpressionContext ctx) {
 		if (ctx.date().size()!=0) {
 			System.out.print(" ON");
 		}
@@ -172,42 +180,42 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
-	public Void visitFromDate(FromDateContext ctx) {
+	public ModuleComponent visitFromDate(FromDateContext ctx) {
 		System.out.print(" FROM");
 		return super.visitFromDate(ctx);
 	}
 
 	@Override
-	public Void visitToDate(ToDateContext ctx) {
+	public ModuleComponent visitToDate(ToDateContext ctx) {
 		System.out.print(" THROUGH");
 		return super.visitToDate(ctx);
 	}
 
 	@Override
-	public Void visitYear(YearContext ctx) {
+	public ModuleComponent visitYear(YearContext ctx) {
 		System.out.print(", " + ctx.AtINT().getText());
 		return null;
 	}
 
 	@Override
-	public Void visitMonth(MonthContext ctx) {
+	public ModuleComponent visitMonth(MonthContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 	@Override
-	public Void visitDay(DayContext ctx) {
+	public ModuleComponent visitDay(DayContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 	@Override
-	public Void visitDate(DateContext ctx) {
+	public ModuleComponent visitDate(DateContext ctx) {
 		return super.visitDate(ctx);
 	}
 
 	@Override
-	public Void visitSpecificDate(SpecificDateContext ctx) {
+	public ModuleComponent visitSpecificDate(SpecificDateContext ctx) {
 		visit(ctx.month());
 		if (ctx.day()!=null) {
 			visit(ctx.day());
@@ -220,21 +228,21 @@ public class SccVisitor extends SccParserBaseVisitor<Void> {
 
 
 	@Override
-	public Void visitDow(DowContext ctx) {
+	public ModuleComponent visitDow(DowContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 
 	@Override
-	public Void visitHoliday(HolidayContext ctx) {
+	public ModuleComponent visitHoliday(HolidayContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}
 
 
 	@Override
-	public Void visitSeason(SeasonContext ctx) {
+	public ModuleComponent visitSeason(SeasonContext ctx) {
 		System.out.print(" " + ctx.getText());
 		return null;
 	}

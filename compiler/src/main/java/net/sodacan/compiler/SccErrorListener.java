@@ -22,24 +22,33 @@ import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;
 import org.antlr.v4.runtime.Recognizer;
 
+import net.sodacan.module.ErrorComponent;
+import net.sodacan.module.SodacanModule;
+
 public class SccErrorListener extends BaseErrorListener {
+	SodacanModule module;
+	public SccErrorListener(SodacanModule module) {
+		this.module = module;
+	}
 
 	@Override
 	public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
 			String msg, RecognitionException e) {
 		List<String> stack = ((SccParser)recognizer).getRuleInvocationStack();
 		Collections.reverse(stack);
-//		if (offendingSymbol instanceof CommonToken) {
-//			CommonToken t = (CommonToken)offendingSymbol;
-//			
+		String symbol = null;
+		if (offendingSymbol instanceof CommonToken) {
+			CommonToken t = (CommonToken)offendingSymbol;
+			symbol = t.getText();
 //			System.out.println("**" + t);
-////			String src = t.getInputStream().;
-//
-//		}
+//			String src = t.getInputStream().;
+
+		}
 		System.err.print("\nRule stack: "+stack);
 		System.err.println();
 		System.err.print(recognizer.getInputStream().getSourceName());
 		System.err.print(" line "+line+":"+charPositionInLine + ": " + msg);
+		module.addError(new ErrorComponent(line,charPositionInLine, stack, msg, symbol, e));
 		super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
 	}
 

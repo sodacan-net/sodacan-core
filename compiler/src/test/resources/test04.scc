@@ -1,0 +1,6 @@
+// SUBSCRIPTION that applies to the class (only one mode variable)
+MODULE test04[location]
+	SUBSCRIBE mode {off,on}
+	AT 10 minutes before sunset
+	  THEN blow.nose
+	  

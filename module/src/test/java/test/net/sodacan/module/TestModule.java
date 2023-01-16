@@ -4,13 +4,13 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import net.sodacan.module.Module;
+import net.sodacan.module.SodacanModule;
 
 public class TestModule {
 
 	@Test
 	public void test() {
-		Module module = new Module();
+		SodacanModule module = new SodacanModule();
 	}
 
 }

@@ -13,11 +13,9 @@
  * limitations under the License.
  */
 package net.sodacan.module;
-/**
- * Abstract class for all statement types
- * @author John Churin
- *
- */
-public abstract class Statement extends ModuleComponent {
 
+public abstract class ModuleComponent {
+	int lineNumber;
+	int characterPosition;
+	
 }

@@ -259,7 +259,7 @@ Processing then continues to the `WHEN` statements. These `WHEN` statements are 
 	->	  THEN log("Lamp is on")	// Say so
 		  
 ```
-The "lamp is on" message is duplicated. Cleaning this up with a `WHEN`
+The "lamp is on" message is duplicated in the example above. We can  up with a `WHEN`in the example below. It will send a message regardless of which condition caused the state variable to change.
 
 ```
 	MODULE lamp1
@@ -280,51 +280,62 @@ The "lamp is on" message is duplicated. Cleaning this up with a `WHEN`
 The passage of time may not trigger any `ON` statements. That's normal. However, for messages, if no matching `ON` statement is found, then an error is thrown. Why? When a `module` subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the `SUBSCRIBE` is wrong or the `ON`s are wrong or missing. 
 
 ### Module Instance
-When a module has instances, a mechanism must be devised to create such instances. Instance creation is done by the Module under which the instances will exist. Here's an example of a module that has instances, in this case, location. And you'll notice that the `SUBSCRIPTION` statement shown is qualified by the instance. In other words, that subscription will listen for messages by location (with a variable name of `event`.
+The examples so far are typically called lamp1, lamp2, etc. suggesting that a different module definition is needed for each device, even if the behavior of all of the devices so numbered are identical. An alternate is to define a module with instances. That is simple enough. Here is an example:
 
 ```
 	MODULE lamp[location]
-		SUBSCRIPTION event[location] {toggle}
+		SUBSCRIBE mode[location] {off,auto,on}	
+		...
+			
+```
+One module definition that handles all devices of a certain type.
+
+In this example, we made the following changes:
+
+1. Change the name of the module to `lamp` (this just looks cleaner, SodaCan doesn't care what you call a module as long as it is unique),
+2. Add the square brackets on the module line. This indicates that the module supports multiple instances. 
+3. The name of a variable in the square brackets will be used to differentiate between different instances. 
+4. It also means that messages we want to subscribe to must specify the location.  For example, another module that represents an individual button will need to publish a message that contains the location in addition to naming the variable to publish.
+
+Here is an over-simplified example of an individual button that is not an instance-based module. But you'll see that when it is ready to publish an event, the message will specify the location. In this case, "hallway".
+
+```
+	MODULE button3					// A specific button
+		PUBLISH mode[location] {off,auto,on}
+		...
+		    THEN mode["hallway"].auto
+```
+
+If a module can be useful for many different devices but the behavior of each device is the same, then rather than making copies of the module with s slight name change, the module can be written to have module instances.  
+When a module has instances, a mechanism is needed to create and keep track of such instances. Here is an example of a module that has instances. In this case, location is what differentiates each instance. And you'll notice that the `SUBSCRIBE` statement shown is qualified by the name of the instance. In other words, that subscription will listen for messages by location (with a variable name of `event`.
+
+```
+	MODULE lamp[location]
+		SUBSCRIBE event[location] {toggle}
 		...
 		ON event.toggle
 		...
 			
 ```
-In order to safely create an instance, a message will be published that this module will listen for and create the instance. To do that, we add another `SUBSCRIPTION` and `ON` as follows:
+Instance creation is done by the command-line interface, the SodacanAPI or the web-based control panel. You cannot create an instance from a module.
+However, the creation process, as usual, is done via message and we can be notified after the new instance is created:
+For that, you simply subscribe to the instance event. In this case, named "location". This event is sent to the module itself, not an instance.
 
 ```
 	MODULE lamp[location]
-		SUBSCRIPTION event[location] {toggle}
-		SUBSCRIPTION instance
+		SUBSCRIBE state[location] {off,on}
+		SUBSCRIBE location	// Respond to a new instance being created
 		...
 		ON event.toggle
 		...
-		ON instance
-			THEN create(instance)
-		...
-			
-```
-The `instance` subscription in this case does not mention location meaning that the message is handled by the module itself, not one of its instances. 
-The `create` function is what creates the new instance. Typically, nothing else should happen as a consequence of this event since there is no instance in this cycle. However, it is possible to populate other non-instance oriented variables. For example, we could keep a count of instances created:
-
-
-```
-	MODULE lamp[location]
-		SUBSCRIPTION event[location] {toggle}
-		SUBSCRIPTION instance
-		PRIVATE instanceCount 0
-		...
-		ON event.toggle
-		...
-		ON instance
-			THEN create(instance)
-			THEN instanceCount++
-		...
+		ON location			// Respond to a new instance being created
+		    THE state.off
+		    THEN print(location)
 			
 ```
  
 ### Module Time
-The passage of time is important to automation problem. Within a module, the `AT` statement demonstrates the need for time based events, however, the infrastructure has a huge responsibility to interpret the requirements and respond accordingly. And do it efficiently. One particularly complex aspect is being able to reproduce the passage of time in the future. In other words, we need to be able to look back in time and see that an `AT` event was actually triggered. 
+Detecting the passage of time is often important for automation problems. Within a module, the `AT` statement demonstrates the need for time based events, however, the infrastructure has the responsibility to interpret the requirements specified in a module and respond accordingly. And do it efficiently. One particularly complex aspect is being able to reproduce the passage of time in the future. In other words, we need to be able to look back in time and see that an `AT` event was actually triggered. 
 Conceptually, it looks like this (but don't try this at home). The lines with * are imaginary.
 
 ```

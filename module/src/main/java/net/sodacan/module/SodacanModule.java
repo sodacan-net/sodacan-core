@@ -22,9 +22,12 @@ import java.util.List;
  * @author John Churin
  *
  */
-public class Module {
+public class SodacanModule {
 	String name;
 	String instanceName;
+	String source;
+	String originalFileName;
+	
 	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of SodaCan 
 	// means the order of statements is unimportant.
 	List<PublishStatement> publishStatements = new ArrayList<>();
@@ -32,7 +35,15 @@ public class Module {
 	List<AtStatement> atStatements = new ArrayList<>();
 	List<OnStatement> onStatements = new ArrayList<>();
 	List<WhenStatement> whenStatements = new ArrayList<>();
-
+	List<ErrorComponent> errors = new ArrayList<>();
+	
+	public SodacanModule() {
+		
+	}
+	
+	public void addError(ErrorComponent error) {
+		errors.add(error);
+	}
 	/**
 	 * Add statements to the module
 	 * @param statement
@@ -54,5 +65,77 @@ public class Module {
 			whenStatements.add((WhenStatement)statement);
 		}
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public String getInstanceName() {
+		return instanceName;
+	}
+
+	public void setInstanceName(String instanceName) {
+		this.instanceName = instanceName;
+	}
+
+	public String getSource() {
+		return source;
+	}
+	public void setSource(String source) {
+		this.source = source;
+	}
+	
+	
+	public String getOriginalFileName() {
+		return originalFileName;
+	}
+	public void setOriginalFileName(String originalFileName) {
+		this.originalFileName = originalFileName;
+	}
+
+	
+	public List<PublishStatement> getPublishStatements() {
+		return publishStatements;
+	}
+
+	public List<SubscribeStatement> getSubscribeStatements() {
+		return subscribeStatements;
+	}
+
+	public List<AtStatement> getAtStatements() {
+		return atStatements;
+	}
+
+	public List<OnStatement> getOnStatements() {
+		return onStatements;
+	}
+
+	public List<WhenStatement> getWhenStatements() {
+		return whenStatements;
+	}
+
+	public List<ErrorComponent> getErrors() {
+		return errors;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof SodacanModule) {
+			SodacanModule other = (SodacanModule) obj;
+			if (getName()==null) return false;
+			return (getName().contentEquals(other.getName()));
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return getName().hashCode();
+	}
+	
 	
 }
