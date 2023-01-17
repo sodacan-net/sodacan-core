@@ -3,7 +3,7 @@ This Web Server hosts static web pages and the RESTful API (which in turn used t
 
 The RESTful API is used by the static pages and can also be used instead of the SodaCan API for message input and output to programs that might otherwise not be able to communicate over ports other than HTTP and HTTPS.
 
-### Page Layout
+### Web Page Layout
 The primary User Interface is broken down into these sections:
 
 #### User Account
@@ -35,3 +35,9 @@ In SodaCan, sessions usually don't time out (log out automatically).
 
 ### Authorization
 The system administrator can assign specific permissions to individual users.
+
+### Implementation
+HTML is served statically. The pages access the SodaCan RESTful API. Many aspects of the user interface are updated dynamically using Server Sent Events (SSE). No polling needed. This provides a relatively low bandwidth means of displaying the current state of modules. A page opens a single "subscription" channel to the server which in turn sends module definitions (JSON SodaCan module AST format) and variable updates. 
+
+Bootstrap and JQuery are used extensively in the HTML pages.
+
