@@ -23,12 +23,33 @@ public abstract class Variable {
 	protected enum variableType {publishVariable,subscribeVariable,privateVariable,module};
 
 	public Variable() {
-		
+		super();
 	}
 
+	public Variable(String name) {
+		super();
+		this.name = name;
+	}
 	public void resetChanged() {
 		changedInCycle = false;
 	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public boolean isChangedInCycle() {
+		return changedInCycle;
+	}
+
+	public void setChangedInCycle(boolean changedInCycle) {
+		this.changedInCycle = changedInCycle;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof Variable) {

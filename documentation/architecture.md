@@ -95,11 +95,12 @@ The SodaCan command line tool provides a number of administrative functions incl
 The web server provides the same capabilities as the command line tool but in a graphical format. It also includes a dashboard for monitoring a running system. It uses the SodaCan API. The web server is also what exposes the SodaCan RESTful API. SodaCan uses static web pages, which it serves, which in turn call the same APIs which remote applications can use independent of web page, subject to authentication and authorization.
 
 #### Message Bus
-The Message Bus is a wrapper around Apache Kafka. Kafka is accessed only through Kafka's client APIs. An existing Kafka (and Zookeeper) installation can be used if necessary. A docker-based Kafka installation is also usable but be certain to externalize the storage. The message bus wrapper (in Java) is needed to support the stand alone configuration and for unit testing SodaCan core code. It also allows plugin of an alternate message bus although no such plugins are available, yet.
+The Message Bus is a wrapper around Apache Kafka. Kafka is accessed only through Kafka's client APIs. An existing Kafka (and Zookeeper) installation can be used if necessary. A docker-based Kafka installation is also usable but be certain to externalize the message storage. The message bus wrapper (in Java) is needed to support the stand alone configuration and for unit testing SodaCan core code. It also allows plugin of an alternate message bus although no such plugins are available in SodaCan, yet.
 
 The message bus in SodaCan is responsible for reliably storing messages for however long is needed. This is the primary means of storage in SodaCan. Messages are the official "source of truth" in SodaCan. The other data stores such as module persistence can be recovered by replaying messages. When the Message Bus is Kafka, each Kafka broker stores these messages close to where the broker is running. If Kafka is running with replica > 1, then there will be multiple copies of messages on different brokers.
 
-If the stand alone configuration is used, then messages are not stored reliably. They are simply stored in a "flat file" in Json format.
+If the stand alone configuration is used, then messages are not stored reliably.
+
 #### ModuleAgent
 Module agent(s) are the workhorse of SodaCan. These agents host one or more modules and provide the timer, clock, persistence, and interface to the Message Bus.
 
@@ -207,6 +208,17 @@ The SodaCan agent is free to completely remove rarely used modules from memory a
 ## Infrastructure
 ### Module deployment
 Each module and adapter is deployed as an independent program on a host computer. 
-The SodaCan command line interface provides all the information needed to start and run a module or an adapter.
 
+The SodaCan command line interface provides all the information needed to start and run a module or an adapter module. In the case of an adapter module, it is often desired that that module be deployed to a specific host since it may have code that interacts with one or more devices connected to that host.
 
+In other respects, modules are deployed randomly to available SodaCan agents.
+
+## Web Application
+The sodaCan web application has several top-level windows:
+
+- User Account - maintain the user's account, login page, etc
+- Administration - Create users, maintain topics, 
+- Operations - Monitor message bus storage and message traffic
+- Application Console - Modules, buttons, etc 
+
+See <a href="webserver/README.md">Web Server</a> for more details.

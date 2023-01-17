@@ -14,7 +14,9 @@
  */
 package net.sodacan.module.variable;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,5 +31,14 @@ public class Variables {
 	 */
 	public void resetChanged() {
 		variables.forEach((name,variable)-> variable.resetChanged());
+	}
+	/**
+	 * Return a list of variables that have changed during the current cycle
+	 * @return
+	 */
+	public List<Variable> getListOfChangedVariableNames() {
+		List<Variable> selected = new ArrayList<Variable>();
+		variables.forEach((name,variable)-> {if (variable.isChangedInCycle()) selected.add(variable);});
+		return selected;
 	}
 }
