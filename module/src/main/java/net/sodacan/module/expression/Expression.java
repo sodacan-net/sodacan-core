@@ -12,15 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.expression;
 
+import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variables;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(Variables variables);
-	
+/**
+ * Expressions represent the things in  language that get things done. They are primarily used in the THEN statement in a module.
+ * @author John Churin
+ *
+ */
+public abstract class Expression extends ModuleComponent {
+
+	protected Value resolve(Variables variables, Value value) {
+		return null;
+	}
 }

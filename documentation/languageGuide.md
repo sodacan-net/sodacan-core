@@ -12,7 +12,7 @@ In a simple configuration topics can be created close to where they are commonly
 		PUBLISH livingRoom.lamp1 {off,on} AS lamp1
 		
 		...
-			THEN lamp1.on
+			THEN lamp1=on
 ```
 
 In the example above, the topic `livingRoom` and its one variable `lamp1` are created automatically with the declaration of the `PUBLISH` variable. The module is then free to publish to that topic immediately as shown in the example. In this case, `lamp1.on` causes the on value to be published.
@@ -39,7 +39,7 @@ Next, we define a module that produces a message in this topic. In this case, th
 	MODULE button23
 		PUBLISH livingRoom.lamp1 {on,off} AS lamp
 		ON <some condition>
-			THEN lamp.on
+			THEN lamp=on
 			
 ```
 
@@ -49,7 +49,7 @@ And, a consumer module interested in this kind of message:
 ```
 	MODULE lamp1
 		SUBSCRIBE livingRoom.lamp1 {on,off} as lamp
-		ON lamp.on
+		ON lamp==on
 			THEN <do something>
 
 ```
@@ -73,12 +73,12 @@ Processing then continues to the `WHEN` statements. These `WHEN` statements are 
 		SUBSCRIBE event	{toggle}
 		PUBLISH state {on,off}
 		AT midnight ON Fridays   // If it's midnight Friday
-		  WITH mode.auto   		// And auto mode is on
-		  THEN state.on  			// set the lamp state to on
+		  AND mode==auto   		// And auto mode is on
+		  THEN state=on  			// set the lamp state to on
 	->	  THEN log("Lamp is on")	// Say so
 		AT sunset ON Thursdays   // If it's sunset on Thursdays
-		  WITH mode.auto   		// and in auto mode
-		  THEN state.on  			// set lamp state to on
+		  AND mode==auto   		// and in auto mode
+		  THEN state=on  			// set lamp state to on
 	->	  THEN log("Lamp is on")	// Say so
 		  
 ```
@@ -92,12 +92,12 @@ We can fix this problem by using a `WHEN`in the example below. It will send a me
 		SUBSCRIBE event	{toggle}
 		PUBLISH state {on,off}
 		AT midnight ON Fridays   // If it's midnight Friday
-		  WITH mode.auto   		// And auto mode is on
-		  THEN state.on  			// set the lamp state to on
+		  AND mode==auto   		// And auto mode is on
+		  THEN state=on  			// set the lamp state to on
 		AT sunset ON Thursdays   // If it's sunset on Thursdays
-		  WITH mode.auto   		// and in auto mode
-		  THEN state.on  			// set lamp state to on
-	->	WHEN state.on				// If state is on
+		  AND mode==auto   		// and in auto mode
+		  THEN state=on  			// set lamp state to on
+	->	WHEN state==on				// If state is on
 		  THEN log("Lamp is on")	// say so.
 		  
 ```
@@ -129,7 +129,7 @@ Here is an over-simplified example of an individual button that is not an instan
 	MODULE button3					// A specific button
 		PUBLISH mode[location] {off,auto,on}
 		...
-		    THEN mode["hallway"].auto
+		    THEN mode["hallway"]=auto
 ```
 
 If a module can be useful for many different devices but the behavior of each device is the same, then rather than making copies of the module with a slight name change, the module can be written to have module instances.  
@@ -139,7 +139,7 @@ When a module has instances, a mechanism is needed to create and keep track of s
 	MODULE lamp[location]
 		SUBSCRIBE event[location] {toggle}
 		...
-		ON event.toggle
+		ON event==toggle
 		...
 			
 ```
@@ -152,10 +152,10 @@ For that, you simply subscribe to the instance event. In this case, named "locat
 		SUBSCRIBE state[location] {off,on}
 		SUBSCRIBE location	// Respond to a new instance being created
 		...
-		ON event.toggle
+		ON event==toggle
 		...
 		ON location			// Respond to a new instance being created
-		    THEN state.off
+		    THEN state=off
 		    THEN print(location)
 			
 ```
@@ -232,13 +232,13 @@ A timer is used when an action is to be taken in the future. And in many cases, 
 		TIMER offTimer 30 minutes
 		...
 		ON offTimer					// If we get a message from the offTimer
-			THEN state.off				// Turn the light off
-		ON state.on					// When state becomes on	
-			THEN offTimer.start 		// Set a timer to turn it off
+			THEN state=off				// Turn the light off
+		ON state==on					// When state becomes on	
+			THEN offTimer=start 		// Set a timer to turn it off
 		ON motion						// On motion, reset the timer
-			THEN offTimer.reset
-		WHEN state.off					// When lamp1 goes off, time is no longer needed
-			THEN offTimer.cancel
+			THEN offTimer=reset
+		WHEN state==off					// When lamp1 goes off, time is no longer needed
+			THEN offTimer=cancel
 ```
 
 This example is simplified but it does explain the basic timer mechanism.
@@ -273,7 +273,7 @@ In SodaCan, a variable defined in a module becomes the source or destination for
 MODULE lamp1
 	SUBSCRIBE switch1.state {on,off}
 	...
-	ON switch1.state.on
+	ON switch1.state==on
 		THEN ...
 ```
 Behind the scenes, SodaCan consumes a message and makes a note that its value has changed. In that case, it signals an event which the `ON` statements in the module will react to. 
@@ -285,11 +285,8 @@ MODULE switch1
 	PUBLISH state {on,off}
 	...
 	ON ...
-		THEN state.on		// Set the state to on
+		THEN state==on		// Set the state to on
 ```
-
-> Syntactic Sugar: `state.on` in a `THEN` statement means the same thing as `state = "on"`. Both mean that the value of the state variable should be changed to `on`.
-
 
 In the background, the SodaCan agent monitors each `PUBLISH` variable and, if any changes are made to it by any of the module's `THEN` statements, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
 
@@ -333,7 +330,7 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 		PUBLISH mode[location] {auto,manual}
 		PUBLISH state[location] {on,off}
 		AT autoModeOnTime
-			THEN mode[location].auto
+			THEN mode[location]=auto
 		...
 		
 ```
@@ -345,8 +342,8 @@ The following is a very simple interaction between a lamp and a button and a mod
 sequenceDiagram
     buttonAdapter->>messageBus: button.press
     messageBus->>lampModule: button.press
-    lampModule->>messageBus: lamp.on
-    messageBus->>lampAdapter: lamp.on
+    lampModule->>messageBus: lamp=on
+    messageBus->>lampAdapter: lamp=on
     
 ```
 Flow of control:
@@ -360,8 +357,8 @@ If there is no need for logic in the lampModule, then it can be eliminated and t
 
 ```mermaid
 sequenceDiagram
-    buttonAdapter->>messageBus: lamp.on
-    messageBus->>lampAdapter: lamp.on
+    buttonAdapter->>messageBus: lamp=on
+    messageBus->>lampAdapter: lamp=on
     
 ```
 

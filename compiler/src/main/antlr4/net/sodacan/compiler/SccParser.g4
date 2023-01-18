@@ -26,207 +26,237 @@ statement
 	| subscribeStatement
 	| publishStatement
 	| privateStatement
-	| atStatement withStatement? thenStatement? sendStatement?
-	| onStatement withStatement? thenStatement? sendStatement?
+	| atStatement
+	| onStatement
 	;
-	
+// Statements, which start with a key word and end at the end of line (or EOF)	
 topicStatement
-	: TOPIC varIdentifier varType (VarEOL|EOF)
+	: TOPIC variableDef (EOL|EOF)
 	;
 
-timerStatement
-	: TIMER varIdentifier (VarEOL|EOF)
-	;
-	
 publishStatement
-	: PUBLISH varIdentifier varType (VarAS varIdentifier)? (VarEOL|EOF)
+	: PUBLISH variableDef (EOL|EOF)
 	;
 
 subscribeStatement
-	: SUBSCRIBE varIdentifier varType (VarAS varIdentifier)? (VarEOL|EOF)
+	: SUBSCRIBE variableDef (EOL|EOF)
 	;
 
 privateStatement
-	: PRIVATE varIdentifier varInstance? varType (VarEOL|EOF)
+	: PRIVATE variableDef (EOL|EOF)
 	;
 
-varIdentifier
-	: VarID (VarDOT VarID)*
-	;
-
-varInstance
-	: VarLBRACKET VarID VarRBRACKET
-	;
-	
-varType
-	: varEnum
-	| varInt
-	| varBool
-	| varEVENT
-	;
-	
-varEnum
-	: VarLBRACE varEnumList+ VarRBRACE
-	;
-
-varEnumList
-	: VarID (VarCOMMA VarID)*
-	;
-
-varInt
-	: VarINT
-	;
-
-varBool
-	: VarTRUE
-	| VarFALSE
-	;
-
-varEVENT
-	: VarEVENT
+timerStatement
+	: TIMER identifier instance? (EOL|EOF)
 	;
 	
 atStatement
-	: AT dayExpression dateExpression? dateRange (AtEOL|EOF) 
+	: AT atTimeExpression atDateExpression? atDateRange (AtEOL|EOF) andStatement? (thenStatement)+
 	;
 
 onStatement
-	: ON onExpression (OnEOL|EOF) 
+	: ON event (OnEOL|EOF)  andStatement? (thenStatement)+
 	;
 
-onExpression
-	: onIdentifier
-	;
-
-onIdentifier
-	: OnID (OnDOT OnID)*
-	;
-		
-withStatement
-	: WITH withExpression (WithEOL|EOF)
-	;
-
-withExpression
-	: withIdentifier							  		# WithId
-    | (WithLPAREN withExpression WithRPAREN)      		# ParenWith
-    | WithNOT withExpression						  	# NotWith
-	| withExpression WithAND withExpression 			# AndWith
-	| withExpression WithOR withExpression 				# OrWith
-	;
-	
-withIdentifier
-	: WithID (WithDOT WithID)*
+andStatement
+	: AND condition (WithEOL|EOF)
 	;
 
 thenStatement
 	: THEN thenExpression (ThenEOL|EOF)
 	;
 
+// Event is limited to inbound messages (variables). The 
+event
+	: aliasName (eventCondition)?
+	;
+	
+eventCondition
+	: EQ condition				#Equality	// a == b
+	| DOT ID					#Dot		// a.b
+	;
+		
+// Define a variable used by PUBLISH SUBSCRIBE TOPIC and PRIVATE
+variableDef
+	: identifier instance? alias? constraint? initialValue?
+	;
+	
+identifier
+	: ID (DOT ID)*
+	;
+
+alias
+	: AS aliasName
+	;
+	
+aliasName
+	: ID
+	;
+		
+instance
+	: LBRACKET name=ID RBRACKET
+	;
+
+initialValue
+	: EQ rhsExpression
+	;
+
+constraint
+	: LBRACE constraintList RBRACE
+	;
+
+constraintList
+	: constraint (COMMA constraint)*
+	;
+
+constraint
+	: numberRange
+	| number
+	| id=ID
+	| STRING
+	;
+
+numberRange
+	: number MINUS number
+	;
+	
+literal
+	: number
+	| string
+	| bool
+	| ID
+	;
+	
+number		// The scale of the decimal here is also the scale of the variable when the initial value is set
+	: sign? INT (DOT INT)?
+	;
+
+sign
+	: PLUS
+	| MINUS
+	;
+	
+bool
+	: TRUE
+	| FALSE
+	;
+
+string
+	: STRING
+	;
+
+function
+	: identifier LPAREN parameterList? RPAREN
+	;
+	
+parameterList
+	: rhsExpression (COMMA rhsExpression)*
+	;
+	
+condition
+    : NOT rhsExpression						  		# Not
+	| rhsExpression op=(AND|OR) rhsExpression 		# AndOr
+    | LPAREN rhsExpression RPAREN	      			# Paren
+	| identifier							  		# Id
+	;
+	
+rhsExpression
+    : MINUS rhsExpression						  	# Minus
+	| rhsExpression op=(MUL|DIV) rhsExpression 		# MulDiv
+	| rhsExpression op=(ADD|SUB) rhsExpression 		# AddSub
+	| condition 									# Condition
+	;
+
 thenExpression
-	: thenIdentifier							  		# thenId
-    | (ThenLPAREN thenExpression ThenRPAREN)      		# ParenThen
-    | ThenNOT thenExpression						  	# NotThen
-	| thenExpression ThenAND thenExpression 			# AndThen
-	| thenExpression ThenOR thenExpression 				# OrThen
+	: rhsExpression
+	| function
 	;
 	
-thenIdentifier
-	: ThenID (ThenDOT ThenID)*
-	;
-
-sendStatement
-	: SEND sendExpression (SendEOL|EOF)
-	;
-
-sendExpression
-	: sendIdentifier
+// At statement elements from this point down
+atDateRange
+	: (AtFROM atFromDate)? (AtTHROUGH atToDate)?
 	;
 	
-sendIdentifier
-	: SendID (SendDOT SendID)*
-	;
-
-// At statement
-dateRange
-	: (FROM fromDate)? (THROUGH toDate)?
+atFromDate
+	: atSpecificDate
 	;
 	
-fromDate
-	: specificDate;
-toDate
-	: specificDate;
-
-dayExpression
-	: durationExpression? specificTimeExpression
+atToDate
+	: atSpecificDate
 	;
 
-durationExpression
-	: quantity timeUnitExpression relativeTimeExpression 
+atTimeExpression
+	: atOffsetExpression? atSpecificTimeExpression
 	;
 
-quantity
+atOffsetExpression
+	: atQantity atTimeUnitExpression atRelativeTimeExpression 
+	;
+
+atQantity
 	: AtINT
 	;
 	
-timeUnitExpression
+atTimeUnitExpression
 	: HOUR
 	| MINUTE
 	;
 	
-relativeTimeExpression
+atRelativeTimeExpression
 	: BEFORE
 	| AFTER
 	;
 
-specificTimeExpression
-	: time
-	| timeShortcut
+atSpecificTimeExpression
+	: atTime
+	| atTimeShortcut
 	;
 
-timeShortcut
-	: SUNRISE 
-	| SUNSET
-	| MIDNIGHT
-	| NOON
+atTimeShortcut
+	: AtSUNRISE 
+	| AtSUNSET
+	| AtMIDNIGHT
+	| AtNOON
 	;
-time
-	: hr=AtINT COLON mi=AtINT ap=AMPM
-	;
-	
-dateExpression
-	: ATON (date)+
+atTime
+	: hr=AtINT AtCOLON mi=AtINT ap=AtAMPM
 	;
 	
-specificDate
-	: month day (COMMA year)?
+atDateExpression
+	: ON (atDate)+
 	;
-		
-date
-	: dow
-	| season
-	| holiday
-	| specificDate
+	
+atDate
+	: atDow
+	| atSeason
+	| atHoliday
+	| atSpecificDate
+	;
+
+atSpecificDate
+	: atMonth atDay (AtCOMMA atYear)?
 	;		
 
-year
+atYear
 	: AtINT
 	;
 
-month
-	: MONTH
+atMonth
+	: AtMONTH
 	;
-dow
-	: DOW;
 
-holiday
-	: CHRISTMAS
+atDow
+	: AtDOW;
+
+atHoliday
+	: AtCHRISTMAS
 	;
-		
-day
+
+atDay
 	: AtINT
 	;
 
-season
-	: SEASON
+atSeason
+	: AtSEASON
 	;
 	

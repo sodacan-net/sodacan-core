@@ -2,27 +2,27 @@ lexer grammar SccLexer;
 options { caseInsensitive=true; }
 
 MODULE
-	: 'MODULE' -> pushMode(ModuleMode)
+	: 'MODULE'
 	;
 
 TOPIC
-	: 'TOPIC' -> pushMode(VarMode)
+	: 'TOPIC'
 	;
 		
 PUBLISH
-	: 'PUBLISH' -> pushMode(VarMode)
+	: 'PUBLISH'
 	;
 		
 SUBSCRIBE
-	: 'SUBSCRIBE' -> pushMode(VarMode)
+	: 'SUBSCRIBE'
 	;
 
 PRIVATE
-	: 'PRIVATE' -> pushMode(VarMode)
+	: 'PRIVATE'
 	;
 		
 TIMER
-	: 'TIMER' -> pushMode(VarMode)
+	: 'TIMER'
 	;
 	
 AT
@@ -30,148 +30,133 @@ AT
 	;
 
 ON
-	: 'ON' -> pushMode(OnMode)
-	;
-	
-WITH
-	: 'WITH' -> pushMode(WithMode)
+	: 'ON'
 	;
 	
 THEN
-	: 'THEN' -> pushMode(ThenMode)
+	: 'THEN'
 	;
 
-SEND
-	: 'SEND' -> pushMode(SendMode)
+TRUE
+	: 'TRUE'
+	;
+	
+FALSE
+	: 'FALSE'
+	;
+
+AS
+	: 'AS'
+	;
+
+
+COMMA
+	: ','
+	;
+
+DECR
+	: '--'
+	;
+	
+MINUS
+	: '-'
+	;
+	
+INCR
+	: '++'
+	;
+	
+PLUS
+	: '+'
+	;
+
+MUL
+	: '*'
+	;
+	
+DIV
+	: '/'
+	;
+
+AND
+	: 'AND'
+	;
+
+OR
+	: 'OR'
+	;
+
+LE
+	: '<='
+	;
+
+GE
+	: '>='
+	;
+
+LT
+	: '<'
+	;
+
+GT
+	: '>'
+	;
+
+EQ
+	: '=='
+	;
+
+NE
+	: '!='
+	;
+	
+DOT
+	: '.'
+	;
+
+LBRACE
+	: '{'
+	;
+	
+RBRACE
+	: '}'
+	;
+	
+LBRACKET
+	: '['
+	;
+
+RBRACKET
+	: ']'
 	;
 
 INT
 	: [0-9]+
 	;
-	
+		
 ID
 	: [a-z][a-z0-9]* 
+//	: [a-z][a-zA-Z0-9]* 
+	;
+
+COMMENT
+	: '//' ~[\n]* -> skip
+	;
+
+STRING:  '"' ~["\\\r\n]* '"';
+
+EOL
+	: [\n]
 	;
 	
-COMMENT : '//' ~[\r\n]* '\r'? '\n' -> skip ;
-
-
 WS
-	: [ \t\r\n]+ -> skip
-	;
-	
-mode VarMode;
-
-VarCOMMA
-	: ','
-	;
-	
-VarLBRACE
-	: '{'
-	;
-	
-VarRBRACE
-	: '}'
-	;
-	
-VarLBRACKET
-	: '['
-	;
-
-VarRBRACKET
-	: ']'
-	;
-
-VarTRUE
-	: 'TRUE'
-	;
-	
-VarFALSE
-	: 'FALSE'
-	;
-
-VarAS
-	: 'AS'
-	;
-
-VarEVENT
-	: 'EVENT'
-	;
-	
-VarINT
-	: [0-9]+
-	;
-		
-VarID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-VarCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-VarEOL
-	: [\n] -> popMode
-	;
-	
-VarWS
 	: [ \t\r]+ -> skip
 	;
 
-
-mode ModuleMode;
-
-ModLBRACKET
-	: '['
-	;
-
-ModRBRACKET
-	: ']'
-	;
-
-ModID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-ModCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-ModEOL
-	: [\n] -> popMode
-	;
-	
-ModWS
-	: [ \t\r]+ -> skip
-	;
-
-mode SubscribeMode;
-SubDOT
-	: '.'
-	;
-
-SubID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-SubCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-SubEOL
-	: [\n] -> popMode
-	;
-	
-SubWS
-	: [ \t\r]+ -> skip
-	;
-	
+// AT statement has different syntax up until end of line
 mode AtMode;
 
-MONTH
+AtMONTH
 	: 'January'
 	| 'February'
 	| 'March'
@@ -185,11 +170,11 @@ MONTH
 	| 'November'
 	| 'December'
 	;
-AMPM
+AtAMPM
 	: 'am'
 	| 'pm'
 	;
-DOW
+AtDOW
 	: 'monday'
 	| 'tuesday'
 	| 'wednesday'
@@ -201,14 +186,14 @@ DOW
 	| 'weekdays'
 	;
 
-SUNRISE
+AtSUNRISE
 	: 'sunrise'
 	;
-SUNSET
+AtSUNSET
 	: 'sunset'
 	;
 
-SEASON
+AtSEASON
 	: 'winter'
 	| 'spring'
 	| 'summer'
@@ -216,57 +201,53 @@ SEASON
 	| 'autumn'
 	;
 
-FROM
+AtFROM
 	: 'FROM'
 	;
 
-THROUGH
+AtTHROUGH
 	: 'THROUGH'
 	;	
 
-HOUR
+AtHOUR
 	: 'hours'
 	| 'hour'
 	;
 	
-MINUTE
+AtMINUTE
 	: 'minutes'
 	| 'minute'
 	;
-BEFORE
+AtBEFORE
 	: 'before'
 	;
-AFTER
+AtAFTER
 	: 'after'
 	;
-CHRISTMAS
+AtCHRISTMAS
 	: 'christmas'
 	| 'xmas'
 	;
 
-MIDNIGHT
+AtMIDNIGHT
 	: 'midnight'
 	;
 
-NOON
+AtNOON
 	: 'noon'
 	;
 
-ATON
+AtON
 	: 'ON'
 	| 'IN'
 	;
 
-COMMA
+AtCOMMA
 	: ','
 	;
 		
 
-SEMICOLON
-	: ';' // -> popMode
-	;
-
-COLON
+AtCOLON
 	: ':'
 	;
 	
@@ -285,122 +266,3 @@ AtEOL
 AtWS
 	: [ \t\r]+ -> skip
 	;
-
-mode OnMode;
-OnDOT
-	: '.'
-	;
-
-OnID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-OnCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-OnEOL
-	: [\n] -> popMode
-	;
-	
-OnWS
-	: [ \t\r]+ -> skip
-	;
-
-mode WithMode;
-WithLPAREN
-	: '('
-	;
-	
-WithRPAREN
-	: ')'
-	;
-WithAND
-	:'AND'
-	;
-WithOR
-	:'OR'
-	;
-WithNOT
-	: 'NOT' 
-	;
-WithDOT
-	: '.'
-	;
-
-WithID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-WithCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-WithEOL
-	: [\n] -> popMode
-	;
-	
-WithWS
-	: [ \t\r]+ -> skip
-	;
-mode ThenMode;
-ThenLPAREN
-	: '('
-	;
-	
-ThenRPAREN
-	: ')'
-	;
-ThenAND
-	:'AND'
-	;
-ThenOR
-	:'OR'
-	;
-ThenNOT
-	: 'NOT' 
-	;
-ThenDOT
-	: '.'
-	;
-
-ThenID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-ThenCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-ThenEOL
-	: [\n] -> popMode
-	;
-	
-ThenWS
-	: [ \t\r]+ -> skip
-	;
-mode SendMode;
-SendDOT
-	: '.'
-	;
-
-SendID
-	: [a-z][a-z0-9]* 
-//	: [a-z][a-zA-Z0-9]* 
-	;
-
-SendCOMMENT
-	: '//' ~[\n]* -> skip
-	;
-
-SendEOL
-	: [\n] -> popMode
-	;
-	
-SendWS
-	: [ \t\r]+ -> skip
-	;
-	
