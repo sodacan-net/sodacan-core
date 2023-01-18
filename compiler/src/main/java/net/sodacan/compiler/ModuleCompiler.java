@@ -93,9 +93,9 @@ public class ModuleCompiler {
         SccParser.StartContext tree = parser.start();
         System.out.println("*****Finish parse: with " + parser.getNumberOfSyntaxErrors() + " error(s)");
         if (0==parser.getNumberOfSyntaxErrors()) {
-//        	SccModuleVisitor smc = new SccModuleVisitor(module);
-//        	// This should return the SodacanModule object as above
-//        	ModuleComponent c = smc.visit(tree);
+        	SccModuleVisitor smc = new SccModuleVisitor(module);
+        	// This should return the SodacanModule object as above
+        	ModuleComponent c = smc.visit(tree);
         }
         System.out.println(tree.toStringTree(parser));
 //        System.out.println("*****Visit: " + file);

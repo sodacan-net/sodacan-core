@@ -14,7 +14,7 @@ moduleName
 	;
 	
 moduleInstance
-	: LBRACKET ID RBRACKET
+	: LBRACKET name=ID RBRACKET
 	;
 				
 statements

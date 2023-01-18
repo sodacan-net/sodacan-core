@@ -136,6 +136,18 @@ public class SodacanModule {
 	public int hashCode() {
 		return getName().hashCode();
 	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getName());
+		if (this.instanceName!=null) {
+			sb.append('[');
+			sb.append(instanceName);
+			sb.append(']');
+		}
+		return sb.toString();
+	}
 	
 	
 }

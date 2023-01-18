@@ -20,7 +20,11 @@ import net.sodacan.compiler.SccParser.StatementListContext;
 import net.sodacan.compiler.SccParser.ThenStatementContext;
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.statement.SodacanModule;
-
+/**
+ * Visit the parse tree and create an AST (Module in our case)
+ * @author John Churin
+ *
+ */
 public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 
 	protected SodacanModule module;
@@ -33,14 +37,14 @@ public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 		return module;
 	}
 
-//	@Override
-//	public ModuleComponent visitModule(ModuleContext ctx) {
-//		ctx.moduleName();
-//		if (ctx.moduleInstance()!=null) {
-//			module.setInstanceName(ctx.moduleInstance().getText());
-//		}
-//		return super.visitModule(ctx);
-//	}
+	@Override
+	public ModuleComponent visitModule(ModuleContext ctx) {
+		if (ctx.moduleName().moduleInstance()!=null) {
+			module.setInstanceName(ctx.moduleName().moduleInstance().name.getText());
+		}
+		System.out.println("Building: " + module);
+		return super.visitModule(ctx);
+	}
 
 	@Override
 	public ModuleComponent visitStatementList(StatementListContext ctx) {
@@ -74,9 +78,7 @@ public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 //
 	@Override
 	public ModuleComponent visitThenStatement(ThenStatementContext ctx) {
-		System.out.print("  THEN");
 		visit(ctx.thenExpression());
-		System.out.println();
 		return null;
 	}
 

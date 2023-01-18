@@ -21,7 +21,6 @@ import java.nio.file.Paths;
 import java.util.Collections;
 import java.util.List;
 import java.util.Properties;
-import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -35,7 +34,6 @@ public class TestCompiler {
     private static final String DIRBASE = "src/test/resources/";
 
     public List<String> getSccFileList(String dir) throws IOException {
-    	Path ePath = Path.of(EXTENSION);
         try (Stream<Path> stream = Files.list(Paths.get(dir))) {
             return stream
               .filter(file -> !Files.isDirectory(file))
