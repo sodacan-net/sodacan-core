@@ -1,4 +1,5 @@
 // With an AT THEN statement
 MODULE test03
-	AT 10 minutes before sunset
-	  THEN blow.nose
+    ON x
+        THEN y
+        	  

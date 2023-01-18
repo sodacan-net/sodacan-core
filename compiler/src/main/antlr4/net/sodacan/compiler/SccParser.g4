@@ -2,18 +2,19 @@ parser grammar SccParser;
 
 options { tokenVocab = SccLexer; }
 start
-	:  module statements EOF	#ModuleStatement
+	:  module EOF
 	;
 
 module
-	: MODULE moduleName moduleInstance? (ModEOL|EOL)
+	: MODULE moduleName statements 
 	;
 
 moduleName
-	: ModID
+	: name=ID moduleInstance? EOL+
 	;
+	
 moduleInstance
-	: ModLBRACKET ModID ModRBRACKET
+	: LBRACKET ID RBRACKET
 	;
 				
 statements
@@ -29,41 +30,42 @@ statement
 	| atStatement
 	| onStatement
 	;
+	
 // Statements, which start with a key word and end at the end of line (or EOF)	
 topicStatement
-	: TOPIC variableDef (EOL|EOF)
+	: TOPIC variableDef EOL+
 	;
 
 publishStatement
-	: PUBLISH variableDef (EOL|EOF)
+	: PUBLISH variableDef EOL+
 	;
 
 subscribeStatement
-	: SUBSCRIBE variableDef (EOL|EOF)
+	: SUBSCRIBE variableDef EOL+
 	;
 
 privateStatement
-	: PRIVATE variableDef (EOL|EOF)
+	: PRIVATE variableDef EOL+
 	;
 
 timerStatement
-	: TIMER identifier instance? (EOL|EOF)
+	: TIMER identifier instance? EOL+
 	;
 	
 atStatement
-	: AT atTimeExpression atDateExpression? atDateRange (AtEOL|EOF) andStatement? (thenStatement)+
+	: AT atTimeExpression atDateExpression? atDateRange AtEOL+ andStatement? thenStatement+
 	;
 
 onStatement
-	: ON event (OnEOL|EOF)  andStatement? (thenStatement)+
+	: ON event EOL+  andStatement? thenStatement+
 	;
 
 andStatement
-	: AND condition (WithEOL|EOF)
+	: AND condition EOL+
 	;
 
 thenStatement
-	: THEN thenExpression (ThenEOL|EOF)
+	: THEN thenExpression EOL+
 	;
 
 // Event is limited to inbound messages (variables). The 
@@ -78,7 +80,7 @@ eventCondition
 		
 // Define a variable used by PUBLISH SUBSCRIBE TOPIC and PRIVATE
 variableDef
-	: identifier instance? alias? constraint? initialValue?
+	: identifier instance? alias? constraintExpression? initialValue?
 	;
 	
 identifier
@@ -101,7 +103,7 @@ initialValue
 	: EQ rhsExpression
 	;
 
-constraint
+constraintExpression
 	: LBRACE constraintList RBRACE
 	;
 
@@ -154,17 +156,17 @@ parameterList
 	;
 	
 condition
-    : NOT rhsExpression						  		# Not
-	| rhsExpression op=(AND|OR) rhsExpression 		# AndOr
-    | LPAREN rhsExpression RPAREN	      			# Paren
-	| identifier							  		# Id
+	:rhsExpression
 	;
 	
 rhsExpression
-    : MINUS rhsExpression						  	# Minus
+    : rhsExpression op=(AND|OR) rhsExpression 		# AndOr
+    | LPAREN rhsExpression RPAREN	      			# Paren
+	| identifier							  		# Id
+	| NOT rhsExpression						  		# Not
+    | MINUS rhsExpression						  	# Minus
 	| rhsExpression op=(MUL|DIV) rhsExpression 		# MulDiv
-	| rhsExpression op=(ADD|SUB) rhsExpression 		# AddSub
-	| condition 									# Condition
+	| rhsExpression op=(PLUS|MINUS) rhsExpression 	# AddSub
 	;
 
 thenExpression
@@ -198,13 +200,13 @@ atQantity
 	;
 	
 atTimeUnitExpression
-	: HOUR
-	| MINUTE
+	: AtHOUR
+	| AtMINUTE
 	;
 	
 atRelativeTimeExpression
-	: BEFORE
-	| AFTER
+	: AtBEFORE
+	| AtAFTER
 	;
 
 atSpecificTimeExpression

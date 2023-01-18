@@ -1,5 +1,5 @@
 lexer grammar SccLexer;
-options { caseInsensitive=true; }
+//options { caseInsensitive=true; }
 
 MODULE
 	: 'MODULE'
@@ -43,6 +43,10 @@ TRUE
 	
 FALSE
 	: 'FALSE'
+	;
+
+NOT
+	: 'NOT'
 	;
 
 AS
@@ -113,7 +117,14 @@ NE
 DOT
 	: '.'
 	;
-
+LPAREN
+	: '('
+	;
+	
+RPAREN
+	: ')'
+	;
+	
 LBRACE
 	: '{'
 	;
@@ -139,14 +150,16 @@ ID
 //	: [a-z][a-zA-Z0-9]* 
 	;
 
-COMMENT
-	: '//' ~[\n]* -> skip
+STRING
+	: '"' ~["\\\r\n]* '"'
 	;
 
-STRING:  '"' ~["\\\r\n]* '"';
+COMMENT
+	: '//' ~[\r\n]* '\r'? '\n' -> skip
+	;
 
 EOL
-	: [\n]
+	: '\n' 
 	;
 	
 WS
@@ -170,18 +183,20 @@ AtMONTH
 	| 'November'
 	| 'December'
 	;
+
 AtAMPM
 	: 'am'
 	| 'pm'
 	;
+
 AtDOW
-	: 'monday'
-	| 'tuesday'
-	| 'wednesday'
-	| 'thursday'
-	| 'friday'
-	| 'saturday'
-	| 'sunday'
+	: 'Monday'
+	| 'Tuesday'
+	| 'Wednesday'
+	| 'Thursday'
+	| 'Friday'
+	| 'Saturday'
+	| 'Sunday'
 	| 'weekends'
 	| 'weekdays'
 	;
@@ -256,11 +271,11 @@ AtINT
 	;
 	
 AtCOMMENT
-	: '//' ~[\n]* -> skip
+	: '//' ~[\r\n]* '\r'? '\n' -> skip
 	;
 
 AtEOL
-	: [\n] -> popMode
+	: '\n' -> popMode
 	;
 	
 AtWS

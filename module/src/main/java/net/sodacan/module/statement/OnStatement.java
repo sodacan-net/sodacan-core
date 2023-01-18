@@ -14,6 +14,15 @@
  */
 package net.sodacan.module.statement;
 
+import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.Variables;
+
 public class OnStatement  extends Statement {
+
+	@Override
+	public Value execute(Variables variables) {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

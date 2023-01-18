@@ -44,7 +44,8 @@ public class TestCompiler {
               .map(Path::toString)
               .collect(Collectors.toList());
         }
-    }    
+    } 
+    
 	@Test
 	public void testAll() throws IOException {
         ModuleCompiler compiler = new ModuleCompiler();
@@ -53,7 +54,7 @@ public class TestCompiler {
 		for (String filename : filenameList) {
 			Path p = Path.of(DIRBASE+filename);
 	        SodacanModule module = compiler.compile(p,new Properties());
-	        System.out.println( module.getErrors());
+	        System.out.println( "Errors: " + module.getErrors());
 	        assert(0==module.getErrors().size());
 		}
 	}

@@ -16,47 +16,22 @@ package net.sodacan.compiler;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import net.sodacan.compiler.SccParser.AndWithContext;
 import net.sodacan.compiler.SccParser.AtStatementContext;
-import net.sodacan.compiler.SccParser.DateExpressionContext;
-import net.sodacan.compiler.SccParser.DateRangeContext;
-import net.sodacan.compiler.SccParser.DayContext;
-import net.sodacan.compiler.SccParser.DowContext;
-import net.sodacan.compiler.SccParser.FromDateContext;
-import net.sodacan.compiler.SccParser.HolidayContext;
 import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.ModuleNameContext;
-import net.sodacan.compiler.SccParser.ModuleStatementContext;
-import net.sodacan.compiler.SccParser.OnIdentifierContext;
 import net.sodacan.compiler.SccParser.OnStatementContext;
-import net.sodacan.compiler.SccParser.OrWithContext;
 import net.sodacan.compiler.SccParser.PrivateStatementContext;
 import net.sodacan.compiler.SccParser.PublishStatementContext;
-import net.sodacan.compiler.SccParser.QuantityContext;
-import net.sodacan.compiler.SccParser.RelativeTimeExpressionContext;
-import net.sodacan.compiler.SccParser.SeasonContext;
-import net.sodacan.compiler.SccParser.SendIdentifierContext;
-import net.sodacan.compiler.SccParser.SendStatementContext;
-import net.sodacan.compiler.SccParser.SpecificDateContext;
-import net.sodacan.compiler.SccParser.SpecificTimeExpressionContext;
 import net.sodacan.compiler.SccParser.StatementContext;
 import net.sodacan.compiler.SccParser.StatementListContext;
 import net.sodacan.compiler.SccParser.SubscribeStatementContext;
-import net.sodacan.compiler.SccParser.ThenIdentifierContext;
 import net.sodacan.compiler.SccParser.ThenStatementContext;
-import net.sodacan.compiler.SccParser.TimeContext;
-import net.sodacan.compiler.SccParser.TimeShortcutContext;
-import net.sodacan.compiler.SccParser.TimeUnitExpressionContext;
-import net.sodacan.compiler.SccParser.ToDateContext;
-import net.sodacan.compiler.SccParser.VarIdentifierContext;
-import net.sodacan.compiler.SccParser.WithIdentifierContext;
-import net.sodacan.compiler.SccParser.WithStatementContext;
 import net.sodacan.module.statement.SodacanModule;
 /**
- * This listener does some semantic check. In a separate pass, we'll create the AST.
+ * This listener does some semantic checks. In a separate pass, we'll create the AST.
  * However, the nascent SodacanModule is partially populated and passed into this listener to 
  * support the semantic checks.
- * @author john
+ * @author 
  *
  */
 public class SccListener extends SccParserBaseListener {
@@ -79,7 +54,7 @@ public class SccListener extends SccParserBaseListener {
 	@Override
 	public void exitModuleName(ModuleNameContext ctx) {
 		System.out.print(" ");
-		final String moduleName = ctx.getText();
+		final String moduleName = ctx.name.getText();
 		// Load up the module name
 		module.setName(moduleName);
 		// Do an additional check that the file name is the same as the module name
@@ -93,7 +68,7 @@ public class SccListener extends SccParserBaseListener {
 
 			}
 			if (!module.getName().equalsIgnoreCase(fileName)) {
-				parser.notifyErrorListeners("The file name " + module.getOriginalFileName() + " and module name " + module.getName() + " must be the same");
+				parser.notifyErrorListeners("The file name " + fileName + " and module name " + module.getName() + " must be the same");
 			}
 		}
 
@@ -102,11 +77,11 @@ public class SccListener extends SccParserBaseListener {
 		super.exitModuleName(ctx);
 	}
 
-	@Override
-	public void exitModuleStatement(ModuleStatementContext ctx) {
-		System.out.println("\nEnd Of Module");
-		super.exitModuleStatement(ctx);
-	}
+//	@Override
+//	public void exitModuleStatement(ModuleStatementContext ctx) {
+//		System.out.println("\nEnd Of Module");
+//		super.exitModuleStatement(ctx);
+//	}
 
 
 	@Override
@@ -148,167 +123,167 @@ public class SccListener extends SccParserBaseListener {
 	}
 
 
-	@Override
-	public void exitVarIdentifier(VarIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitVarIdentifier(ctx);
-	}
+//	@Override
+//	public void exitVarIdentifier(VarIdentifierContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitVarIdentifier(ctx);
+//	}
 
 
 	@Override
 	public void enterAtStatement(AtStatementContext ctx) {
-		System.out.print("AT");
+		System.out.print("    AT");
 		super.enterAtStatement(ctx);
 	}
 
 	@Override
 	public void enterOnStatement(OnStatementContext ctx) {
-		System.out.print("ON");
+		System.out.print("    ON");
 		super.enterOnStatement(ctx);
 	}
 	
-	@Override
-	public void enterWithStatement(WithStatementContext ctx) {
-		System.out.print("\n  WITH");
-		super.enterWithStatement(ctx);
-	}
-	
-	@Override
-	public void exitWithIdentifier(WithIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitWithIdentifier(ctx);
-	}
-	
-	@Override
-	public void enterAndWith(AndWithContext ctx) {
-		System.out.print(" AND");
-		super.enterAndWith(ctx);
-	}
-	@Override
-	public void enterOrWith(OrWithContext ctx) {
-		System.out.print(" OR");
-		super.enterOrWith(ctx);
-	}
-
+//	@Override
+//	public void enterWithStatement(WithStatementContext ctx) {
+//		System.out.print("\n  WITH");
+//		super.enterWithStatement(ctx);
+//	}
+//	
+//	@Override
+//	public void exitWithIdentifier(WithIdentifierContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitWithIdentifier(ctx);
+//	}
+//	
+//	@Override
+//	public void enterAndWith(AndWithContext ctx) {
+//		System.out.print(" AND");
+//		super.enterAndWith(ctx);
+//	}
+//	@Override
+//	public void enterOrWith(OrWithContext ctx) {
+//		System.out.print(" OR");
+//		super.enterOrWith(ctx);
+//	}
+//
 	@Override
 	public void enterThenStatement(ThenStatementContext ctx) {
-		System.out.print("\n  THEN");
+		System.out.print("\n      THEN");
 		super.enterThenStatement(ctx);
 	}
 	
-	@Override
-	public void exitThenIdentifier(ThenIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitThenIdentifier(ctx);
-	}
-
-	@Override
-	public void enterSendStatement(SendStatementContext ctx) {
-		System.out.print("\n  SEND");
-		super.enterSendStatement(ctx);
-	}
-
-	@Override
-	public void exitSendIdentifier(SendIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitSendIdentifier(ctx);
-	}
-	
-	@Override
-	public void exitOnIdentifier(OnIdentifierContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitOnIdentifier(ctx);
-	}
-
-	@Override
-	public void exitDateRange(DateRangeContext ctx) {
-		// TODO Auto-generated method stub
-		super.exitDateRange(ctx);
-	}
-
-	@Override
-	public void enterFromDate(FromDateContext ctx) {
-		System.out.print(" FROM");
-		super.enterFromDate(ctx);
-	}
-
-	@Override
-	public void enterToDate(ToDateContext ctx) {
-		System.out.print(" THROUGH");
-		super.enterToDate(ctx);
-	}
-
-	@Override
-	public void exitQuantity(QuantityContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitQuantity(ctx);
-	}
-	@Override
-	public void exitTime(TimeContext ctx) {
-		int hr = Integer.parseInt(ctx.hr.getText());
-		int min = Integer.parseInt(ctx.mi.getText());
-		String ampm = ctx.ap.getText();
-		System.out.format(" %d:%02d%s", hr, min, ampm);
-		if (hr<1 || hr > 12 ) {
-			parser.notifyErrorListeners("Invalid Time: hour must be between 1 and 12");
-		}
-		if (min > 59) {
-			parser.notifyErrorListeners("Invalid Time: minutes must be between 0 and 59");
-		}
-		super.exitTime(ctx);
-	}
-
-	@Override
-	public void exitTimeShortcut(TimeShortcutContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitTimeShortcut(ctx);
-	}
-
-
-	@Override
-	public void exitRelativeTimeExpression(RelativeTimeExpressionContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitRelativeTimeExpression(ctx);
-	}
-
-	@Override
-	public void exitTimeUnitExpression(TimeUnitExpressionContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitTimeUnitExpression(ctx);
-	}
-
-	@Override
-	public void exitSpecificTimeExpression(SpecificTimeExpressionContext ctx) {
-		// TODO Auto-generated method stub
-		super.exitSpecificTimeExpression(ctx);
-	}
-
-	@Override
-	public void exitSpecificDate(SpecificDateContext ctx) {
-		String mS = ctx.month().getText();
-		System.out.print(" ");
-		System.out.print(mS);
-		if (ctx.day()!=null) {
-			int d = Integer.parseInt(ctx.day().getText());
-			System.out.format(" %d",d);
-//			System.out.print(dS);
-		}
-		if (ctx.year()!=null) {
-			String yS = ctx.year().getText();
-			System.out.print(", ");
-			System.out.print(yS);
-		}
-		super.exitSpecificDate(ctx);
-	}
+//	@Override
+//	public void exitThenIdentifier(ThenIdentifierContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitThenIdentifier(ctx);
+//	}
+//
+//	@Override
+//	public void enterSendStatement(SendStatementContext ctx) {
+//		System.out.print("\n  SEND");
+//		super.enterSendStatement(ctx);
+//	}
+//
+//	@Override
+//	public void exitSendIdentifier(SendIdentifierContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitSendIdentifier(ctx);
+//	}
+//	
+//	@Override
+//	public void exitOnIdentifier(OnIdentifierContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitOnIdentifier(ctx);
+//	}
+//
+//	@Override
+//	public void exitDateRange(DateRangeContext ctx) {
+//		// TODO Auto-generated method stub
+//		super.exitDateRange(ctx);
+//	}
+//
+//	@Override
+//	public void enterFromDate(FromDateContext ctx) {
+//		System.out.print(" FROM");
+//		super.enterFromDate(ctx);
+//	}
+//
+//	@Override
+//	public void enterToDate(ToDateContext ctx) {
+//		System.out.print(" THROUGH");
+//		super.enterToDate(ctx);
+//	}
+//
+//	@Override
+//	public void exitQuantity(QuantityContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitQuantity(ctx);
+//	}
+//	@Override
+//	public void exitTime(TimeContext ctx) {
+//		int hr = Integer.parseInt(ctx.hr.getText());
+//		int min = Integer.parseInt(ctx.mi.getText());
+//		String ampm = ctx.ap.getText();
+//		System.out.format(" %d:%02d%s", hr, min, ampm);
+//		if (hr<1 || hr > 12 ) {
+//			parser.notifyErrorListeners("Invalid Time: hour must be between 1 and 12");
+//		}
+//		if (min > 59) {
+//			parser.notifyErrorListeners("Invalid Time: minutes must be between 0 and 59");
+//		}
+//		super.exitTime(ctx);
+//	}
+//
+//	@Override
+//	public void exitTimeShortcut(TimeShortcutContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitTimeShortcut(ctx);
+//	}
+//
+//
+//	@Override
+//	public void exitRelativeTimeExpression(RelativeTimeExpressionContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitRelativeTimeExpression(ctx);
+//	}
+//
+//	@Override
+//	public void exitTimeUnitExpression(TimeUnitExpressionContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitTimeUnitExpression(ctx);
+//	}
+//
+//	@Override
+//	public void exitSpecificTimeExpression(SpecificTimeExpressionContext ctx) {
+//		// TODO Auto-generated method stub
+//		super.exitSpecificTimeExpression(ctx);
+//	}
+//
+//	@Override
+//	public void exitSpecificDate(SpecificDateContext ctx) {
+//		String mS = ctx.month().getText();
+//		System.out.print(" ");
+//		System.out.print(mS);
+//		if (ctx.day()!=null) {
+//			int d = Integer.parseInt(ctx.day().getText());
+//			System.out.format(" %d",d);
+////			System.out.print(dS);
+//		}
+//		if (ctx.year()!=null) {
+//			String yS = ctx.year().getText();
+//			System.out.print(", ");
+//			System.out.print(yS);
+//		}
+//		super.exitSpecificDate(ctx);
+//	}
 
 //	@Override
 //	public void exitYear(YearContext ctx) {
@@ -317,40 +292,40 @@ public class SccListener extends SccParserBaseListener {
 //		System.out.print(ctx.getText());
 //	}
 
-	@Override
-	public void exitSeason(SeasonContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-	super.exitSeason(ctx);
-	}
-
-	@Override
-	public void enterDateExpression(DateExpressionContext ctx) {
-		System.out.print(" ON");
-		super.exitDateExpression(ctx);
-	}
-
-	@Override
-	public void exitDow(DowContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitDow(ctx);
-	}
-
-	@Override
-	public void exitHoliday(HolidayContext ctx) {
-		System.out.print(" ");
-		System.out.print(ctx.getText());
-		super.exitHoliday(ctx);
-	}
-
-	@Override
-	public void exitDay(DayContext ctx) {
+//	@Override
+//	public void exitSeason(SeasonContext ctx) {
 //		System.out.print(" ");
 //		System.out.print(ctx.getText());
-		super.exitDay(ctx);
-	}
-
+//	super.exitSeason(ctx);
+//	}
+//
+//	@Override
+//	public void enterDateExpression(DateExpressionContext ctx) {
+//		System.out.print(" ON");
+//		super.exitDateExpression(ctx);
+//	}
+//
+//	@Override
+//	public void exitDow(DowContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitDow(ctx);
+//	}
+//
+//	@Override
+//	public void exitHoliday(HolidayContext ctx) {
+//		System.out.print(" ");
+//		System.out.print(ctx.getText());
+//		super.exitHoliday(ctx);
+//	}
+//
+//	@Override
+//	public void exitDay(DayContext ctx) {
+////		System.out.print(" ");
+////		System.out.print(ctx.getText());
+//		super.exitDay(ctx);
+//	}
+//
 	@Override
 	public void exitEveryRule(ParserRuleContext ctx) {
 		// TODO Auto-generated method stub

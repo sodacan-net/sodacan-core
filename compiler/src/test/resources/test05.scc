@@ -2,5 +2,6 @@
 MODULE test05[location]
 	SUBSCRIBE mode {off,on}
 	AT 10 minutes before sunset
-	  SEND topic.nose
+	  THEN topic.nose
+	  THEN any.time
 	

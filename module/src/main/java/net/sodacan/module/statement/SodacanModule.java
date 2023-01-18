@@ -34,7 +34,7 @@ public class SodacanModule {
 	List<SubscribeStatement> subscribeStatements = new ArrayList<>();
 	List<AtStatement> atStatements = new ArrayList<>();
 	List<OnStatement> onStatements = new ArrayList<>();
-	List<WhenStatement> whenStatements = new ArrayList<>();
+	List<AndStatement> whenStatements = new ArrayList<>();
 	List<ErrorComponent> errors = new ArrayList<>();
 	
 	public SodacanModule() {
@@ -61,8 +61,8 @@ public class SodacanModule {
 		if (statement instanceof OnStatement) {
 			onStatements.add((OnStatement)statement);
 		}
-		if (statement instanceof WhenStatement) {
-			whenStatements.add((WhenStatement)statement);
+		if (statement instanceof AndStatement) {
+			whenStatements.add((AndStatement)statement);
 		}
 	}
 
@@ -114,7 +114,7 @@ public class SodacanModule {
 		return onStatements;
 	}
 
-	public List<WhenStatement> getWhenStatements() {
+	public List<AndStatement> getWhenStatements() {
 		return whenStatements;
 	}
 
