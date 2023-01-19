@@ -15,21 +15,18 @@
 package net.sodacan.compiler;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import net.sodacan.compiler.SccParser.AtStatementContext;
+import net.sodacan.compiler.SccParser.AliasNameContext;
 import net.sodacan.compiler.SccParser.ConstraintContext;
 import net.sodacan.compiler.SccParser.ConstraintListContext;
 import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.ModuleNameContext;
-import net.sodacan.compiler.SccParser.OnStatementContext;
-import net.sodacan.compiler.SccParser.PrivateStatementContext;
-import net.sodacan.compiler.SccParser.PublishStatementContext;
-import net.sodacan.compiler.SccParser.StatementContext;
-import net.sodacan.compiler.SccParser.StatementListContext;
 import net.sodacan.compiler.SccParser.SubscribeStatementContext;
-import net.sodacan.compiler.SccParser.ThenStatementContext;
+import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
 /**
  * This listener does some semantic checks. In a separate pass, we'll create the AST.
@@ -42,6 +39,9 @@ public class SccListener extends SccParserBaseListener {
 
 	protected SodacanModule module;
 	protected SccParser parser;
+	
+	protected List<String> variables = new ArrayList<>();
+	
 	public SccListener( SccParser parser, SodacanModule module ) {
 		this.parser = parser;
 		this.module = module;
@@ -84,7 +84,7 @@ public class SccListener extends SccParserBaseListener {
 	public void exitSubscribeStatement(SubscribeStatementContext ctx) {
 		String id = ctx.variableDef().identifier().getText();
 		if (id.contains(".") && ctx.variableDef().alias()==null) {
-			parser.notifyErrorListeners("The compond identifer '" + id + "' requires an AS clause");
+			parser.notifyErrorListeners("The compound identifer '" + id + "' requires an AS clause");
 		}
 		super.exitSubscribeStatement(ctx);
 	}
@@ -101,7 +101,7 @@ public class SccListener extends SccParserBaseListener {
 		for ( ConstraintContext constraint :  ctx.constraint()) {
 			if (constraint.constraintIdentifier()!=null) {
 				String value = constraint.constraintIdentifier().getText();
-				System.out.println("Constraint ID: " + value);
+				System.out.println("Constraint Identifier: " + value);
 			}
 			if (constraint.STRING()!=null) {
 				String value = constraint.STRING().getText();
@@ -121,6 +121,46 @@ public class SccListener extends SccParserBaseListener {
 //			db = new BigDecimal
 		}
 		super.exitConstraintList(ctx);
+	}
+
+
+	@Override
+	public void exitVariableDef(VariableDefContext ctx) {
+		StringBuffer sb = new StringBuffer(ctx.identifier().getText());
+		if (ctx.instance()!=null) {
+			sb.append('[');
+			sb.append(ctx.instance().getText());
+			sb.append(']');
+			
+		}
+		String name = sb.toString();
+		System.out.println("Variable: " + name);
+//		if (variables.contains(name)) {
+//			parser.notifyErrorListeners("Variable already defined: " + name);
+//		}
+//		variables.add(name);
+//		for (ConstraintContext constraint :  ctx.constraintExpression().constraintList().constraint()) {
+//			if (constraint.constraintIdentifier()!=null) {
+//				String value = constraint.constraintIdentifier().getText();
+//				System.out.println("Constraint ID: " + name + "." + value);
+//				if (variables.contains(value)) {
+//					parser.notifyErrorListeners("Constraint " + value + " already defined elsewhere. Consider using quotes around constaint value.");
+//				}
+//				variables.add(value);
+//			}
+//		}
+		super.exitVariableDef(ctx);
+	}
+
+
+	@Override
+	public void exitAliasName(AliasNameContext ctx) {
+		String name = ctx.getText();
+		if (variables.contains(name)) {
+			parser.notifyErrorListeners("Alias already defined: " + name);
+		}
+		variables.add(name);
+		super.exitAliasName(ctx);
 	}
 
 

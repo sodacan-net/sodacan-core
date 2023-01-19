@@ -1,6 +1,6 @@
 // More complex IF statement
 MODULE test15
-    IF true==false OR 17==3*4+5
+    IF true==false OR 17==3*4+5 AND state.on
     AND whatever+4==2
         THEN x=-y
-        THEN func.tion(arg1)
+        THEN func.tion(arg1,arg2a+arg2b)

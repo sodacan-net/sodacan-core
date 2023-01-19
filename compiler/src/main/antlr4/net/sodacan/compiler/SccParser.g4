@@ -75,7 +75,7 @@ thenStatement
 
 // Event is limited to inbound messages (variables). The 
 event
-	: aliasName (eventCondition)?
+	: idRef (eventCondition)?
 	;
 	
 eventCondition
