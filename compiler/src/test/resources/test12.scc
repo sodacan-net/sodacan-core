@@ -1,0 +1,8 @@
+// Initialize a variable's constraint with more than one number 
+MODULE test12
+    PRIVATE w {0.00,0.50,1.00}
+    // Some math
+    ON w==1
+        THEN w=3
+        THEN w=1+2
+ 

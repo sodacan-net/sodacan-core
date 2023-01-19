@@ -130,10 +130,10 @@ In the following two modules, a message *from* button1 is subscribed to by the `
 		SUBSCRIBE button1.press	// This subscribes to button1.press
 		PUBLIC state
 		ON button1.press
-		  WHEN state==off
+		  AND state==off
 		  THEN state=on
 		ON button1.press
-		  WHEN state==on
+		  AND state==on
 		  THEN state=off
 
 	MODULE button1
@@ -189,7 +189,7 @@ To prevent this from happening, a simple check is made that prevents an alias fr
 existing module other than itself. In the above example, there should be no module named 'bedtime' and there isn't 
 but how can we be sure that `bedtime` is reserved so that a future module doesn't use that name?
 
-We reserve the name (`bedtime` in this case) using a **TOPIC** definition. A topic is a channel for messages to
+Reserve the name (`bedtime` in this case) using a **TOPIC** definition. A topic is a channel for messages to
 be exchanged. Each `PUBLIC` variable defines a topic and each `SUBSCRIBE` statement subscribes to a topic.
 This new topic, `bedtime`, is defined explicitly in a `TOPIC` declaration. In most respects, it is the same as a `PUBLIC`
 declaration. The main difference is that the name of a topic does not include the name of the module. By convention,

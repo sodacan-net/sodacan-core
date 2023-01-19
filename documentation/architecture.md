@@ -50,7 +50,7 @@ The producer is also identified in a message. Messages also contain a `key` and 
 ### Message Bus
 Abstractly, a message bus exits to exchange messages. Ignoring security, anyone can produce a message and anyone can consume messages. In SodaCan, the message bus is an implementation detail handled in the background. The modules that make up a system are unaware of the bus itself. Like a post office handles the logistics of getting a newspaper from its source (producer) to its destination(s) (consumer(s)). In a message bus architecture, the producer of a message as no control over who consumes that message. And, in general, the consumer has no control over who, how or when the messages it receives are produced. This is the essence of decoupling in a microservice architecture.
 
-In the following diagram, messages are produced by Modules A and C without any knowledge of where they will be consumed or even if they will be consumed.
+In the following diagram, messages are produced by Modules A and C without any knowledge of where they will be consumed or even *if* they will be consumed.
 
 ```mermaid
 flowchart BT;
@@ -156,11 +156,11 @@ Since messages arrive at a module one by-one, it is important to maintain state 
 		SUBSCRIBE mode	{off, auto, on}	
 		PUBLISH state {on,off}
 		AT midnight       // Turn off this light
-		  WHEN mode.auto  // at midnight
+		  AND mode.auto  // at midnight
 		  THEN state=off  // if mode is auto
 		
 ```
-Persistence is handled automatically by the infrastructure. Underneath is a directory structure with a text file that is used to save and restore module state for each module and instance. 
+Persistence is handled automatically by the infrastructure. Underneath is a directory structure with a text file that is used to save and restore module state for each module and instance.  Call a module snapshot.
 
 ```
 	<agent working directory>
@@ -170,15 +170,15 @@ Persistence is handled automatically by the infrastructure. Underneath is a dire
 					<instanceName>.scc.json
 ```
  
-The content of the .scc.json file is a json representation of the module's variables, including the AST and source code of the module.
- 
+The content of the .scc.json file is a json representation of the module's variables, including the values, AST and source code of the module.
+
 Now, this .scc.json file is completely redundant. Why? Because the variables in the module
 instance were populated by messages... and only messages. And, the messages that were consumed by a module that resulted in 
-the variables current values are still around (in the message bus)! 
-That means one way to restore the current state of a variable is to simply replay the message stream
+the variable's current values are still around (in the message bus)! 
+That means one way to restore the current state of a module is to simply replay the message stream
 into that module (the output of the module can be ignored during this recovery).
 
-So, the key-value store is really just there for performance reasons. It would take much longer to replay messages, 
+So, the snapshot file is just there for performance reasons. It would take much longer to replay messages, 
 sequentially, in order to recover a module's state than to simply load state from an indexed database optimized for random access.
 
 The module agent creates a snapshot for the module periodically and stores it in the data store.

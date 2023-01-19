@@ -46,12 +46,14 @@ public class TestCompiler {
     
 	@Test
 	public void testAll() throws IOException {
-        ModuleCompiler compiler = new ModuleCompiler();
+		Properties properties = new Properties();
+		properties.setProperty("property1", "value of property 1");
+		ModuleCompiler compiler = new ModuleCompiler();
         List<String> filenameList = getSccFileList(DIRBASE);
         Collections.sort(filenameList);
 		for (String filename : filenameList) {
 			Path p = Path.of(DIRBASE+filename);
-	        SodacanModule module = compiler.compile(p,new Properties());
+	        SodacanModule module = compiler.compile(p,properties);
 	        System.out.println( "Errors: " + module.getErrors());
 	        assert(0==module.getErrors().size());
 		}

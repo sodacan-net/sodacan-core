@@ -53,7 +53,18 @@ AS
 	: 'AS'
 	;
 
+AND
+	: 'AND'
+	;
 
+OR
+	: 'OR'
+	;
+
+IF
+	: 'IF'
+	;
+	
 COMMA
 	: ','
 	;
@@ -80,14 +91,6 @@ MUL
 	
 DIV
 	: '/'
-	;
-
-AND
-	: 'AND'
-	;
-
-OR
-	: 'OR'
 	;
 
 LE
@@ -140,7 +143,9 @@ LBRACKET
 RBRACKET
 	: ']'
 	;
-
+ASSIGN
+	: '='
+	;
 INT
 	: [0-9]+
 	;

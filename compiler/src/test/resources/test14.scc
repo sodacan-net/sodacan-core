@@ -1,0 +1,5 @@
+// Simple IF statement
+MODULE test14
+    IF true==false
+        THEN x
+ 

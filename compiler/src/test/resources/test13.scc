@@ -1,0 +1,26 @@
+// A bunch of time statements
+MODULE test13
+	AT 1 hour before midnight
+		THEN x
+	AT midnight ON December 31
+		THEN x
+	AT midnight ON weekdays
+		THEN x
+	AT 1 hour before midnight ON Monday
+		THEN x
+	AT noon IN fall
+		THEN x
+	AT noon FROM June 1, 2023 THROUGH July 13, 2023
+		THEN x
+	AT 1 minute before noon ON Tuesday Thursday Saturday
+		THEN x
+	AT 1 minute after sunset ON Tuesday FROM May 1
+		THEN x
+	AT 3:00pm FROM June 1, 2023
+		THEN x
+	AT sunset THROUGH September 30, 2023
+		THEN x
+
+	AT 10:04am
+		THEN x
+	

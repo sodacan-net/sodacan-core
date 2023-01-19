@@ -1,0 +1,9 @@
+// Numeric assignment and some math
+MODULE test11
+    SUBSCRIBE somewhere.count AS count
+    PRIVATE w {0.00}
+    // Some math
+    ON w==1
+        THEN w=3
+        THEN w=1+2
+    

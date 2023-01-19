@@ -53,7 +53,6 @@ public class ModuleCompiler {
     		module.setSource(StringSubstitutor.replace(rawSource,properties));
     	}
 		module.setOriginalFileName(fileName);
-		module.setSource(rawSource);
 		compile(module);
 		return module;
 	}
@@ -90,7 +89,7 @@ public class ModuleCompiler {
         parser.removeErrorListeners();
         parser.addErrorListener(new SccErrorListener(module));
 //        System.out.println("*****Start parse: " + file);
-        SccParser.StartContext tree = parser.start();
+        SccParser.SccContext tree = parser.scc();
         System.out.println("*****Finish parse: with " + parser.getNumberOfSyntaxErrors() + " error(s)");
         if (0==parser.getNumberOfSyntaxErrors()) {
         	SccModuleVisitor smc = new SccModuleVisitor(module);

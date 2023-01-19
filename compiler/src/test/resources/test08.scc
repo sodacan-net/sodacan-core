@@ -1,0 +1,6 @@
+MODULE test08
+    SUBSCRIBE state {on,off}
+    // Same as mode==on
+    ON mode.on
+        THEN state.on
+        

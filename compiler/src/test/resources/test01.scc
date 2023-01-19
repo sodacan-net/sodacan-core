@@ -1,2 +1,2 @@
-// Comments on this line
+// Comments on this line and a substitution: ${property1}
 MODULE test01

@@ -1,7 +1,7 @@
 parser grammar SccParser;
 
 options { tokenVocab = SccLexer; }
-start
+scc
 	:  module EOF
 	;
 
@@ -29,6 +29,7 @@ statement
 	| privateStatement
 	| atStatement
 	| onStatement
+	| ifStatement
 	;
 	
 // Statements, which start with a key word and end at the end of line (or EOF)	
@@ -60,6 +61,10 @@ onStatement
 	: ON event EOL+  andStatement? thenStatement+
 	;
 
+ifStatement
+	: IF condition EOL+  andStatement? thenStatement+
+	;
+	
 andStatement
 	: AND condition EOL+
 	;
@@ -87,6 +92,18 @@ identifier
 	: ID (DOT ID)*
 	;
 
+identifierRef
+	: ID (DOT ID)?
+	;
+
+identifierFun
+	: ID
+	;
+
+assignmentTarget
+	: ID
+	;
+	
 alias
 	: AS aliasName
 	;
@@ -114,10 +131,13 @@ constraintList
 constraint
 	: numberRange
 	| number
-	| id=ID
 	| STRING
+	| constraintIdentifier
 	;
 
+constraintIdentifier
+	: ID
+	;
 numberRange
 	: number MINUS number
 	;
@@ -126,7 +146,6 @@ literal
 	: number
 	| string
 	| bool
-	| ID
 	;
 	
 number		// The scale of the decimal here is also the scale of the variable when the initial value is set
@@ -148,7 +167,7 @@ string
 	;
 
 function
-	: identifier LPAREN parameterList? RPAREN
+	: identifierFun LPAREN parameterList? RPAREN
 	;
 	
 parameterList
@@ -156,13 +175,24 @@ parameterList
 	;
 	
 condition
-	:rhsExpression
+	: condition EQ condition
+	| condition NE condition
+	| condition LT condition
+	| condition LE condition
+	| condition GT condition
+	| condition GE condition
+	| rhsExpression
+	;
+	
+assignmentExpression
+	: assignmentTarget ASSIGN rhsExpression
 	;
 	
 rhsExpression
     : rhsExpression op=(AND|OR) rhsExpression 		# AndOr
     | LPAREN rhsExpression RPAREN	      			# Paren
-	| identifier							  		# Id
+	| identifierRef							  		# Id
+	| literal										# Lit
 	| NOT rhsExpression						  		# Not
     | MINUS rhsExpression						  	# Minus
 	| rhsExpression op=(MUL|DIV) rhsExpression 		# MulDiv
@@ -170,11 +200,12 @@ rhsExpression
 	;
 
 thenExpression
-	: rhsExpression
+	: assignmentExpression
+	| rhsExpression
 	| function
 	;
 	
-// At statement elements from this point down
+// At (time and date) statement elements from this point down
 atDateRange
 	: (AtFROM atFromDate)? (AtTHROUGH atToDate)?
 	;
@@ -225,7 +256,7 @@ atTime
 	;
 	
 atDateExpression
-	: ON (atDate)+
+	: AtON (atDate)+
 	;
 	
 atDate

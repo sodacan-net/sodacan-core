@@ -42,7 +42,7 @@ public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 		if (ctx.moduleName().moduleInstance()!=null) {
 			module.setInstanceName(ctx.moduleName().moduleInstance().name.getText());
 		}
-		System.out.println("Building: " + module);
+		System.out.println("Visiting module: " + module);
 		return super.visitModule(ctx);
 	}
 

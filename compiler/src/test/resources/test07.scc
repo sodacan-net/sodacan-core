@@ -1,0 +1,8 @@
+// Test function calls
+MODULE test07
+ 	SUBSCRIBE mode {1,2}
+    AT 10 minutes before sunset
+	  THEN send(1)
+	  THEN send("a")
+	  THEN send(a)
+	  
