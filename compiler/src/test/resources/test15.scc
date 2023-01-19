@@ -1,6 +1,6 @@
 // More complex IF statement
 MODULE test15
-    IF true==false
-    AND 1 < 3
-        THEN x
- 
+    IF true==false OR 17==3*4+5
+    AND whatever+4==2
+        THEN x=-y
+        THEN func.tion(arg1)

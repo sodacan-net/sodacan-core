@@ -62,15 +62,15 @@ onStatement
 	;
 
 ifStatement
-	: IF condition EOL+  andStatement? thenStatement+
+	: IF expr EOL+  andStatement? thenStatement+
 	;
 	
 andStatement
-	: AND condition EOL+
+	: AND expr EOL+
 	;
 
 thenStatement
-	: THEN thenExpression EOL+
+	: THEN thenExpr EOL+
 	;
 
 // Event is limited to inbound messages (variables). The 
@@ -79,7 +79,7 @@ event
 	;
 	
 eventCondition
-	: EQ condition				#Equality	// a == b
+	: EQ expr					#Equality	// a == b
 	| DOT ID					#Dot		// a.b
 	;
 		
@@ -92,7 +92,7 @@ identifier
 	: ID (DOT ID)*
 	;
 
-identifierRef
+idRef
 	: ID (DOT ID)?
 	;
 
@@ -117,7 +117,7 @@ instance
 	;
 
 initialValue
-	: EQ rhsExpression
+	: EQ expr
 	;
 
 constraintExpression
@@ -166,45 +166,33 @@ string
 	: STRING
 	;
 
-function
-	: identifierFun LPAREN parameterList? RPAREN
+thenExpr
+	: expr								# Exp
+	| idRef ASSIGN expr					# Ass
 	;
-	
-parameterList
-	: rhsExpression (COMMA rhsExpression)*
+		
+expr
+	: literal							# Lit
+	| idRef								# Id
+    | LPAREN expr RPAREN	      		# Paren
+    | idRef LPAREN expr (COMMA expr)* RPAREN	# Fun
+    | <assoc=right> PLUS expr			# UPlus
+    | <assoc=right> MINUS expr			# UMinus
+    | <assoc=right> NOT expr			# Not
+	| expr PLUS expr 					# Add
+	| expr MINUS expr					# Sub
+	| expr MUL expr 					# Mul
+	| expr DIV expr						# Div
+	| expr LT expr						# Lt
+	| expr LE expr						# Le
+	| expr GT expr						# Gt
+	| expr GE expr						# Ge
+	| expr EQ expr						# Eq
+	| expr NE expr						# Ne
+	| expr AND expr						# And
+	| expr OR expr						# Or
 	;
-	
-condition
-	: condition EQ condition
-	| condition NE condition
-	| condition LT condition
-	| condition LE condition
-	| condition GT condition
-	| condition GE condition
-	| rhsExpression
-	;
-	
-assignmentExpression
-	: assignmentTarget ASSIGN rhsExpression
-	;
-	
-rhsExpression
-    : rhsExpression op=(AND|OR) rhsExpression 		# AndOr
-    | LPAREN rhsExpression RPAREN	      			# Paren
-	| identifierRef							  		# Id
-	| literal										# Lit
-	| NOT rhsExpression						  		# Not
-    | MINUS rhsExpression						  	# Minus
-	| rhsExpression op=(MUL|DIV) rhsExpression 		# MulDiv
-	| rhsExpression op=(PLUS|MINUS) rhsExpression 	# AddSub
-	;
-
-thenExpression
-	: assignmentExpression
-	| rhsExpression
-	| function
-	;
-	
+		
 // At (time and date) statement elements from this point down
 atDateRange
 	: (AtFROM atFromDate)? (AtTHROUGH atToDate)?

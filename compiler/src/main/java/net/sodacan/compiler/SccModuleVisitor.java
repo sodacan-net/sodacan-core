@@ -76,12 +76,6 @@ public class SccModuleVisitor extends SccParserBaseVisitor<ModuleComponent> {
 //		return null;
 //	}
 //
-	@Override
-	public ModuleComponent visitThenStatement(ThenStatementContext ctx) {
-		visit(ctx.thenExpression());
-		return null;
-	}
-
 //	@Override
 //	public ModuleComponent visitSendStatement(SendStatementContext ctx) {
 //		System.out.print("  SEND");
