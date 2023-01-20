@@ -8,4 +8,11 @@
   	<relativePath>../sodacan/pom.xml</relativePath>
   </parent>
   <description>POJO module heirarchy</description>
+  <dependencies>
+		<dependency>
+			<groupId>net.sodacan</groupId>
+			<artifactId>sodacan</artifactId>
+			<version>0.0.1</version>
+		</dependency>
+  </dependencies>
 </project>

@@ -1,5 +1,5 @@
 MODULE test16
     PUBLISH a.a[location] {1,2,3}
     PRIVATE b
-    SUBSCRIBE a.b[location] AS d {a,b,d} 
+    SUBSCRIBE a.b[location] AS d {a,m,d} 
     

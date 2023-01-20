@@ -12,22 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.compiler;
 
-import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+public class SccException extends RuntimeException {
 
-/**
- * An AT statement responds to the passage of time
- * @author John Churin
- *
- */
-public class AtStatement extends Statement {
-
-	@Override
-	public Value execute(VariableDefs variables) {
-		// TODO Auto-generated method stub
-		return null;
+	public SccException(String message) {
+		super(message);
 	}
 
 }

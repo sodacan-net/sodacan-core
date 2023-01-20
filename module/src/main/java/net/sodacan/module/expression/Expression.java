@@ -16,7 +16,7 @@ package net.sodacan.module.expression;
 
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.VariableDefs;
 
 /**
  * Expressions represent the things in  language that get things done. They are primarily used in the THEN statement in a module.
@@ -25,7 +25,7 @@ import net.sodacan.module.variable.Variables;
  */
 public abstract class Expression extends ModuleComponent {
 
-	protected Value resolve(Variables variables, Value value) {
+	protected Value resolve(VariableDefs variables, Value value) {
 		return null;
 	}
 }

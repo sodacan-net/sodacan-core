@@ -14,6 +14,7 @@
  */
 package net.sodacan.module.value;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 
@@ -25,7 +26,7 @@ import java.util.List;
  */
 public class Value {
 	
-	private Integer integer = null;
+	private BigDecimal number = null;
 	private String string = null;
 	private Boolean bool = null;
 	private List<Value> array = null;
@@ -37,7 +38,7 @@ public class Value {
 		this.array = array;
 	}
 	public Value(int integer) {
-		this.integer = integer;
+		this.number = new BigDecimal(integer);
 	}
 	public Value(String string) {
 		this.string = string;
@@ -55,9 +56,9 @@ public class Value {
 		return false;
 	}
 
-	public boolean isInteger() {
-		if (integer!=null) return true;
-		// A String containing an integer is an integer
+	public boolean isNumber() {
+		if (number!=null) return true;
+		// A String containing an number is a number
 		if (string!=null) {
 			try {
 				Integer.parseInt(string);
@@ -72,7 +73,7 @@ public class Value {
 	public boolean isString() {
 		if (string!=null) return true;
 		// An integer can be expressed as a string
-		return isInteger();
+		return isNumber();
 	}
 	
 	public boolean isBoolean() {
@@ -84,13 +85,13 @@ public class Value {
 		return variable;
 	}
 	public boolean isNull() {
-		if (integer==null && string==null && bool==null && array==null) return true;
+		if (number==null && string==null && bool==null && array==null) return true;
 		return false;
 	}
 	
-	public Integer getInteger() {
-		if (integer!=null) return integer;
-		if (string!=null) return Integer.parseInt(string);
+	public BigDecimal getNumber() {
+		if (number!=null) return number;
+		if (string!=null) return new BigDecimal(string);
 		throw new RuntimeException("Wrong type");
 	}
 	
@@ -108,7 +109,7 @@ public class Value {
 	}
 	@Override
 	public String toString() {
-		if (integer!=null) return Integer.toString(integer);
+		if (number!=null) return number.toString();
 		if (string!=null) return string;
 		if (bool!=null) return Boolean.toString(bool);
 		if (array!=null) return array.toString();

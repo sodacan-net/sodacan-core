@@ -15,12 +15,12 @@
 package net.sodacan.module.statement;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.VariableDefs;
 
 public class AndStatement  extends Statement {
 
 	@Override
-	public Value execute(Variables variables) {
+	public Value execute(VariableDefs variables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -18,7 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.VariableDefs;
 
 /**
  * A terminal node in the AST. All name segments of an identifier are here as is the instance designator, if applicable.
@@ -28,13 +28,13 @@ import net.sodacan.module.variable.Variables;
  * 
  * @author John Churin
  */
-public class Identifier extends Expression {
+public class VariableRef extends Expression {
 	String domainName;
 	String topicName;
 	String variableName;
 	Expression instanceExpression;
 	
-	public Identifier(String domainName, String topicName, String variableName, Expression instanceExpression) {
+	public VariableRef(String domainName, String topicName, String variableName, Expression instanceExpression) {
 		super();
 		this.domainName = domainName;
 		this.topicName = topicName;
@@ -43,7 +43,7 @@ public class Identifier extends Expression {
 	}
 
 	@Override
-	public Value execute(Variables variables) {
+	public Value execute(VariableDefs variables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

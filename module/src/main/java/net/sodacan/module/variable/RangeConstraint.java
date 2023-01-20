@@ -12,22 +12,42 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.variable;
+
+import java.math.BigDecimal;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 
-/**
- * An AT statement responds to the passage of time
- * @author John Churin
- *
- */
-public class AtStatement extends Statement {
+public class RangeConstraint extends Constraint {
+	BigDecimal low = null;
+	BigDecimal high = null;
+	
+	public RangeConstraint(String low, String high) {
+		if (low!=null) {
+			this.low = new BigDecimal(low);
+		}
+		if (high!=null) {
+			this.high = new BigDecimal( high);
+		}
+	}
 
 	@Override
-	public Value execute(VariableDefs variables) {
+	public boolean isMatch(Value value) {
 		// TODO Auto-generated method stub
-		return null;
+		return false;
+	}
+	
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		if (low!=null) {
+			sb.append(low.toPlainString());
+		}
+		sb.append('-');
+		if (high!=null) {
+			sb.append(high.toPlainString());
+		}
+		return sb.toString();
 	}
 
 }

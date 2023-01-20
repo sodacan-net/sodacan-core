@@ -15,7 +15,7 @@
 package net.sodacan.module.expression;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.VariableDefs;
 /**
  * Binary expressions have two sub-expressions
  * @author John Churin
@@ -38,7 +38,7 @@ public abstract class BinaryExpression extends Expression {
 	abstract protected Value evaluate(Value leftValue, Value rightValue);
 
 	@Override
-	public Value execute(Variables variables) {
+	public Value execute(VariableDefs variables) {
 		Value resolvedLeftValue = resolve(variables, left.execute(variables));
 		Value resolvedRightValue = resolve(variables, right.execute(variables));
 		return evaluate( resolvedLeftValue, resolvedRightValue);

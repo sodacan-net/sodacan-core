@@ -50,7 +50,7 @@ privateStatement
 	;
 
 timerStatement
-	: TIMER identifier instance? EOL+
+	: TIMER variableDef EOL+
 	;
 	
 atStatement
@@ -89,7 +89,9 @@ variableDef
 	;
 	
 identifier
-	: ID (DOT ID)*
+	: ID DOT ID DOT ID			# FullId
+	| ID DOT ID					# TopicId
+	| ID 						# ShortId
 	;
 
 idRef
@@ -131,7 +133,7 @@ constraintList
 constraint
 	: numberRange
 	| number
-	| STRING
+	| string
 	| constraintIdentifier
 	;
 
@@ -139,7 +141,9 @@ constraintIdentifier
 	: ID
 	;
 numberRange
-	: number MINUS number
+	: number MINUS number				# FullRange
+	| MINUS number						# HighRange
+	| number MINUS						# LowRange
 	;
 	
 literal

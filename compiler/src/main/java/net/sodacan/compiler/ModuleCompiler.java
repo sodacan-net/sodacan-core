@@ -90,11 +90,18 @@ public class ModuleCompiler {
         parser.addErrorListener(new SccErrorListener(module));
 //        System.out.println("*****Start parse: " + file);
         SccParser.SccContext tree = parser.scc();
-        System.out.println("*****Finish parse: with " + parser.getNumberOfSyntaxErrors() + " error(s)");
+        System.out.println("*****Finish parse: with " + module.getErrors().size() + " error(s)");
         if (0==parser.getNumberOfSyntaxErrors()) {
-        	SccModuleVisitor smc = new SccModuleVisitor(module);
-        	// This should return the SodacanModule object as above
-        	ModuleComponent c = smc.visit(tree);
+			VariableDefVisitor variableDefVisitor = new VariableDefVisitor(module,parser); 
+			variableDefVisitor.visit(tree);
+            System.out.println("*****Finish VariableDefs: with " + module.getErrors().size() + " error(s)");
+            if (0==module.getErrors().size() ) {
+            	System.out.print("Variables: ");
+            	System.out.println(variableDefVisitor.getVariables());
+            }
+//        	SccModuleVisitor smc = new SccModuleVisitor(module);
+//        	// This should return the SodacanModule object as above
+//        	ModuleComponent c = smc.visit(tree);
         }
         System.out.println(tree.toStringTree(parser));
 //        System.out.println("*****Visit: " + file);

@@ -89,79 +89,16 @@ public class SccListener extends SccParserBaseListener {
 		super.exitSubscribeStatement(ctx);
 	}
 
-	/**
-	 * A constraint has constraints:
-	 * If a decimal number with a zero value, such as 0.00, means the precision of a decimal number. 
-	 * If more than one such number is supplied, then they all must have the same number of decimal places.
-	 * For example: 0.0,1.0 is valid. 0.0000,1.0000 is valid. 0.0,1.0000 is not valid because the precision of the numbers must be the same.
-	 */
-	@Override
-	public void exitConstraintList(ConstraintListContext ctx) {
-		Integer decimalPlaces = null;
-		for ( ConstraintContext constraint :  ctx.constraint()) {
-			if (constraint.constraintIdentifier()!=null) {
-				String value = constraint.constraintIdentifier().getText();
-				System.out.println("Constraint Identifier: " + value);
-			}
-			if (constraint.STRING()!=null) {
-				String value = constraint.STRING().getText();
-				System.out.println("Constraint String literal: " + value);
-			}
-			if (constraint.number()!=null) {
-				BigDecimal bd = new BigDecimal(constraint.number().getText());
-				if (decimalPlaces==null) {
-					decimalPlaces = bd.scale();
-				} else {
-					if (decimalPlaces!=bd.scale()) {
-						parser.notifyErrorListeners("Numeric constraints must have the same number of decimal places");
-					}
-				}
-				
-			}
-//			db = new BigDecimal
-		}
-		super.exitConstraintList(ctx);
-	}
 
-
-	@Override
-	public void exitVariableDef(VariableDefContext ctx) {
-		StringBuffer sb = new StringBuffer(ctx.identifier().getText());
-		if (ctx.instance()!=null) {
-			sb.append('[');
-			sb.append(ctx.instance().getText());
-			sb.append(']');
-			
-		}
-		String name = sb.toString();
-		System.out.println("Variable: " + name);
+//	@Override
+//	public void exitAliasName(AliasNameContext ctx) {
+//		String name = ctx.getText();
 //		if (variables.contains(name)) {
-//			parser.notifyErrorListeners("Variable already defined: " + name);
+//			parser.notifyErrorListeners("Alias already defined: " + name);
 //		}
 //		variables.add(name);
-//		for (ConstraintContext constraint :  ctx.constraintExpression().constraintList().constraint()) {
-//			if (constraint.constraintIdentifier()!=null) {
-//				String value = constraint.constraintIdentifier().getText();
-//				System.out.println("Constraint ID: " + name + "." + value);
-//				if (variables.contains(value)) {
-//					parser.notifyErrorListeners("Constraint " + value + " already defined elsewhere. Consider using quotes around constaint value.");
-//				}
-//				variables.add(value);
-//			}
-//		}
-		super.exitVariableDef(ctx);
-	}
-
-
-	@Override
-	public void exitAliasName(AliasNameContext ctx) {
-		String name = ctx.getText();
-		if (variables.contains(name)) {
-			parser.notifyErrorListeners("Alias already defined: " + name);
-		}
-		variables.add(name);
-		super.exitAliasName(ctx);
-	}
+//		super.exitAliasName(ctx);
+//	}
 
 
 	@Override

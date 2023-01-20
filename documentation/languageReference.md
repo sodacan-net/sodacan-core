@@ -5,9 +5,13 @@ The goal of this language is to be concise and to the extent possible declarativ
 ## General lexical rules
 The SCC language is relatively simple. In fact, it is designed to be used by non-programmers. While tabs and whitespace improve human readability, they are ignored in the language. Should more complicated logic be needed, other languages such as Java or C++ can be used.  
 Very few reserved words are needed for any particular statement. Each statement will be described below.
-SCC is line oriented with one statement per line.
-### Case Insensitive
-In most examples, key words are capitalized. This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
+
+SCC is line oriented with one statement per line. Therefore, line endings are significant.
+
+### Case Sensitivity
+Key words are capitalized. User-created identifiers must be lowercase in order to avoid a possible conflict with keywords.
+
+&&&&This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
 ``` 
 	THEN
 	then
@@ -54,8 +58,7 @@ be initialized with a string literal, even if the string literal is empty:
 	PUBLIC myName "John"
 ```
 Some variables have no value whatsoever. Such a variable is still quite useful. For example, if we declare a variable named
-`bedtime`, the variable can be **activated**. In other words, "it's bedtime". This causes that variable to be published as a message so that other modules
-can subscribe to it. Other than triggering an action, the message does not carry any other useful information.
+`bedtime`, the variable can be **activated**. In other words, "it's bedtime". This causes that variable to be published as a message so that other modules can subscribe to it. Other than triggering an action, the message does not carry any other useful information.
 ```
 	MODULE topics
 		TOPIC myhouse.bedtime

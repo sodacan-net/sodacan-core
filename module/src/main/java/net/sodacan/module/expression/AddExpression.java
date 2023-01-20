@@ -24,6 +24,6 @@ public class AddExpression extends BinaryExpression {
 	
 	@Override
 	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
-		return new Value( resolvedLeftValue.getInteger() + resolvedRightValue.getInteger());
+		return null; //////// new Value( resolvedLeftValue.getInteger() + resolvedRightValue.getInteger());
 	}
 }

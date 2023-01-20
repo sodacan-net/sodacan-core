@@ -15,12 +15,12 @@
 package net.sodacan.module.statement;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.VariableDefs;
 
 public abstract class ModuleComponent {
 	int lineNumber;
 	int characterPosition;
 	
-	abstract public Value execute(Variables variables);
+	abstract public Value execute(VariableDefs variables);
 	
 }

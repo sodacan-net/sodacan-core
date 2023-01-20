@@ -12,22 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.variable;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 
-/**
- * An AT statement responds to the passage of time
- * @author John Churin
- *
- */
-public class AtStatement extends Statement {
+public class StringConstraint extends Constraint {
+	String value;
+	public StringConstraint(String value) {
+		this.value = value;
+	}
 
 	@Override
-	public Value execute(VariableDefs variables) {
-		// TODO Auto-generated method stub
-		return null;
+	public boolean isMatch(Value value) {
+		if (value.isString()) {
+			return (value.getValue().equals(this.value));
+		}
+		return false;
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append('"');
+		sb.append(value);
+		sb.append('"');
+		return sb.toString();
 	}
 
 }

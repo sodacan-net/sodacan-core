@@ -12,22 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.variable;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 
 /**
- * An AT statement responds to the passage of time
- * @author John Churin
+ * Constraint of a variable. Variables optionally have constraints. If so, at least one must match
+ * the value being added to a Value for the variable.
+ * @author john
  *
  */
-public class AtStatement extends Statement {
-
-	@Override
-	public Value execute(VariableDefs variables) {
-		// TODO Auto-generated method stub
-		return null;
+public abstract class Constraint {
+	
+	public Constraint() {
 	}
 
+	public String getIdentifierName() {
+		return null;
+	}
+	/**
+	 * Does the supplied value match this constraint?
+	 * @param value The value to match
+	 * @return true if a match, otherwise, false
+	 */
+	public abstract boolean isMatch(Value value);
 }

@@ -34,8 +34,6 @@ public class SccErrorListener extends BaseErrorListener {
 	@Override
 	public void syntaxError(Recognizer<?, ?> recognizer, Object offendingSymbol, int line, int charPositionInLine,
 			String msg, RecognitionException e) {
-		List<String> stack = ((SccParser)recognizer).getRuleInvocationStack();
-		Collections.reverse(stack);
 		String symbol = null;
 		if (offendingSymbol instanceof CommonToken) {
 			CommonToken t = (CommonToken)offendingSymbol;
@@ -44,12 +42,14 @@ public class SccErrorListener extends BaseErrorListener {
 //			String src = t.getInputStream().;
 
 		}
-		System.err.print("\nRule stack: "+stack);
+//		List<String> stack = ((SccParser)recognizer).getRuleInvocationStack();
+//		Collections.reverse(stack);
+//		System.err.print("\nRule stack: "+stack);
 		System.err.println();
 		System.err.print(recognizer.getInputStream().getSourceName());
 		System.err.print(" line "+line+":"+charPositionInLine + ": " + msg);
-		module.addError(new ErrorComponent(line,charPositionInLine, stack, msg, symbol, e));
-		super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
+		module.addError(new ErrorComponent(line,charPositionInLine, null, msg, symbol, e));
+//		super.syntaxError(recognizer, offendingSymbol, line, charPositionInLine, msg, e);
 	}
 
 }

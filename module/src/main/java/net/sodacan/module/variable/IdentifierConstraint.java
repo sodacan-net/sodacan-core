@@ -12,22 +12,27 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
-
-import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+package net.sodacan.module.variable;
 
 /**
- * An AT statement responds to the passage of time
+ * An identifier constraint in Sodacan is just a string (without quotes)
+ * The only challenge is that these pseudo-string must not conflict with other identifiers.
  * @author John Churin
  *
  */
-public class AtStatement extends Statement {
+public class IdentifierConstraint extends StringConstraint {
+
+	public IdentifierConstraint(String value) {
+		super(value);
+	}
 
 	@Override
-	public Value execute(VariableDefs variables) {
-		// TODO Auto-generated method stub
-		return null;
+	public String getIdentifierName() {
+		return value;
+	}
+	@Override
+	public String toString() {
+		return value;
 	}
 
 }
