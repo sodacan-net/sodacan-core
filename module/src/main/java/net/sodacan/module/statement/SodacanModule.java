@@ -17,8 +17,10 @@ package net.sodacan.module.statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.module.variable.VariableDefs;
+
 /**
- * Top-level module. Essentially an AST, produced from source code, from the compiler perspective. We walk this tree to execute a module at runtime.
+ * Top-level module. Essentially an AST, produced from source code, from the .scc compiler. We walk this tree to execute a module at runtime.
  * @author John Churin
  *
  */
@@ -30,8 +32,7 @@ public class SodacanModule {
 	
 	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of SodaCan 
 	// means the order of statements is unimportant.
-	List<PublishStatement> publishStatements = new ArrayList<>();
-	List<SubscribeStatement> subscribeStatements = new ArrayList<>();
+	VariableDefs variableDefs = new VariableDefs();
 	List<AtStatement> atStatements = new ArrayList<>();
 	List<OnStatement> onStatements = new ArrayList<>();
 	List<AndStatement> whenStatements = new ArrayList<>();
@@ -41,6 +42,14 @@ public class SodacanModule {
 		
 	}
 	
+	public VariableDefs getVariableDefs() {
+		return variableDefs;
+	}
+
+	public void setVariableDefs(VariableDefs variableDefs) {
+		this.variableDefs = variableDefs;
+	}
+
 	public void addError(ErrorComponent error) {
 		errors.add(error);
 	}
@@ -49,12 +58,6 @@ public class SodacanModule {
 	 * @param statement
 	 */
 	public void addStatement(Statement statement) {
-		if (statement instanceof PublishStatement) {
-			publishStatements.add((PublishStatement)statement);
-		}
-		if (statement instanceof SubscribeStatement) {
-			subscribeStatements.add((SubscribeStatement)statement);
-		}
 		if (statement instanceof AtStatement) {
 			atStatements.add((AtStatement)statement);
 		}
@@ -97,14 +100,6 @@ public class SodacanModule {
 		this.originalFileName = originalFileName;
 	}
 
-	
-	public List<PublishStatement> getPublishStatements() {
-		return publishStatements;
-	}
-
-	public List<SubscribeStatement> getSubscribeStatements() {
-		return subscribeStatements;
-	}
 
 	public List<AtStatement> getAtStatements() {
 		return atStatements;

@@ -97,8 +97,9 @@ public class ModuleCompiler {
             System.out.println("*****Finish VariableDefs: with " + module.getErrors().size() + " error(s)");
             if (0==module.getErrors().size() ) {
             	System.out.print("Variables: ");
-            	System.out.println(variableDefVisitor.getVariables());
+            	System.out.println(module.getVariableDefs());
             }
+            
 //        	SccModuleVisitor smc = new SccModuleVisitor(module);
 //        	// This should return the SodacanModule object as above
 //        	ModuleComponent c = smc.visit(tree);

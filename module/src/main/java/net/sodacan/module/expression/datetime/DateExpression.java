@@ -12,12 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.expression.datetime;
 
+import java.util.Set;
+import java.util.TreeSet;
+
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
-public class SubscribeStatement  extends Statement {
+public class DateExpression extends Expression {
+	Set<String> dow = new TreeSet<>();
+	Set<String> season = new TreeSet<>();
+	Set<String> month = new TreeSet<>();
+
+	public DateExpression() {
+		// TODO Auto-generated constructor stub
+	}
 
 	@Override
 	public Value execute(VariableDefs variables) {

@@ -14,20 +14,22 @@
  */
 package net.sodacan.compiler;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 import net.sodacan.compiler.SccParser.AliasNameContext;
+import net.sodacan.compiler.SccParser.AtStatementContext;
 import net.sodacan.compiler.SccParser.ConstraintContext;
 import net.sodacan.compiler.SccParser.ConstraintExpressionContext;
-import net.sodacan.compiler.SccParser.ConstraintIdentifierContext;
 import net.sodacan.compiler.SccParser.FullIdContext;
+import net.sodacan.compiler.SccParser.OnStatementContext;
+import net.sodacan.compiler.SccParser.PrivateStatementContext;
+import net.sodacan.compiler.SccParser.PublishStatementContext;
 import net.sodacan.compiler.SccParser.ShortIdContext;
+import net.sodacan.compiler.SccParser.SubscribeStatementContext;
 import net.sodacan.compiler.SccParser.TopicIdContext;
+import net.sodacan.compiler.SccParser.TopicStatementContext;
 import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
 import net.sodacan.module.variable.VariableDefs;
@@ -42,11 +44,12 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 	// The current builder created during our descent
 	private VariableDefBuilder vdb = null;
 	
-	protected VariableDefs variables = new VariableDefs();
 	
 	protected SodacanModule module;
 	protected SccParser parser;
-
+	// We communicate the variable type from statement down to variableDef
+	private String variableType = null;
+	
 	public VariableDefVisitor(SodacanModule module,SccParser parser) {
 		super();
 		this.module = module;
@@ -54,7 +57,44 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 	}
 	
 	public VariableDefs getVariables() {
-		return variables;
+		return module.getVariableDefs();
+	}
+
+	@Override
+	public Void visitPublishStatement(PublishStatementContext ctx) {
+		variableType = "publishVariable";
+		return super.visitPublishStatement(ctx);
+	}
+
+	@Override
+	public Void visitSubscribeStatement(SubscribeStatementContext ctx) {
+		variableType = "subscribeVariable";
+		return super.visitSubscribeStatement(ctx);
+	}
+
+	@Override
+	public Void visitPrivateStatement(PrivateStatementContext ctx) {
+		variableType = "privateVariable";
+		return super.visitPrivateStatement(ctx);
+	}
+
+	
+	@Override
+	public Void visitTopicStatement(TopicStatementContext ctx) {
+		variableType = "topicVariable";
+		return super.visitTopicStatement(ctx);
+	}
+
+	@Override
+	public Void visitAtStatement(AtStatementContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitAtStatement(ctx);
+	}
+
+	@Override
+	public Void visitOnStatement(OnStatementContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitOnStatement(ctx);
 	}
 
 	@Override
@@ -98,6 +138,7 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 	public Void visitVariableDef(VariableDefContext ctx) {
 		// Get ready to construct a new variable
 		vdb = VariableDef.newVariableDefBuilder();
+		vdb.type(variableType);
 		visit(ctx.identifier());
 		if (ctx.instance()!=null) {
 			visit(ctx.instance());
@@ -111,12 +152,12 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		// We've collected all the parts, so build it
 		VariableDef vd = vdb.build();
 		// Add it to collection of variables
-		if (!variables.addVariableDef(vd)) {
+		if (!module.getVariableDefs().addVariableDef(vd)) {
 			parser.notifyErrorListeners(ctx.getStart(), "Variable already defined: " + vd, null);
 		}
 		List<String> conIds = vd.getConstraintIdentifiers();
 		for (String id : conIds) {
-			if (null!=variables.find(id)) {
+			if (null!=module.getVariableDefs().find(id)) {
 				parser.notifyErrorListeners(ctx.getStart(), "Constraint " + id + " already defined elsewhere. Consider using quotes around constaint value.", null);
 			}
 		}

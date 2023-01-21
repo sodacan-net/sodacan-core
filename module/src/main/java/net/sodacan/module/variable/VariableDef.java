@@ -23,7 +23,7 @@ import java.util.List;
  * @author John Churin
  */
 public class VariableDef {
-	public enum VariableType {publishVariable,subscribeVariable,privateVariable};
+	public enum VariableType {topicVariable, publishVariable,subscribeVariable,privateVariable};
 	private String namespace;
 	private String topic;
 	private String name;
@@ -174,6 +174,8 @@ public class VariableDef {
 	@Override
 	public String toString() {
 		StringBuffer sb = new StringBuffer();
+		sb.append(variableType.toString());
+		sb.append(':');
 		sb.append(getFullName());
 		if (constraints!=null) {
 			sb.append('{');
@@ -223,7 +225,17 @@ public class VariableDef {
 			this.alias = alias;
 			return this;
 		}
+		
+		public VariableDefBuilder type(String type) {
+			this.variableType = VariableType.valueOf(type);
+			return this;
+		}
 
+		public VariableDefBuilder type(VariableType type) {
+			this.variableType = type;
+			return this;
+		}
+		
 		public VariableDefBuilder constraint(Constraint constraint) {
 			if (null==this.constraints) {
 				this.constraints = new ArrayList<>();
