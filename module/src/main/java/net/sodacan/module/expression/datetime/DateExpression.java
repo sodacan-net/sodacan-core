@@ -14,20 +14,37 @@
  */
 package net.sodacan.module.expression.datetime;
 
+import java.time.LocalDate;
+import java.time.LocalTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
 
+import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
+import net.sodacan.module.expression.datetime.TimeExpression.TimeExpressionBuilder;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
+/**
+ * Combining date criteria in one expression provides "and" and "or" combinations.
+ * For example,  ON weekends DURING summer
+ * This means what it looks like, weekends during summer.
+ * However, ON monday tuesday DURING winter
+ * means only a monday or a tuesday, and only during the winter.
+ * More: ON July 1
+ * Date Range: FROM July 1 THROUGH August 17
+ *
+ * @author John Churin
+ *
+ */
 public class DateExpression extends Expression {
-	Set<String> dow = new TreeSet<>();
-	Set<String> season = new TreeSet<>();
-	Set<String> month = new TreeSet<>();
 
-	public DateExpression() {
-		// TODO Auto-generated constructor stub
+	List<DateCriteria> criteria = new ArrayList<>();
+
+	private DateExpression(DateExpressionBuilder builder) {
+		this.criteria = builder.criteria;
 	}
 
 	@Override
@@ -35,5 +52,51 @@ public class DateExpression extends Expression {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	/**
+	 * Create a new, empty, builder for a DateExpression
+	 */
+	public static DateExpressionBuilder newDateExpressionBuilder() {
+		return new DateExpressionBuilder();
+	}
+
+	/**
+	 * Builder class for DateExpressions
+	 *
+	 */
+	public static class DateExpressionBuilder {
+		List<DateCriteria> criteria = new ArrayList<>();
+
+		protected DateExpressionBuilder() {
+			
+		}
+		
+		public DateExpressionBuilder date(LocalDate time) {
+//			this.localDate = time;
+			return this;
+		}
+		
+		public DateExpressionBuilder weekend() {
+			criteria.add(new WeekendCriteria());
+			return this;
+		}
+
+		/**
+		 * Add a specific date from y,m,d components
+		 * @return
+		 */
+		public DateExpressionBuilder date(int year, int month, int day ) {
+//			this.localDate = LocalDate.of(year,month,day);
+			return this;
+		}
+		public DateExpressionBuilder date(int year, String month, int day) {
+			
+			return this;
+		}
+		public DateExpression build() {
+			return new DateExpression(this);
+		}
+
+	}
+
 
 }

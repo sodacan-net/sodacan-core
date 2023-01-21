@@ -228,7 +228,18 @@ AtFROM
 AtTHROUGH
 	: 'THROUGH'
 	;	
+AtIN
+	: 'IN'
+	;
 
+AtSTARTING
+	: 'STARTING'
+	;
+
+AtENDING
+	: 'ENDING'
+	;
+	
 AtHOUR
 	: 'hours'
 	| 'hour'

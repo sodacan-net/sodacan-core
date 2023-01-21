@@ -19,6 +19,7 @@ import net.sodacan.compiler.SccParser.ModuleInstanceContext;
 import net.sodacan.compiler.SccParser.ModuleNameContext;
 import net.sodacan.compiler.SccParser.SccContext;
 import net.sodacan.compiler.SccParser.StatementListContext;
+import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 /**
  * One more time we need to visit the module tree to construct the executable portion of the module.
@@ -26,6 +27,16 @@ import net.sodacan.module.value.Value;
  *
  */
 public class ExecuteableStatementVisitor extends SccParserBaseVisitor<Value> {
+	protected SodacanModule module;
+	protected SccParser parser;
+
+	public ExecuteableStatementVisitor(SodacanModule module,SccParser parser) {
+		super();
+		this.module = module;
+		this.parser = parser;
+
+	}
+	
 	/**
 	 * Top-level module file
 	 */

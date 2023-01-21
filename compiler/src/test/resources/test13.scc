@@ -10,15 +10,17 @@ MODULE test13
 		THEN x
 	AT noon IN fall
 		THEN x
-	AT noon FROM June 1, 2023 THROUGH July 13, 2023
+	AT noon FROM June 1 THROUGH July 13
+		THEN x
+	AT noon FROM June THROUGH July
 		THEN x
 	AT 1 minute before noon ON Tuesday Thursday Saturday
 		THEN x
-	AT 1 minute after sunset ON Tuesday FROM May 1
+	AT 1 minute after sunset ON Tuesday STARTING May 1, 2024
 		THEN x
-	AT 3:00pm FROM June 1, 2023
+	AT 3:00pm STARTING June 1, 2023
 		THEN x
-	AT sunset THROUGH September 30, 2023
+	AT sunset ENDING September 30, 2023
 		THEN x
 
 	AT 10:04am

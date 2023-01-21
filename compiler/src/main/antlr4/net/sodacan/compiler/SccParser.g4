@@ -54,7 +54,7 @@ timerStatement
 	;
 	
 atStatement
-	: AT atTimeExpression atDateExpression? atDateRange AtEOL+ andStatement? thenStatement+
+	: AT atTimeExpression atDateExpression? AtEOL+ andStatement? thenStatement+
 	;
 
 onStatement
@@ -198,18 +198,6 @@ expr
 	;
 		
 // At (time and date) statement elements from this point down
-atDateRange
-	: (AtFROM atFromDate)? (AtTHROUGH atToDate)?
-	;
-	
-atFromDate
-	: atSpecificDate
-	;
-	
-atToDate
-	: atSpecificDate
-	;
-
 atTimeExpression
 	: atOffsetExpression? atSpecificTimeExpression
 	;
@@ -243,23 +231,48 @@ atTimeShortcut
 	| AtMIDNIGHT
 	| AtNOON
 	;
+	
 atTime
 	: hr=AtINT AtCOLON mi=AtINT ap=AtAMPM
 	;
 	
 atDateExpression
-	: AtON (atDate)+
+	: atDateSpecs*
 	;
 	
-atDate
-	: atDow
-	| atSeason
-	| atHoliday
-	| atSpecificDate
+atDateSpecs
+	: AtON atOnSpec+
+	| AtIN atInSpec+
+	| AtSTARTING atFullDate
+	| AtENDING atFullDate
+	| AtFROM atOnAnnualDate AtTHROUGH atOnAnnualDate
 	;
 
-atSpecificDate
-	: atMonth atDay (AtCOMMA atYear)?
+atOnSpec
+	: atOnDaysOfWeek
+	| atOnAnnualDate
+	;
+
+atInSpec
+	: atMonth
+	| atSeason
+	| atYear
+	;
+	
+atOnDaysOfWeek
+	: atDow+
+	;
+	
+atOnDate
+	: AtON atFullDate+
+	;
+
+atOnAnnualDate
+	: atMonth atDay?
+	;
+			
+atFullDate
+	: atMonth atDay AtCOMMA atYear
 	;		
 
 atYear
@@ -271,7 +284,8 @@ atMonth
 	;
 
 atDow
-	: AtDOW;
+	: AtDOW
+	;
 
 atHoliday
 	: AtCHRISTMAS
