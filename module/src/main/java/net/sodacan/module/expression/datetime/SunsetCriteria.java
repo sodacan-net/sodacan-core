@@ -28,10 +28,7 @@ public class SunsetCriteria extends ShortcutTimeCriteria {
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
 		ZonedDateTime sst = SunriseSunset.getInstance().getSunset(date);
-		if (getUnits()!=null) {
-				sst = sst.plus(getOffset(), getUnits());
-			
-		}
+		sst = applyOffset(sst);
 		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
 	}
 

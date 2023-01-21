@@ -17,26 +17,18 @@ package net.sodacan.module.expression.datetime;
 import java.time.ZonedDateTime;
 import java.time.temporal.ChronoUnit;
 
-public abstract class ShortcutTimeCriteria extends TimeCriteria {
-	private long offset;
-	private ChronoUnit units;
+import net.sodacan.utility.SunriseSunset;
 
-	public ShortcutTimeCriteria(long offset, ChronoUnit units) {
-		super();
-		this.offset = offset;
-		this.units = units;
+public class SunriseCriteria extends ShortcutTimeCriteria {
+
+	public SunriseCriteria(int offset, ChronoUnit units) {
+		super(offset, units);
 	}
-	
-	public long getOffset() {
-		return offset;
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		ZonedDateTime sst = SunriseSunset.getInstance().getSunrise(date);
+		sst = applyOffset(sst);
+		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
 	}
-	public ChronoUnit getUnits() {
-		return units;
-	}
-	public ZonedDateTime applyOffset( ZonedDateTime time ) {
-		if (units!=null) {
-			return time.plus(getOffset(), getUnits());		
-		}
-		return time;
-	}
+
 }

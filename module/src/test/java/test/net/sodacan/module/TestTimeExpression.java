@@ -18,6 +18,7 @@ import static org.junit.Assert.*;
 
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
 import org.junit.Test;
 
@@ -44,5 +45,53 @@ public class TestTimeExpression {
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.systemDefault());
 		assert(te.isMatch(now));
 	}
+	/**
+	 * The second time this runs should be much faster than the first time (on my machine, 0.5 sec 
+	 * the first time and > 0.001 sec on the second run for the same day.
+	 */
+	@Test
+	public void testSunset1() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.systemDefault());
+		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testSunsetWithOffset() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset(1,ChronoUnit.HOURS).build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 18, 13, 0, 0, ZoneId.systemDefault());
+		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testSunsetWithNegativeOffset() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset(-1,ChronoUnit.HOURS).build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 16, 13, 0, 0, ZoneId.systemDefault());
+		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testSunrise() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunrise().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 7, 37, 0, 0, ZoneId.systemDefault());
+		assert(te.isMatch(now));
+	}
+
 
 }

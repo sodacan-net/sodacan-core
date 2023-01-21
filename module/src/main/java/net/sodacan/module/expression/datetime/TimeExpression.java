@@ -88,10 +88,14 @@ public class TimeExpression extends Expression {
 			return this;
 		}
 
-//		public TimeExpressionBuilder sunrise() {
-//			criteria.add(new SunriseCriteria(0,null));
-//			return this;
-//		}
+		public TimeExpressionBuilder sunrise() {
+			criteria.add(new SunriseCriteria(0,null));
+			return this;
+		}
+		public TimeExpressionBuilder sunrise(int offset, ChronoUnit units) {
+			criteria.add(new SunsetCriteria(offset,units));
+			return this;
+		}
 
 		public TimeExpressionBuilder time(LocalTime time) {
 			criteria.add(new TimeOfDayCriteria(time.getHour(),time.getMinute()));

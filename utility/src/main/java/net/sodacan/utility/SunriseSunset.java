@@ -33,6 +33,7 @@ public class SunriseSunset {
 	public static SunriseSunset getInstance() {
 		return instance;
 	}
+	
 	/**
 	 * Get the sunTime instance that matches the date in time
 	 * Use a cache to avoid recompute.
@@ -52,6 +53,7 @@ public class SunriseSunset {
 		cache.add(dayNumber,nss);
 		return nss;
 	}
+	
 	public ZonedDateTime getSunrise(ZonedDateTime time) {
 		SunTimes ss = getSuntimes(time);
 		return ss.getRise();
