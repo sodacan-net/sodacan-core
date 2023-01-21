@@ -12,15 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.utility;
 
-import java.time.ZonedDateTime;
+import java.util.Optional;
 
-public abstract class DateCriteria extends Criteria {
-
-	public DateCriteria() {
-		super();
-	}
-
-		
+public interface Cache<K, V> {
+	/**
+	 * Add a new item to the cache. Return true if this replaces an item with the same key
+	 * @param key
+	 * @param value
+	 * @return
+	 */
+    public void add(K key, V value);
+    
+    public V get(K key);
+    public int size();
+    public boolean isEmpty();
+    public void clear();
 }

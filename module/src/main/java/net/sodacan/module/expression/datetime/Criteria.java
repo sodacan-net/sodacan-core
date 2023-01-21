@@ -1,3 +1,6 @@
+package net.sodacan.module.expression.datetime;
+import java.time.ZonedDateTime;
+
 /*
  * Copyright 2023 John M Churin
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +15,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
 
-import java.time.ZonedDateTime;
+public abstract class Criteria {
 
-public abstract class DateCriteria extends Criteria {
-
-	public DateCriteria() {
-		super();
+	public Criteria() {
+		// TODO Auto-generated constructor stub
 	}
+	/**
+	 * Return true of the date passed in meets the this criteria.
+	 * For example, the Weekend subclass returns true of the
+	 * passed-in date is a weekend day
+	 * @param date
+	 * @return
+	 */
+	public abstract boolean isMatch( ZonedDateTime date);
 
-		
 }

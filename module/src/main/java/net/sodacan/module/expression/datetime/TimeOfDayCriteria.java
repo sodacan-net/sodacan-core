@@ -16,11 +16,18 @@ package net.sodacan.module.expression.datetime;
 
 import java.time.ZonedDateTime;
 
-public abstract class DateCriteria extends Criteria {
+public class TimeOfDayCriteria extends TimeCriteria {
+	int hour;
+	int minute;
 
-	public DateCriteria() {
-		super();
+	public TimeOfDayCriteria(int hour, int minute) {
+		this.hour = hour;
+		this.minute = minute;
 	}
 
-		
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		return (hour==date.getHour() && minute==date.getMinute());
+	}
+
 }

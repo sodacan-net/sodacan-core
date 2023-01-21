@@ -14,13 +14,23 @@
  */
 package net.sodacan.module.expression.datetime;
 
-import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
-public abstract class DateCriteria extends Criteria {
+public abstract class ShortcutTimeCriteria extends TimeCriteria {
+	private long offset;
+	private ChronoUnit units;
 
-	public DateCriteria() {
+	public ShortcutTimeCriteria(long offset, ChronoUnit units) {
 		super();
+		this.offset = offset;
+		this.units = units;
+	}
+	
+	public long getOffset() {
+		return offset;
+	}
+	public ChronoUnit getUnits() {
+		return units;
 	}
 
-		
 }

@@ -15,12 +15,7 @@
 package net.sodacan.module.expression.datetime;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
 
-public abstract class DateCriteria extends Criteria {
-
-	public DateCriteria() {
-		super();
-	}
-
-		
+public abstract class TimeCriteria extends Criteria {
 }

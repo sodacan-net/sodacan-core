@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="info" packages="net.sodacan.webserver.log">
   <Appenders>
-    <!-- <LogAppender name="LogAppender" /> -->
     <Console name="Console" target="SYSTEM_OUT">
       <PatternLayout pattern="%d{HH:mm:ss} [%t] %-5level %logger{36} - %msg%n"/>
     </Console>
@@ -10,7 +9,6 @@
 	<logger name="org.drools" level="debug"/>
 	<logger name="org.glassfish.jersey" level="debug"/>
 	<logger name="net.sodacan" level="DEBUG">
-      <!-- <AppenderRef ref="LogAppender"/>  -->
       <AppenderRef ref="Console"/>
 	</logger>
     <Root level="DEBUG">

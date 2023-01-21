@@ -16,6 +16,10 @@ package net.sodacan.module.expression.datetime;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoField;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 import net.sodacan.SodacanException;
@@ -34,16 +38,10 @@ import net.sodacan.module.variable.VariableDefs;
 public class TimeExpression extends Expression {
 	static final private Set<String> validUnits = Set.of("hours","minutes");
 	static final private Set<String> validShortcuts = Set.of("noon","midnight","sunrise","sunset");
-	private int offsetValue = 0;
-	private String offsetUnits = null;	// Hours or minutes
-	private String shortcut = null;
-	private LocalTime localTime;
+	private List<Criteria> criteria = new ArrayList<>();
 	
 	private TimeExpression(TimeExpressionBuilder builder) {
-		this.offsetValue = builder.offsetValue;
-		this.offsetUnits = builder.offsetUnits;
-		this.shortcut = builder.shortcut;
-		this.localTime = builder.localTime;
+		this.criteria = builder.criteria;
 	}
 	
 	@Override
@@ -57,6 +55,9 @@ public class TimeExpression extends Expression {
 	 * @return
 	 */
 	public boolean isMatch( ZonedDateTime now) {
+		for (Criteria criterium : criteria) {
+			if (criterium.isMatch(now)) return true;
+		}
 		return false;
 	}
 	/**
@@ -71,34 +72,29 @@ public class TimeExpression extends Expression {
 	 *
 	 */
 	public static class TimeExpressionBuilder {
-		private int offsetValue = 0;
-		private String offsetUnits = null;	// Hours or minutes
-		private String shortcut = null;
-		private LocalTime localTime;
+		private List<Criteria> criteria = new ArrayList<>();
 
 		protected TimeExpressionBuilder() {
 			
 		}
 		
-		public TimeExpressionBuilder offset(int value, String units) {
-			if (!validUnits.contains(units)) {
-				throw new SodacanException("Invalid time units: " + units);
-			}
-			this.offsetValue = value;
-			this.offsetUnits = units;
+		public TimeExpressionBuilder sunset() {
+			criteria.add(new SunsetCriteria(0,null));
 			return this;
 		}
 		
-		public TimeExpressionBuilder shortcut(String shortcut) {
-			if (!validShortcuts.contains(shortcut)) {
-				throw new SodacanException("Invalid time shortcut: " + shortcut);
-			}
-			this.shortcut = shortcut;
+		public TimeExpressionBuilder sunset(int offset, ChronoUnit units) {
+			criteria.add(new SunsetCriteria(offset,units));
 			return this;
 		}
 
+//		public TimeExpressionBuilder sunrise() {
+//			criteria.add(new SunriseCriteria(0,null));
+//			return this;
+//		}
+
 		public TimeExpressionBuilder time(LocalTime time) {
-			this.localTime = time;
+			criteria.add(new TimeOfDayCriteria(time.getHour(),time.getMinute()));
 			return this;
 		}
 		/**
@@ -108,9 +104,10 @@ public class TimeExpression extends Expression {
 		 * @return
 		 */
 		public TimeExpressionBuilder time(int hour, int minute) {
-			this.localTime = LocalTime.of(hour, minute);
+			criteria.add(new TimeOfDayCriteria(hour,minute));
 			return this;
 		}
+		
 		/**
 		 * Time in am/pm format
 		 * @param hour
@@ -119,14 +116,6 @@ public class TimeExpression extends Expression {
 		 * @return
 		 */
 		public TimeExpressionBuilder time(int hour, int minute, String ampm) {
-			int h;
-			if ("pm".equalsIgnoreCase(ampm)) {
-				h = hour + 12;
-			} else {
-				h = hour;
-			}
-			h = h %12;
-			this.localTime = LocalTime.of(h, minute);
 			return this;
 		}
 		public TimeExpression build() {

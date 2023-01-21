@@ -15,12 +15,24 @@
 package net.sodacan.module.expression.datetime;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
-public abstract class DateCriteria extends Criteria {
+import net.sodacan.utility.SunriseSunset;
 
-	public DateCriteria() {
-		super();
+public class SunsetCriteria extends ShortcutTimeCriteria {
+
+	public SunsetCriteria(int offset, ChronoUnit units ) {
+		super(offset, units);
 	}
 
-		
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		ZonedDateTime sst = SunriseSunset.getInstance().getSunset(date);
+		if (getUnits()!=null) {
+				sst = sst.plus(getOffset(), getUnits());
+			
+		}
+		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
+	}
+
 }

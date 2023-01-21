@@ -16,11 +16,17 @@ package net.sodacan.module.expression.datetime;
 
 import java.time.ZonedDateTime;
 
-public abstract class DateCriteria extends Criteria {
+public class DayOfWeekCriteria extends DateCriteria {
+	int dayOfWeek;
 
-	public DateCriteria() {
-		super();
+	public DayOfWeekCriteria(int dayOfWeek) {
+		this.dayOfWeek = dayOfWeek;
 	}
 
-		
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		int dow = date.getDayOfWeek().getValue();
+		return (dow==dayOfWeek);
+	}
+
 }
