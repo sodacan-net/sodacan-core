@@ -27,22 +27,27 @@ import net.sodacan.config.Location;
 import net.sodacan.module.expression.datetime.TimeExpression;
 
 public class TestTimeExpression {
-
+	public Config setupConfig() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		config.getLocation().setTimezone("America/Los_Angeles");
+		return config;
+	}
 	@Test
 	public void testHourMinute() {
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().time(16, 30).build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 16, 30, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 
 	@Test
 	public void testSunset() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset().build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 	/**
@@ -51,45 +56,33 @@ public class TestTimeExpression {
 	 */
 	@Test
 	public void testSunset1() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset().build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 17, 13, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 
 	@Test
 	public void testSunsetWithOffset() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset(1,ChronoUnit.HOURS).build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 18, 13, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 18, 13, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 
 	@Test
 	public void testSunsetWithNegativeOffset() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunset(-1,ChronoUnit.HOURS).build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 16, 13, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 16, 13, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 
 	@Test
 	public void testSunrise() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
+		Config config = setupConfig();
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunrise().build();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 7, 37, 0, 0, ZoneId.systemDefault());
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 7, 37, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
 	}
 

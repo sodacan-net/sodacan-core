@@ -49,6 +49,7 @@ public class SunriseSunset {
 		    .on(time.getYear(),time.getMonthValue(),time.getDayOfMonth())
 		    .latitude(config.getLocation().getLatitude())
 		    .longitude(config.getLocation().getLongitude())
+		    .timezone(config.getLocation().getTimezone())
 		    .execute();
 		cache.add(dayNumber,nss);
 		return nss;
