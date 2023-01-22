@@ -11,11 +11,6 @@
   <dependencies>
 		<dependency>
 			<groupId>net.sodacan</groupId>
-			<artifactId>sodacan</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sodacan</groupId>
 			<artifactId>utility</artifactId>
 			<version>0.0.1</version>
 		</dependency>
