@@ -62,7 +62,7 @@ public class AtStatement extends Statement {
 				return new Value(false);
 			}
 		}
-		// If we made it this far, do all of the thens
+		// If we made it this far, so do all of the thens
 		for (ThenStatement thenStatement : thenStatements) {
 			thenStatement.execute(variables, now);
 		}
