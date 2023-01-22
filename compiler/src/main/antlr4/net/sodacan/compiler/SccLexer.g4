@@ -270,7 +270,6 @@ AtNOON
 
 AtON
 	: 'ON'
-	| 'IN'
 	;
 
 AtCOMMA
