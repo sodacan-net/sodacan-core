@@ -2,7 +2,7 @@
 
 *Note: The code is not complete.*
 
-![build workflow](https://github.com/johnchurin/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
+![build workflow](https://github.com/sodacan-net/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
 
 Sodacan is for home and plant automation. One might describe it as "post-IOT" but it's more like they work together. IIOT? Internet and Intranet Of Things? A little less cloud. A little more local infrastructure.
 
