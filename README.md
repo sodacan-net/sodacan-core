@@ -2,6 +2,8 @@
 
 *Note: The code is not complete.*
 
+![example workflow](https://github.com/johnchurin/sodacan/actions/workflows/maven.yml/badge.svg)
+
 This project is a proof-of-concept for home and plant automation using a message-driven architecture.
 
 My test environment is a five acre property in southern Oregon. It includes a residence, shop, water pumps, irrigation, Christmas lighting, an outdoor movie theater, security, indoor and outdoor lighting.
