@@ -18,15 +18,16 @@ import net.sodacan.module.expression.BinaryOperator;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 
-public class LessThanOperator extends BinaryOperator {
+public class GreaterThanOperator extends BinaryOperator{
 
-	public LessThanOperator(Expression left, Expression right) {
+	public GreaterThanOperator(Expression left, Expression right) {
 		super(left, right);
 	}
 
+
 	@Override
 	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
-		return new Value( 0 > resolvedLeftValue.compare(resolvedRightValue) );
+		return new Value( 0 < resolvedLeftValue.compare(resolvedRightValue) );
 	}
 
 }

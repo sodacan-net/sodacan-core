@@ -23,7 +23,7 @@ import net.sodacan.module.variable.VariableDefs;
  * @author John Churin
  *
  */
-public abstract class BinaryExpression extends Expression {
+public abstract class BinaryOperator extends Expression {
 	Expression left;
 	Expression right;
 
@@ -32,7 +32,7 @@ public abstract class BinaryExpression extends Expression {
 	 * @param left
 	 * @param right
 	 */
-	public BinaryExpression(Expression left, Expression right) {
+	public BinaryOperator(Expression left, Expression right) {
 		this.left = left;
 		this.right = right;
 	}

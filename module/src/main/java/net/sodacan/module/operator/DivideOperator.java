@@ -14,11 +14,11 @@
  */
 package net.sodacan.module.operator;
 
-import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.BinaryOperator;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 
-public class DivideOperator extends BinaryExpression {
+public class DivideOperator extends BinaryOperator {
 
 	public DivideOperator(Expression left, Expression right) {
 		super(left, right);

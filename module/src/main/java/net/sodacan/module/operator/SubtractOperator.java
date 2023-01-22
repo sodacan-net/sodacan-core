@@ -14,11 +14,11 @@
  */
 package net.sodacan.module.operator;
 
-import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.BinaryOperator;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 
-public class SubtractOperator extends BinaryExpression {
+public class SubtractOperator extends BinaryOperator {
 
 	SubtractOperator(Expression left,Expression right) {
 		super(left, right);

@@ -14,11 +14,11 @@
  */
 package net.sodacan.module.operator;
 
-import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.BinaryOperator;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 
-public class EqualsOperator extends BinaryExpression {
+public class EqualsOperator extends BinaryOperator {
 
 	public EqualsOperator(Expression left, Expression right) {
 		super(left, right);
@@ -26,7 +26,7 @@ public class EqualsOperator extends BinaryExpression {
 
 	@Override
 	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
-		return new Value( resolvedLeftValue.equals(resolvedRightValue) );
+		return new Value( 0==resolvedLeftValue.compare(resolvedRightValue) );
 	}
 
 }
