@@ -40,6 +40,32 @@ public class AtStatement extends Statement {
 	 */
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
+		Value timeValue;
+		Value dateValue;
+		
+		if (timeExpression!=null) {
+			timeValue = timeExpression.execute(variables, now);
+		} else {
+			timeValue = new Value(false);
+		}
+		if (dateExpression!=null) {
+			dateValue = dateExpression.execute(variables, now);
+		} else {
+			dateValue = new Value(false);
+		}
+		// If no match on date/time, we're done
+		if (!dateValue.getBoolean() || !timeValue.getBoolean()) {
+			return new Value(false);
+		}
+		for (AndStatement andStatement : andStatements) {
+			if (!andStatement.execute(variables, now).getBoolean()) {
+				return new Value(false);
+			}
+		}
+		// If we made it this far, do all of the thens
+		for (ThenStatement thenStatement : thenStatements) {
+			thenStatement.execute(variables, now);
+		}
 		
 		return null;
 	}
