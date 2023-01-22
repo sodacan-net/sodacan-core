@@ -78,6 +78,16 @@ public class TimeExpression extends Expression {
 			
 		}
 		
+		public TimeExpressionBuilder noon() {
+			criteria.add(new NoonCriteria());
+			return this;
+		}
+
+		public TimeExpressionBuilder midnight() {
+			criteria.add(new MidnightCriteria());
+			return this;
+		}
+
 		public TimeExpressionBuilder sunset() {
 			criteria.add(new SunsetCriteria(0,null));
 			return this;

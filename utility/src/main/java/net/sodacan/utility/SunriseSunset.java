@@ -15,7 +15,6 @@
 package net.sodacan.utility;
 
 import java.time.ZonedDateTime;
-import java.util.Optional;
 
 import org.shredzone.commons.suncalc.SunTimes;
 

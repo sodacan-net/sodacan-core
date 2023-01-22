@@ -14,5 +14,18 @@
  */
 package net.sodacan.module.expression.datetime;
 
-public abstract class TimeCriteria extends Criteria {
+import java.time.ZonedDateTime;
+
+public class WeekdayCriteria extends DateCriteria {
+
+	public WeekdayCriteria() {
+	}
+
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		int dow = date.getDayOfWeek().getValue();
+		if (dow< 6) return true;
+		return false;
+	}
+
 }

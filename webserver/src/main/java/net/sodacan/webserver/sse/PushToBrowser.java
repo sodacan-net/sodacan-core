@@ -15,13 +15,7 @@
 package net.sodacan.webserver.sse;
 
 
-import java.util.Arrays;
-
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ArrayNode;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 
 import jakarta.inject.Singleton;
 import jakarta.ws.rs.Consumes;
@@ -35,7 +29,6 @@ import jakarta.ws.rs.sse.OutboundSseEvent;
 import jakarta.ws.rs.sse.Sse;
 import jakarta.ws.rs.sse.SseBroadcaster;
 import jakarta.ws.rs.sse.SseEventSink;
-import net.sodacan.SodacanException;
 
 @Singleton
 @Path("subscribe")

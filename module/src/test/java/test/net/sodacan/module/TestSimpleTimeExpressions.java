@@ -26,15 +26,7 @@ import net.sodacan.config.Config;
 import net.sodacan.config.Location;
 import net.sodacan.module.expression.datetime.TimeExpression;
 
-public class TestTimeExpression {
-	public Config setupConfig() {
-		Config config = Config.getInstance();
-		config.setLocation(new Location());
-		config.getLocation().setLatitude(42.557982);
-		config.getLocation().setLongitude(-123.393342);
-		config.getLocation().setTimezone("America/Los_Angeles");
-		return config;
-	}
+public class TestSimpleTimeExpressions extends TestConfig {
 	@Test
 	public void testHourMinute() {
 		Config config = setupConfig();
@@ -84,6 +76,38 @@ public class TestTimeExpression {
 		TimeExpression te = TimeExpression.newTimeExpressionBuilder().sunrise().build();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 7, 37, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testNoon() {
+		Config config = setupConfig();
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().noon().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 12, 0, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testNotNoon() {
+		Config config = setupConfig();
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().noon().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 12, 1, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(!te.isMatch(now));
+	}
+
+	@Test
+	public void testMidnight() {
+		Config config = setupConfig();
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().midnight().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 0, 0, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(te.isMatch(now));
+	}
+
+	@Test
+	public void testNotMidnight() {
+		Config config = setupConfig();
+		TimeExpression te = TimeExpression.newTimeExpressionBuilder().midnight().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 21, 0, 1, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(!te.isMatch(now));
 	}
 
 

@@ -15,15 +15,11 @@
 package net.sodacan.module.expression.datetime;
 
 import java.time.LocalDate;
-import java.time.LocalTime;
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
-import java.util.TreeSet;
 
-import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
-import net.sodacan.module.expression.datetime.TimeExpression.TimeExpressionBuilder;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
@@ -52,6 +48,19 @@ public class DateExpression extends Expression {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+	/**
+	 * You give me a datetime and I'll tell you if it's included in the set.
+	 * @param now
+	 * @return true if it matched at least one criteria
+	 */
+	public boolean isMatch( ZonedDateTime now) {
+		for (Criteria criterium : criteria) {
+			if (criterium.isMatch(now)) return true;
+		}
+		return false;
+	}
+
 	/**
 	 * Create a new, empty, builder for a DateExpression
 	 */
@@ -75,8 +84,41 @@ public class DateExpression extends Expression {
 			return this;
 		}
 		
+		public DateExpressionBuilder monday() {
+			criteria.add(new DayOfWeekCriteria(1));
+			return this;
+		}
+		public DateExpressionBuilder tuesday() {
+			criteria.add(new DayOfWeekCriteria(2));
+			return this;
+		}
+		public DateExpressionBuilder wednesday() {
+			criteria.add(new DayOfWeekCriteria(3));
+			return this;
+		}
+		public DateExpressionBuilder thursday() {
+			criteria.add(new DayOfWeekCriteria(4));
+			return this;
+		}
+		public DateExpressionBuilder friday() {
+			criteria.add(new DayOfWeekCriteria(5));
+			return this;
+		}
+		public DateExpressionBuilder saturday() {
+			criteria.add(new DayOfWeekCriteria(6));
+			return this;
+		}
+		public DateExpressionBuilder sunday() {
+			criteria.add(new DayOfWeekCriteria(7));
+			return this;
+		}
 		public DateExpressionBuilder weekend() {
 			criteria.add(new WeekendCriteria());
+			return this;
+		}
+		
+		public DateExpressionBuilder weekday() {
+			criteria.add(new WeekdayCriteria());
 			return this;
 		}
 

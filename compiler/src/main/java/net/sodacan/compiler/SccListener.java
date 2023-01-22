@@ -14,19 +14,14 @@
  */
 package net.sodacan.compiler;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.antlr.v4.runtime.ParserRuleContext;
 
-import net.sodacan.compiler.SccParser.AliasNameContext;
-import net.sodacan.compiler.SccParser.ConstraintContext;
-import net.sodacan.compiler.SccParser.ConstraintListContext;
 import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.ModuleNameContext;
 import net.sodacan.compiler.SccParser.SubscribeStatementContext;
-import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
 /**
  * This listener does some semantic checks. In a separate pass, we'll create the AST.

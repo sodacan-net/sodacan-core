@@ -14,23 +14,13 @@
  */
 package net.sodacan.webserver.resource;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
-import java.util.List;
-
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import jakarta.ws.rs.GET;
-import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import net.sodacan.SodacanException;
-import net.sodacan.config.Config;
 
 @Path("")
 public class RestApi {

@@ -14,5 +14,17 @@
  */
 package net.sodacan.module.expression.datetime;
 
-public abstract class TimeCriteria extends Criteria {
+import java.time.ZonedDateTime;
+
+public class MidnightCriteria extends TimeCriteria {
+
+	public MidnightCriteria() {
+		super();
+	}
+
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		return (date.getHour()==0 && date.getMinute()==0);
+	}
+
 }

@@ -12,7 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package test.net.sodacan.module;
 
-public abstract class TimeCriteria extends Criteria {
+import net.sodacan.config.Config;
+import net.sodacan.config.Location;
+
+public abstract class TestConfig {
+
+	public TestConfig() {
+	}
+	public Config setupConfig() {
+		Config config = Config.getInstance();
+		config.setLocation(new Location());
+		config.getLocation().setLatitude(42.557982);
+		config.getLocation().setLongitude(-123.393342);
+		config.getLocation().setTimezone("America/Los_Angeles");
+		return config;
+	}
+
 }

@@ -14,9 +14,6 @@
  */
 package net.sodacan.compiler;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.antlr.v4.runtime.BaseErrorListener;
 import org.antlr.v4.runtime.CommonToken;
 import org.antlr.v4.runtime.RecognitionException;

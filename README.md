@@ -2,7 +2,7 @@
 
 *Note: The code is not complete.*
 
-![example workflow](https://github.com/johnchurin/sodacan/actions/workflows/maven.yml/badge.svg)
+![build workflow](https://github.com/johnchurin/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
 
 This project is a proof-of-concept for home and plant automation using a message-driven architecture.
 
