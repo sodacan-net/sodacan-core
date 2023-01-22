@@ -5,7 +5,6 @@
   	<groupId>net.sodacan</groupId>
   	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
-  	<relativePath>../sodacan/pom.xml</relativePath>
   </parent>
   <description>POJO module heirarchy</description>
   <dependencies>

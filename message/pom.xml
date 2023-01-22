@@ -3,13 +3,10 @@
   <artifactId>message</artifactId>
     <name>message</name>
     <packaging>jar</packaging>
-    <properties>
-    </properties>
   <parent>
   	<groupId>net.sodacan</groupId>
   	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
-  	<relativePath>../sodacan/pom.xml</relativePath>
   </parent>
   <description>Message bus and message format</description>
   <dependencies>

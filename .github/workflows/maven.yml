@@ -17,9 +17,8 @@ on:
 
 jobs:
   build:
-
-    runs-on: ubuntu-latest
-
+    name: Build Sodacan
+    runs-on: ubuntu-latest        
     steps:
     - name: Checkout
       uses: actions/checkout@v3
@@ -33,7 +32,6 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
-      working-directory: sodacan
       
     # Optional: Uploads the full dependency graph to GitHub to improve the quality of Dependabot alerts this repository can receive
     - name: Update dependency graph
