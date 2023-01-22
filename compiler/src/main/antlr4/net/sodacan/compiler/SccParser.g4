@@ -226,10 +226,10 @@ atSpecificTimeExpression
 	;
 
 atTimeShortcut
-	: AtSUNRISE 
-	| AtSUNSET
-	| AtMIDNIGHT
-	| AtNOON
+	: AtSUNRISE 	#AtSunrise
+	| AtSUNSET		#AtSunset
+	| AtMIDNIGHT	#AtMidnight
+	| AtNOON		#AtNoon
 	;
 	
 atTime

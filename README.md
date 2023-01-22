@@ -4,12 +4,25 @@
 
 ![build workflow](https://github.com/johnchurin/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
 
-This project is a proof-of-concept for home and plant automation using a message-driven architecture.
+This project is for home and plant automation using a message-driven architecture. You might think of it as post-IOT but it's more like they work together. IIOT? Internet and Intranet Of Things?
 
-My test environment is a five acre property in southern Oregon. It includes a residence, shop, water pumps, irrigation, Christmas lighting, an outdoor movie theater, security, indoor and outdoor lighting.
+## Motivation
+I live on a five acre property in southern Oregon. It includes a residence, shop, electric gate, water pumps, irrigation, Christmas lighting, an outdoor movie theater, security, indoor and outdoor lighting, and more. I have a bunch of controllers running these components and I'm adding more all the time. However, most of these components run in their own little world. What I need is a way to tie them all together. If I want to turn on a light in the house when the a lawn sprinkler is running, I should be able to do so with little or no coding. If I want my electric gate to open at 3pm on Thursdays, but only during the spring, that shouldn't require complex coding or rules. Whatever happens at bedtime should not be limited to lighting. If I want to close the gate, if it's still open, then that should be easy to configure. I have a flapole which is lit from sundown to sunrise, except during Christmas season when the flagpole becomes a huge Christmas tree: Flagpole light off, Christmas lights on... until Midnight.
 
-Real-time high-frequency control of industrial devices is beyond the scope of this project. For example, robotics, printers (2d or 3d), and similar devices would tax the network and would likely behave poorly if response was delayed. However, meta-control, such as submitting job specifications to an otherwise dedicated device controller using this technology would be a good fit.
+So, the essence of Sodacan is tying disparate device controllers together using modern technology.
 
+## Reliability
+Are you  concerned about trusting the operation of your various devices to a cloud-based solution? If someone rings the doorbell and your Internet connection is down what happens? (I'm rural, so it happens from time to time). Sure, Alexa is nice when it's available.  In Sodacan, an AWS notification can easily initiate an action to the Sodacan servers: (eg "Alexa, turn on the living room light"). But if the Internet is not available, you still have the browser-based dashboard, served locally, available.
+
+## Hardware
+While Sodacan will run on beefy servers the design target for Sodacan is a small cluster of Raspberry Pi 4 boards: The more boards, the more fault tolerance and the more throughput. (In Apache Kafka terms:  Replication and Partitioning). And the hardware configuration is where the name Sodacan originates: The server hardware should fit into a soda can. (And, it is my beverage of choice). WiFi and/or Ethernet connectivity from servers to each other and servers to device controllers running Sodacan "agents" typically close to or on the device. 
+
+## Limitations
+Real-time high-frequency control of industrial devices is beyond the scope of this project. For example, robotics, printers (2d or 3d), and similar devices would tax the network and would likely behave poorly if response was delayed. However, meta-control, such as sending control instructions to an otherwise dedicated device controller using this technology would be a good fit. 
+
+Best practice: Sodacan sends instructions to a simple Sodacan agent installed inside the gate control box and hard wired to the existing gate controller. The gate controller knows how to control open/close speed, limit detection, etc. It just needs to know when to open or close: from Sodacan.
+
+## Summary
 If you are looking for something that has all of the scale, reliability, and fault-tolerance of a cloud-based service (Amazon, Google, etc) in an intranet environment, this may be a good solution for you. 
 
 ## How It Works

@@ -65,5 +65,28 @@ public class TestSimpleDateExpressions extends TestConfig {
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 22, 8, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		assert(de.isMatch(now));
 	}
+	
+	@Test
+	public void testMonthInJanuary() {
+		Config config = setupConfig();
+		DateExpression de = DateExpression.newDateExpressionBuilder().month(1).build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 22, 8, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(de.isMatch(now));
+	}
+
+	@Test
+	public void testJanuary() {
+		Config config = setupConfig();
+		DateExpression de = DateExpression.newDateExpressionBuilder().january().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 22, 8, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(de.isMatch(now));
+	}
+	@Test
+	public void testNotJanuary() {
+		Config config = setupConfig();
+		DateExpression de = DateExpression.newDateExpressionBuilder().january().build();
+		ZonedDateTime now = ZonedDateTime.of(2023, 3, 1, 7, 45, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		assert(!de.isMatch(now));
+	}
 
 }

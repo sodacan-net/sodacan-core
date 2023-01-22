@@ -14,8 +14,10 @@
  */
 package net.sodacan.compiler;
 
-import net.sodacan.compiler.SccParser.AtOffsetExpressionContext;
-import net.sodacan.compiler.SccParser.AtTimeContext;
+import net.sodacan.compiler.SccParser.AtMidnightContext;
+import net.sodacan.compiler.SccParser.AtNoonContext;
+import net.sodacan.compiler.SccParser.AtSunriseContext;
+import net.sodacan.compiler.SccParser.AtSunsetContext;
 import net.sodacan.compiler.SccParser.AtTimeShortcutContext;
 import net.sodacan.module.expression.datetime.TimeExpression.TimeExpressionBuilder;
 import net.sodacan.module.statement.SodacanModule;
@@ -37,22 +39,28 @@ public class TimeExpressionVisitor extends SccParserBaseVisitor<Void> {
 		this.teb = teb;
 	}
 
-//	@Override
-//	public Void visitAtTimeShortcut(AtTimeShortcutContext ctx) {
-//		teb.shortcut(ctx.getText());
-//		return null;
-//	}
-//
-//	@Override
-//	public Void visitAtOffsetExpression(AtOffsetExpressionContext ctx) {
-//		teb.offset(Integer.valueOf(ctx.atQantity().getText()), ctx.atTimeUnitExpression().getText());
-//		return null;
-//	}
-//
-//	@Override
-//	public Void visitAtTime(AtTimeContext ctx) {
-//		teb.time(Integer.valueOf(ctx.hr.getText()),Integer.valueOf(ctx.mi.getText()) , ctx.AtAMPM().getText());
-//		return null;
-//	}
-	
+	@Override
+	public Void visitAtSunrise(AtSunriseContext ctx) {
+		teb.sunrise();
+		return null;
+	}
+
+	@Override
+	public Void visitAtSunset(AtSunsetContext ctx) {
+		teb.sunset();
+		return null;
+	}
+
+	@Override
+	public Void visitAtMidnight(AtMidnightContext ctx) {
+		teb.midnight();
+		return null;
+	}
+
+	@Override
+	public Void visitAtNoon(AtNoonContext ctx) {
+		teb.midnight();
+		return null;
+	}
+
 }

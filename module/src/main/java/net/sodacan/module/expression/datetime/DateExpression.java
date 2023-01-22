@@ -19,6 +19,7 @@ import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
@@ -80,10 +81,54 @@ public class DateExpression extends Expression {
 		}
 		
 		public DateExpressionBuilder date(LocalDate time) {
-//			this.localDate = time;
 			return this;
 		}
-		
+
+		public DateExpressionBuilder month(int month) {
+			if (month<1 || month>12) {
+				throw new SodacanException("Invalid month number: " + month);
+			}
+			criteria.add(new MonthCriteria(month));
+			return this;
+		}
+
+		public DateExpressionBuilder january() {
+			return month(1);
+		}
+		public DateExpressionBuilder february() {
+			return month(2);
+		}
+		public DateExpressionBuilder march() {
+			return month(3);
+		}
+		public DateExpressionBuilder april() {
+			return month(4);
+		}
+		public DateExpressionBuilder may() {
+			return month(5);
+		}
+		public DateExpressionBuilder june() {
+			return month(6);
+		}
+		public DateExpressionBuilder july() {
+			return month(7);
+		}
+		public DateExpressionBuilder august() {
+			return month(8);
+		}
+		public DateExpressionBuilder september() {
+			return month(9);
+		}
+		public DateExpressionBuilder october() {
+			return month(10);
+		}
+		public DateExpressionBuilder november() {
+			return month(11);
+		}
+		public DateExpressionBuilder december() {
+			return month(12);
+		}
+
 		public DateExpressionBuilder monday() {
 			criteria.add(new DayOfWeekCriteria(1));
 			return this;
