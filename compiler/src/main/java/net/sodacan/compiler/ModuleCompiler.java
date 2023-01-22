@@ -96,19 +96,15 @@ public class ModuleCompiler {
 			variableDefVisitor.visit(tree);
             System.out.println("*****Finish VariableDefs: with " + module.getErrors().size() + " error(s)");
             if (0==module.getErrors().size() ) {
-            	System.out.print("Variables: ");
-            	System.out.println(module.getVariableDefs());
+            	ExecuteableStatementVisitor esv = new ExecuteableStatementVisitor(module,parser);
+            	esv.visit(tree);
+                System.out.println("*****Finish ExecutableStatements: with " + module.getErrors().size() + " error(s)");
+                if (0==parser.getNumberOfSyntaxErrors()) {
+                	System.out.println(module);
+                }
             }
             
-//        	SccModuleVisitor smc = new SccModuleVisitor(module);
-//        	// This should return the SodacanModule object as above
-//        	ModuleComponent c = smc.visit(tree);
         }
-        System.out.println(tree.toStringTree(parser));
-//        System.out.println("*****Visit: " + file);
-//        AtVisitor visitor = new AtVisitor();
-//        visitor.visit(tree);
-//        System.out.println("*****Visit Finish: " + file);
-		
+        System.out.println(tree.toStringTree(parser));		
 	}
 }

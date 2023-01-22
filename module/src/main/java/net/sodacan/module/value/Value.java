@@ -40,6 +40,11 @@ public class Value {
 	public Value(int integer) {
 		this.number = new BigDecimal(integer);
 	}
+	
+	public Value( BigDecimal number) {
+		this.number = number;
+	}
+
 	public Value(String string) {
 		this.string = string;
 	}
@@ -129,6 +134,13 @@ public class Value {
 		}
 		return false;
 	}
-
-	
+	/**
+	 * Compare two values and return -1 if the other is lower, 0 if they are equal, and 1 if the other is greater.
+	 * If the 
+	 * @param other
+	 * @return
+	 */
+	public int compare( Value other) {
+		return 0;
+	}
 }

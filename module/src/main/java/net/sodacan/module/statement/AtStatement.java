@@ -14,19 +14,33 @@
  */
 package net.sodacan.module.statement;
 
+import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.List;
+
+import net.sodacan.module.expression.datetime.DateExpression;
+import net.sodacan.module.expression.datetime.TimeExpression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
 /**
- * An AT statement responds to the passage of time
+ * The AT statement responds to the passage of time
  * @author John Churin
  *
  */
 public class AtStatement extends Statement {
+	TimeExpression timeExpression;
+	DateExpression dateExpression;
+	List<AndStatement> andStatements = new ArrayList<>();
+	List<ThenStatement> thenStatements = new ArrayList<>();
 
+	/**
+	 * If the date and time expressions return true and the AndStatements all return true, then 
+	 * execute the ThenStatements (ignoring their return value)
+	 */
 	@Override
-	public Value execute(VariableDefs variables) {
-		// TODO Auto-generated method stub
+	public Value execute(VariableDefs variables, ZonedDateTime now) {
+		
 		return null;
 	}
 

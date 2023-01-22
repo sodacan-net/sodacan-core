@@ -19,10 +19,16 @@ import java.time.ZonedDateTime;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(VariableDefs variables, ZonedDateTime now);
-	
+public class ThenStatement extends Statement {
+
+	public ThenStatement() {
+		// TODO Auto-generated constructor stub
+	}
+
+	@Override
+	public Value execute(VariableDefs variables, ZonedDateTime now) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

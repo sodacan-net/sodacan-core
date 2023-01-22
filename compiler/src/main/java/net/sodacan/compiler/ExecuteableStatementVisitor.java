@@ -22,7 +22,8 @@ import net.sodacan.compiler.SccParser.StatementListContext;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 /**
- * One more time we need to visit the module tree to construct the executable portion of the module.
+ * After collecting the variable definitions, we need to visit the module tree to construct the executable portion of the module.
+ * Compile errors generated in this phase include references to non-existing variables.
  * @author John Churin
  *
  */
@@ -71,4 +72,5 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<Value> {
 		return super.visitStatementList(ctx);
 	}
 
+	
 }

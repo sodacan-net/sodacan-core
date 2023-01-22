@@ -12,17 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.operator;
 
-import java.time.ZonedDateTime;
-
+import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(VariableDefs variables, ZonedDateTime now);
-	
+public class MultiplyOperator extends BinaryExpression {
+
+	public MultiplyOperator(Expression left, Expression right) {
+		super(left, right);
+	}
+
+	@Override
+	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
+		return new Value( resolvedLeftValue.getNumber().multiply(resolvedRightValue.getNumber()));
+	}
+
 }

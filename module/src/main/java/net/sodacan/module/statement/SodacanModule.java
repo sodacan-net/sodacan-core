@@ -17,10 +17,13 @@ package net.sodacan.module.statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDefs;
 
 /**
- * Top-level module. Essentially an AST, produced from source code, from the .scc compiler. We walk this tree to execute a module at runtime.
+ * Top-level Sodacan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 
+ * The Sodacan runtime will walk one of three module sub-trees, depending on the circumstance: Due to the passage of time: atStatements. 
+ * Due to an incomming message: OnStatements. And, after either case: IfStatements.
  * @author John Churin
  *
  */
@@ -33,25 +36,51 @@ public class SodacanModule {
 	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of SodaCan 
 	// means the order of statements is unimportant.
 	VariableDefs variableDefs = new VariableDefs();
+	List<ErrorComponent> errors = new ArrayList<>();
 	List<AtStatement> atStatements = new ArrayList<>();
 	List<OnStatement> onStatements = new ArrayList<>();
-	List<AndStatement> whenStatements = new ArrayList<>();
-	List<ErrorComponent> errors = new ArrayList<>();
-	
+	List<IfStatement> ifStatements = new ArrayList<>();
+
+	/**
+	 * A Sodacan module is constructed very early in the process, however, once complete, 
+	 * it is entirely immutable, or effectively immutable, by the Sodacan runtime. 
+	 * If there are no errors in the list of errors for this module, then the module is considered executable.
+	 * A modules is always serializable into a Json string.
+	 */
 	public SodacanModule() {
 		
 	}
+
+	/**
+	 * Without errors, the module is considered executable.
+	 * @return
+	 */
+	public boolean isExecutable() {
+		return (errors.size()==0);
+	}
+
+	/**
+	 * Add an error such as from parsing the module language.
+	 * @param error
+	 */
+	public void addError(ErrorComponent error) {
+		errors.add(error);
+	}
+
+	public boolean addVariableDef(VariableDef variable) {
+		return variableDefs.addVariableDef(variable);
+	}
+
+	public VariableDef findVariableDef( String name) {
+		return variableDefs.find(name);
+	}
 	
-	public VariableDefs getVariableDefs() {
+	protected VariableDefs getVariableDefs() {
 		return variableDefs;
 	}
 
 	public void setVariableDefs(VariableDefs variableDefs) {
 		this.variableDefs = variableDefs;
-	}
-
-	public void addError(ErrorComponent error) {
-		errors.add(error);
 	}
 	/**
 	 * Add statements to the module
@@ -64,8 +93,8 @@ public class SodacanModule {
 		if (statement instanceof OnStatement) {
 			onStatements.add((OnStatement)statement);
 		}
-		if (statement instanceof AndStatement) {
-			whenStatements.add((AndStatement)statement);
+		if (statement instanceof IfStatement) {
+			ifStatements.add((IfStatement)statement);
 		}
 	}
 
@@ -109,8 +138,8 @@ public class SodacanModule {
 		return onStatements;
 	}
 
-	public List<AndStatement> getWhenStatements() {
-		return whenStatements;
+	public List<IfStatement> getIfStatements() {
+		return ifStatements;
 	}
 
 	public List<ErrorComponent> getErrors() {

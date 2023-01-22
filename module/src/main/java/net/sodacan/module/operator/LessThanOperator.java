@@ -12,17 +12,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.operator;
 
-import java.time.ZonedDateTime;
-
+import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(VariableDefs variables, ZonedDateTime now);
-	
+public class LessThanOperator extends BinaryExpression {
+
+	public LessThanOperator(Expression left, Expression right) {
+		super(left, right);
+	}
+
+	@Override
+	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
+		// The comparison depends on the type of values. See Value.compare
+		return new Value( 0 > resolvedLeftValue.compare(resolvedRightValue));
+	}
+
 }

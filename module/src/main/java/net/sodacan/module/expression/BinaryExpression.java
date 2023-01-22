@@ -14,6 +14,8 @@
  */
 package net.sodacan.module.expression;
 
+import java.time.ZonedDateTime;
+
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 /**
@@ -34,13 +36,22 @@ public abstract class BinaryExpression extends Expression {
 		this.left = left;
 		this.right = right;
 	}
-	
+	/**
+	 * Our subclasses must implement this method to do the actual math.
+	 * @param leftValue
+	 * @param rightValue
+	 * @return The Value resulting from the operation
+	 */
 	abstract protected Value evaluate(Value leftValue, Value rightValue);
-
+	/**
+	 * All binary operators work the same way: Execute the left and right operands, resolve to concrete values, 
+	 * and finally, do the math (or whatever) in a specific subclass such as add two values and return the result value.
+	 */
 	@Override
-	public Value execute(VariableDefs variables) {
-		Value resolvedLeftValue = resolve(variables, left.execute(variables));
-		Value resolvedRightValue = resolve(variables, right.execute(variables));
+	public Value execute(VariableDefs variables, ZonedDateTime now) {
+		Value resolvedLeftValue = resolve(variables, left.execute(variables,now));
+		Value resolvedRightValue = resolve(variables, right.execute(variables,now));
+		// Now actually do the math part in the specific subclass
 		return evaluate( resolvedLeftValue, resolvedRightValue);
 	}
 

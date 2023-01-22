@@ -14,6 +14,8 @@
  */
 package net.sodacan.module.expression;
 
+import java.time.ZonedDateTime;
+
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 
@@ -40,7 +42,7 @@ public class VariableRef extends Expression {
 	}
 
 	@Override
-	public Value execute(VariableDefs variables) {
+	public Value execute(VariableDefs variables, ZonedDateTime now) {
 		// TODO Auto-generated method stub
 		return null;
 	}

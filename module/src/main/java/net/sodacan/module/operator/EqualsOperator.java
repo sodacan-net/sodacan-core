@@ -12,18 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression;
+package net.sodacan.module.operator;
 
+import net.sodacan.module.expression.BinaryExpression;
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 
-public class AddExpression extends BinaryExpression {
+public class EqualsOperator extends BinaryExpression {
 
-	AddExpression(Expression left,Expression right) {
+	public EqualsOperator(Expression left, Expression right) {
 		super(left, right);
 	}
-	
+
 	@Override
 	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
-		return null; //////// new Value( resolvedLeftValue.getInteger() + resolvedRightValue.getInteger());
+		return new Value( resolvedLeftValue.equals(resolvedRightValue) );
 	}
+
 }

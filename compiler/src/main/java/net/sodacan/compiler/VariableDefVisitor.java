@@ -56,10 +56,6 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		this.parser = parser;
 	}
 	
-	public VariableDefs getVariables() {
-		return module.getVariableDefs();
-	}
-
 	@Override
 	public Void visitPublishStatement(PublishStatementContext ctx) {
 		variableType = "publishVariable";
@@ -152,12 +148,12 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		// We've collected all the parts, so build it
 		VariableDef vd = vdb.build();
 		// Add it to collection of variables
-		if (!module.getVariableDefs().addVariableDef(vd)) {
+		if (!module.addVariableDef(vd)) {
 			parser.notifyErrorListeners(ctx.getStart(), "Variable already defined: " + vd, null);
 		}
 		List<String> conIds = vd.getConstraintIdentifiers();
 		for (String id : conIds) {
-			if (null!=module.getVariableDefs().find(id)) {
+			if (null!=module.findVariableDef(id)) {
 				parser.notifyErrorListeners(ctx.getStart(), "Constraint " + id + " already defined elsewhere. Consider using quotes around constaint value.", null);
 			}
 		}
