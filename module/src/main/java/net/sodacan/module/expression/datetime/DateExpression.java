@@ -45,7 +45,7 @@ public class DateExpression extends Expression {
 	}
 
 	@Override
-	public Value execute(VariableDefs variables) {
+	public Value execute(VariableDefs variables, ZonedDateTime now) {
 		// TODO Auto-generated method stub
 		return null;
 	}
