@@ -17,12 +17,12 @@ package net.sodacan.module.statement;
 import java.time.ZonedDateTime;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 
 public class AndStatement  extends Statement {
 
 	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
+	public Value execute(Variables variables, ZonedDateTime now) {
 		// TODO Auto-generated method stub
 		return null;
 	}

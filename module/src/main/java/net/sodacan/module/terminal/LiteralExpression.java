@@ -12,18 +12,31 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.terminal;
 
+import java.math.BigDecimal;
 import java.time.ZonedDateTime;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(Variables variables, ZonedDateTime now);
-	
+public class LiteralExpression extends TerminalExpression {
+
+	public LiteralExpression(String string) {
+		super(new Value(string));
+	}
+
+	public LiteralExpression(BigDecimal number) {
+		super(new Value(number));
+	}
+
+	public LiteralExpression(boolean bool) {
+		super(new Value(bool));
+	}
+
+	@Override
+	public Value execute(Variables variables, ZonedDateTime now) {
+		return value;
+	}
+
 }

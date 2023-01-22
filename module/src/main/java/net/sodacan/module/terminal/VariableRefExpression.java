@@ -12,18 +12,30 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.terminal;
 
 import java.time.ZonedDateTime;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.Variables;
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
+public class VariableRefExpression extends TerminalExpression {
+
+	public VariableRefExpression(String variableName) {
+		super(new Value(variableName,true));
+	}
 	
-	abstract public Value execute(Variables variables, ZonedDateTime now);
-	
+	/**
+	 * We do more than execute: If the variable found is an identifier,
+	 * then we "dereference" it by returning the underlying value.
+	 */
+	protected Value resolve(Variables variables, Value value) {
+		if (value.isVariable()) {
+			Variable v = variables.find(value.getValue());
+			return v.getValue();
+		}
+		return value;
+	}
+
 }

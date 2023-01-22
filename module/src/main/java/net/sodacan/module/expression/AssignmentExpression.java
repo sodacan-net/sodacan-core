@@ -16,44 +16,41 @@ package net.sodacan.module.expression;
 
 import java.time.ZonedDateTime;
 
+import net.sodacan.SodacanException;
+import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
 /**
- * Binary expressions have two sub-expressions
+ * An assignment expression is a bit different from other binary operators in that
+ * only the right-hand-side of the assignment is "resolved" and then executed and the
+ * resulting value is assigned to the variable on the left side of the assignment.
  * @author John Churin
  *
  */
-public abstract class BinaryOperator extends Expression {
-	Expression left;
-	Expression right;
+public class AssignmentExpression extends BinaryOperator {
 
-	/**
-	 * Construct a binary expression
-	 * @param left
-	 * @param right
-	 */
-	public BinaryOperator(Expression left, Expression right) {
-		this.left = left;
-		this.right = right;
+	AssignmentExpression(Expression left,Expression right) {
+		super(left, right);
 	}
-	/**
-	 * Our subclasses must implement this method to do the actual math.
-	 * @param leftValue
-	 * @param rightValue
-	 * @return The Value resulting from the operation
-	 */
-	abstract protected Value evaluate(Value leftValue, Value rightValue);
-	/**
-	 * All binary operators work the same way: Execute the left and right operands, resolve to concrete values, 
-	 * and finally, do the math (or whatever) in a specific subclass such as add two values and return the result value.
-	 */
+
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
-		Value resolvedLeftValue = resolve(variables, left.execute(variables,now));
 		Value resolvedRightValue = resolve(variables, right.execute(variables,now));
-		// Now actually do the math part in the specific subclass
-		return evaluate( resolvedLeftValue, resolvedRightValue);
+		if (!(left instanceof VariableRefExpression)) {
+			throw new SodacanException("Left side of assignment must be a variable");
+		}
+		VariableRefExpression vre = (VariableRefExpression)left;
+		variables.setVariable(vre.toString(), resolvedRightValue);
+		return resolvedRightValue;
+	}
+	
+	/**
+	 * Ignore this, not used here.
+	 */
+	@Override
+	protected Value evaluate(Value leftValue, Value rightValue) {
+		return null;
 	}
 
 }

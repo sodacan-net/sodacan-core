@@ -16,16 +16,23 @@ package net.sodacan.module.expression;
 
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 
 /**
- * Expressions represent the things in  language that get things done. They are primarily used in the THEN statement in a module.
+ * Expressions represent the things in language that get things done. They are primarily used in the THEN statement in a module.
  * @author John Churin
  *
  */
 public abstract class Expression extends ModuleComponent {
-
-	protected Value resolve(VariableDefs variables, Value value) {
-		return null;
+	/**
+	 * Resolving an expression means finding Values that contain identifiers, lookup the identifier in the collection of variable and returning the value.
+	 * Most subclasses are not identifiers so most don't need to override this method.
+	 * @param variables
+	 * @param value
+	 * @return
+	 */
+	protected Value resolve(Variables variables, Value value) {
+		return value;
 	}
+	
 }

@@ -22,7 +22,7 @@ import java.util.List;
 import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 
 /**
  * Combining date criteria in one expression provides "and" and "or" combinations.
@@ -45,17 +45,20 @@ public class DateExpression extends Expression {
 	}
 
 	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
-		// TODO Auto-generated method stub
-		return null;
+	public Value execute(Variables variables, ZonedDateTime now) {
+		return new Value(isMatch(now));
 	}
 
 	/**
 	 * You give me a datetime and I'll tell you if it's included in the set.
+	 * If there is no criteria, then all dates match.
 	 * @param now
 	 * @return true if it matched at least one criteria
 	 */
 	public boolean isMatch( ZonedDateTime now) {
+		if (criteria.size()==0) {
+			return true;
+		}
 		for (Criteria criterium : criteria) {
 			if (criterium.isMatch(now)) return true;
 		}

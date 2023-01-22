@@ -12,18 +12,34 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.terminal;
 
 import java.time.ZonedDateTime;
 
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
+/**
+ * Terminal expressions just have a value and of course there are no children to execute.
+ * Our subclasses just make construction easy. But they always result in a value.
+ * @author John Churin
+ *
+ */
+public abstract class TerminalExpression extends Expression {
+	Value value;
+	public TerminalExpression(Value value) {
+		this.value = value;
+	}
+	
+	/**
+	 * To execute is to just return the value, which may still be a reference to a variable, not an actionable value.
+	 * See Resolve in AvariableRefExpression
+	 */
+	@Override
+	public Value execute(Variables variables, ZonedDateTime now) {
+		return value;	
+	}
 
-public abstract class ModuleComponent {
-	int lineNumber;
-	int characterPosition;
-	
-	abstract public Value execute(Variables variables, ZonedDateTime now);
-	
 }

@@ -27,7 +27,7 @@ import net.sodacan.module.variable.VariableDefs;
  * 
  * @author John Churin
  */
-public class VariableRef extends Expression {
+public class VariableRef {
 	String domainName;
 	String topicName;
 	String variableName;
@@ -40,11 +40,4 @@ public class VariableRef extends Expression {
 		this.variableName = variableName;
 		this.instanceExpression = instanceExpression;
 	}
-
-	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 }

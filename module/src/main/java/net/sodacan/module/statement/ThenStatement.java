@@ -16,17 +16,22 @@ package net.sodacan.module.statement;
 
 import java.time.ZonedDateTime;
 
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
-
+import net.sodacan.module.variable.Variables;
+/**
+ * A Then Statement contains a simple expression, or an assignment expression.
+ * @author John Churin
+ *
+ */
 public class ThenStatement extends Statement {
-
+	Expression expression;
 	public ThenStatement() {
 		// TODO Auto-generated constructor stub
 	}
 
 	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
+	public Value execute(Variables variables, ZonedDateTime now) {
 		// TODO Auto-generated method stub
 		return null;
 	}

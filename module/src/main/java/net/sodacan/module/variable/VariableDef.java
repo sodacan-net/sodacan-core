@@ -17,6 +17,8 @@ package net.sodacan.module.variable;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.module.value.Value;
+
 /**
  * A Single Variable. In SodaCan, all messages begin (publish) as variables or end (subscribe) as variables.
  * A variable definition is immutable once created.
@@ -30,7 +32,8 @@ public class VariableDef {
 	private String alias;
 	private String instance;
 	private VariableType variableType;
-	private boolean changedInCycle;
+	private Value initialValue;
+	
 	private List<Constraint> constraints = null;	// Null unless there are constraints
 
 	private VariableDef(VariableDefBuilder builder) {
@@ -41,12 +44,9 @@ public class VariableDef {
 		this.instance = builder.instance;
 		this.constraints = builder.constraints;
 		this.variableType = builder.variableType;
+		this.initialValue = builder.initialValue;
 	}
 	
-	void resetChanged() {
-		changedInCycle = false;
-	}
-
 	public String getFullName( ) {
 		StringBuffer sb = new StringBuffer();
 		if (namespace!=null) {
@@ -98,14 +98,10 @@ public class VariableDef {
 	public VariableType getVariableType() {
 		return variableType;
 	}
-
-	public boolean isChangedInCycle() {
-		return changedInCycle;
+	public Value getInitialValue() {
+		return initialValue;
 	}
-
-	public void setChangedInCycle(boolean changedInCycle) {
-		this.changedInCycle = changedInCycle;
-	}
+	
 	/**
 	 * Return a list of those constraints that are identifiers (ignore numbers and quoted strings)
 	 * Used by the Variabledef visitor to check for duplicate identifiers
@@ -148,6 +144,24 @@ public class VariableDef {
 		}
 		return true;
 	}
+	/**
+	 * Validate the supplied value against constraints. If no constraints, then returns true (valid).
+	 * @param value the value to be validated
+	 * @return true if the value is valid
+	 */
+	public boolean validateAgainstConstraints( Value value) {
+
+		if (constraints.size()==0) {
+			return true;
+		}
+		for (Constraint constraint : constraints) {
+			if (constraint.isMatch(value)) {
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	/**
 	 * Two variable defs are equal if their namespace, topic, name, and instance are equal.
 	 * They are also equal (in a bad way) if heir aliases are the same.
@@ -204,6 +218,7 @@ public class VariableDef {
 		private String instance;
 		private List<Constraint> constraints;
 		private VariableType variableType;
+		private Value initialValue;
 
 		protected VariableDefBuilder() {
 			
@@ -243,7 +258,15 @@ public class VariableDef {
 			this.constraints.add(constraint);
 			return this;
 		}
+		public VariableDefBuilder initialValue(Value value) {
+			this.initialValue = value;
+			return this;
+		}
 		public VariableDef build() {
+			// If no initial value, then start with a null
+			if (initialValue==null) {
+				initialValue = new Value();
+			}
 			return new VariableDef(this);
 		}
 

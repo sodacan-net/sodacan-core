@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import net.sodacan.SodacanException;
 
@@ -32,12 +33,6 @@ public class VariableDefs {
 	
 	protected Map<String,String> shortNameToFullName = new TreeMap<>();
 
-	/**
-	 * Reset the changed flag in all variables
-	 */
-	public void resetChanged() {
-		variables.forEach((name,variable)-> variable.resetChanged());
-	}
 	/**
 	 * Is the supplied name already known, and if so, return that
 	 * @return
@@ -75,15 +70,17 @@ public class VariableDefs {
 		}
 		return true;
 	}
-	
 	/**
-	 * Return a list of variables that have changed during the current cycle
+	 * At runtime, find each variable definition and create a set of variable.
 	 * @return
 	 */
-	public List<VariableDef> getListOfChangedVariableNames() {
-		List<VariableDef> selected = new ArrayList<VariableDef>();
-		variables.forEach((name,variable)-> {if (variable.isChangedInCycle()) selected.add(variable);});
-		return selected;
+	public Variables createVariablesMap() {
+		Variables vs = new Variables();
+		for (String key : variables.keySet()) {
+			VariableDef vd = variables.get(key);
+			vs.addVariable(vd, vd.getInitialValue());
+		}
+		return vs;
 	}
 
 	@Override

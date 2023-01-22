@@ -16,16 +16,14 @@ package net.sodacan.module.expression.datetime;
 
 import java.time.LocalTime;
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoField;
 import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 /**
  * A TimeExpression has a number of constraints. In general, if
  * no time is specified, then it means midnight on the specified day.
@@ -45,9 +43,8 @@ public class TimeExpression extends Expression {
 	}
 	
 	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
-		// TODO Auto-generated method stub
-		return null;
+	public Value execute(Variables variables, ZonedDateTime now) {
+		return new Value(isMatch(now));
 	}
 	/**
 	 * You give me a datetime and I'll tell you if it's included in the set.

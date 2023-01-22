@@ -21,7 +21,7 @@ import java.util.List;
 import net.sodacan.module.expression.datetime.DateExpression;
 import net.sodacan.module.expression.datetime.TimeExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 
 /**
  * The AT statement responds to the passage of time
@@ -39,7 +39,7 @@ public class AtStatement extends Statement {
 	 * execute the ThenStatements (ignoring their return value)
 	 */
 	@Override
-	public Value execute(VariableDefs variables, ZonedDateTime now) {
+	public Value execute(Variables variables, ZonedDateTime now) {
 		
 		return null;
 	}
