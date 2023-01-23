@@ -33,11 +33,12 @@ public class OnStatement  extends ActionStatement {
 	Expression onSelectExpression;
 
 	protected boolean isMessageMatch(Variables variables, ZonedDateTime now) {
-		
+		return false;
 	}
 	
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
+		return new Value();
 	}
 
 	public boolean processMessage(Variables variables, ZonedDateTime now) {

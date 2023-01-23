@@ -77,7 +77,7 @@ public class SodacanModule {
 		variables.resetChanged();
 		// Lookup the variable
 		Variable variable = variables.find(message.getTopic(), message.getNamespace(), message.getInstance(), message.getName());
-		setVariable(message);
+//		setVariable(message);
 		for (OnStatement os : onStatements) {
 			Value result = os.execute(variables, now);
 		}

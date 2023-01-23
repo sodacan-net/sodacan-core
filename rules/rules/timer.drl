@@ -1,7 +1,0 @@
-package net.sodacan.rules;
-import net.sodacan.rules.Event;
-import net.sodacan.rules.State;
-import net.sodacan.rules.Countdown;
-import net.sodacan.rules.Tick;
-global org.apache.logging.log4j.Logger logger;
-
