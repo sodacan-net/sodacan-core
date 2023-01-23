@@ -31,7 +31,7 @@ public class VariableRefExpression extends TerminalExpression {
 	 * then we "dereference" it by returning the underlying value.
 	 */
 	@Override
-	protected Value resolve(Variables variables, ZonedDateTime now) {
+	public Value resolve(Variables variables, ZonedDateTime now) {
 		if (value.isVariable()) {
 			Variable v = variables.find(value.getIdentifier());
 			return v.getValue();

@@ -150,6 +150,9 @@ public class VariableDef {
 	 * @return true if the value is valid
 	 */
 	public boolean validateAgainstConstraints( Value value) {
+		if (constraints==null) {
+			return true;
+		}
 
 		if (constraints.size()==0) {
 			return true;

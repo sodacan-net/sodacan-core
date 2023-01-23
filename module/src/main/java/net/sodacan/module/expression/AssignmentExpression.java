@@ -30,7 +30,7 @@ import net.sodacan.module.variable.Variables;
  */
 public class AssignmentExpression extends BinaryOperator {
 
-	AssignmentExpression(Expression left,Expression right) {
+	public AssignmentExpression(Expression left,Expression right) {
 		super(left, right);
 	}
 

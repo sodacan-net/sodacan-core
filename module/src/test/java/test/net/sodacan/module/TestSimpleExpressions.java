@@ -39,7 +39,9 @@ import net.sodacan.module.variable.Variables;
 public class TestSimpleExpressions extends TestConfig {
 	static final String STRING1 = "a String";
 	static final String STRING2 = "a";
-	static final String STRINGb = "b";
+	static final String STRING3 = "b";
+	static final String STRING4 = "123.4";
+	static final String STRING5 = "123.40";
 	static final BigDecimal NUMBER1 = new BigDecimal("123.4");
 	static final BigDecimal NUMBER2 = new BigDecimal("100.0");
 	static final BigDecimal NUMBER2a = new BigDecimal("100");
@@ -70,7 +72,65 @@ public class TestSimpleExpressions extends TestConfig {
 		Value result = ex3.execute(variables, now);
 		assert(result.getBoolean());
 	}
+	/**
+	 * 123.4="123.4"
+	 */
+	@Test
+	public void testANumberAndAStringForEquality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(NUMBER1);
+		Expression ex2 = new LiteralExpression(STRING4);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(result.getBoolean());
+	}
 
+	/**
+	 * "123.4"=123.4
+	 */
+	@Test
+	public void testAStringAndANumberForEquality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(STRING4);
+		Expression ex2 = new LiteralExpression(NUMBER1);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(result.getBoolean());
+	}
+
+	/**
+	 * "123.40"=123.4 (still a numeric compare)
+	 */
+	@Test
+	public void testAStringAndAnotherNumberForEquality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(STRING5);
+		Expression ex2 = new LiteralExpression(NUMBER1);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(result.getBoolean());
+	}
+	/**
+	 * "123.40"="123.4" (still a numeric compare!)
+	 */
+	@Test
+	public void testANumberStringAndANumberStringForEquality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(STRING4);
+		Expression ex2 = new LiteralExpression(STRING5);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(result.getBoolean());
+	}
+	
 	@Test
 	public void testTwoStringsForInequality() {
 		Config config = setupConfig();
