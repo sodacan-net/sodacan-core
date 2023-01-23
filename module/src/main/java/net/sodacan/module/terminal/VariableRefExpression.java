@@ -30,12 +30,17 @@ public class VariableRefExpression extends TerminalExpression {
 	 * We do more than execute: If the variable found is an identifier,
 	 * then we "dereference" it by returning the underlying value.
 	 */
-	protected Value resolve(Variables variables, Value value) {
+	@Override
+	protected Value resolve(Variables variables, ZonedDateTime now) {
 		if (value.isVariable()) {
-			Variable v = variables.find(value.getValue());
+			Variable v = variables.find(value.getIdentifier());
 			return v.getValue();
 		}
 		return value;
+	}
+	@Override
+	public String toString() {
+		return value.getIdentifier();
 	}
 
 }

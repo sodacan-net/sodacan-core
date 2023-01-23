@@ -14,6 +14,8 @@
  */
 package net.sodacan.module.expression;
 
+import java.time.ZonedDateTime;
+
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variables;
@@ -31,8 +33,8 @@ public abstract class Expression extends ModuleComponent {
 	 * @param value
 	 * @return
 	 */
-	protected Value resolve(Variables variables, Value value) {
-		return value;
+	protected Value resolve(Variables variables, ZonedDateTime now) {
+		return execute(variables, now);
 	}
 	
 }

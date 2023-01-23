@@ -50,8 +50,8 @@ public abstract class BinaryOperator extends Expression {
 	 */
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
-		Value resolvedLeftValue = resolve(variables, left.execute(variables,now));
-		Value resolvedRightValue = resolve(variables, right.execute(variables,now));
+		Value resolvedLeftValue = left.resolve(variables,now );
+		Value resolvedRightValue = right.resolve(variables, now);
 		// Now actually do the math part in the specific subclass
 		return evaluate( resolvedLeftValue, resolvedRightValue);
 	}

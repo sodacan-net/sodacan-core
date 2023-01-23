@@ -267,6 +267,10 @@ public class VariableDef {
 			if (initialValue==null) {
 				initialValue = new Value();
 			}
+			// If no variable type, assume private (probably due to testing)
+			if (variableType==null) {
+				variableType = VariableType.privateVariable;
+			}
 			return new VariableDef(this);
 		}
 

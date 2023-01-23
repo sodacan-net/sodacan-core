@@ -119,7 +119,7 @@ public class Value {
 	
 	public BigDecimal getNumber() {
 		if (isVariable()) {
-			throw new SodacanException("Type cannot be determined for a variable until resolved");
+			throw new SodacanException("Value cannot be determined for a variable until resolved");
 		}
 		if (number!=null) return number;
 		if (string!=null) return new BigDecimal(string);
@@ -140,6 +140,7 @@ public class Value {
 
 		return bool;
 	}
+	
 	/**
 	 * Return the string value of a Value. But this does not resolve the variable which must be done first.
 	 * @return
@@ -150,7 +151,16 @@ public class Value {
 		}
 		return toString();
 	}
-
+	/**
+	 * Return identifier when this value is a variableReference
+	 * @return
+	 */
+	public String getIdentifier() {
+		if (!isVariable()) {
+			throw new SodacanException("Literal Values do not have an identifier");
+		}
+		return string;
+	}
 	public List<Value> getArray() {
 		return array;
 	}
@@ -202,4 +212,5 @@ public class Value {
 		}
 		throw new SodacanException("These two values cannot be compared");
 	}
+	
 }

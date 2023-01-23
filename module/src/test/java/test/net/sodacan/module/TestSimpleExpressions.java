@@ -35,6 +35,7 @@ import net.sodacan.module.operator.SubtractOperator;
 import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.Variables;
 
 public class TestSimpleExpressions extends TestConfig {
@@ -218,22 +219,23 @@ public class TestSimpleExpressions extends TestConfig {
 	}
 
 	/**
-	 * 100.0 <= 100.0 is true
-	 * 
+	 * x  with initial value 123.4
+	 * x + 100.0 
+	 * result is 223.4
 	 */
 	@Test
 	public void testAddTwoNumbersOneIsAVariable() {
 		Config config = setupConfig();
 		Variables variables = new Variables();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		
 //		Expression ex1 = new LiteralExpression(NUMBER1);
-//		Expression ex2 = new LiteralExpression(NUMBER2);
-//		variables.addVariable(variableDef, ex2.execute(variables, now));
-//		Expression ex3 = new VariableRefExpression("x");
-//		Expression ex5 = new AddOperator(ex1,ex3);
-//		Value result = ex5.execute(variables, now);
-//		assert(result.getBoolean());
+		VariableDef variableDef = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
+		variables.addVariable(variableDef);
+		Expression ex1 = new VariableRefExpression("x");
+		Expression ex2 = new LiteralExpression(NUMBER2);
+		Expression ex3 = new AddOperator(ex1,ex2);
+		Value result = ex3.execute(variables, now);
+		assert(0==ANSWER1.compareTo(result.getNumber()));
 	}
 	
 	

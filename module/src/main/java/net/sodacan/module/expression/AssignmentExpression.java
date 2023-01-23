@@ -36,7 +36,7 @@ public class AssignmentExpression extends BinaryOperator {
 
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
-		Value resolvedRightValue = resolve(variables, right.execute(variables,now));
+		Value resolvedRightValue = right.resolve(variables, now);
 		if (!(left instanceof VariableRefExpression)) {
 			throw new SodacanException("Left side of assignment must be a variable");
 		}

@@ -44,6 +44,7 @@ public class Variables {
 		}
 		return v;
 	}
+
 	/**
 	 * Add a variable to this collection of variable. Should be called
 	 * at the start of execution, not along the way. All variables should be 
@@ -53,6 +54,14 @@ public class Variables {
 	 */
 	public void addVariable(VariableDef vd, Value v) {
 		variables.put(vd.getShortName(), new Variable(vd, v));
+	}
+	/**
+	 * Add a variable using it's initial value as the value
+	 * @param vd
+	 * @param v
+	 */
+	public void addVariable(VariableDef vd) {
+		addVariable(vd, vd.getInitialValue());
 	}
 
 	/**
@@ -85,4 +94,9 @@ public class Variables {
 		}
 		v.setValue(value);
 	}
+	@Override
+	public String toString() {
+		return variables.toString();
+	}
+	
 }
