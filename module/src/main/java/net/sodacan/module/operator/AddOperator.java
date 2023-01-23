@@ -20,12 +20,12 @@ import net.sodacan.module.value.Value;
 
 public class AddOperator extends BinaryOperator {
 
-	AddOperator(Expression left,Expression right) {
+	public AddOperator(Expression left,Expression right) {
 		super(left, right);
 	}
 	
 	@Override
-	protected Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
+	public Value evaluate(Value resolvedLeftValue, Value resolvedRightValue) {
 		return new Value( resolvedLeftValue.getNumber().add(resolvedRightValue.getNumber()));
 	}
 

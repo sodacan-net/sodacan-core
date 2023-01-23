@@ -20,7 +20,7 @@ import net.sodacan.module.value.Value;
 
 public class SubtractOperator extends BinaryOperator {
 
-	SubtractOperator(Expression left,Expression right) {
+	public SubtractOperator(Expression left,Expression right) {
 		super(left, right);
 	}
 	
