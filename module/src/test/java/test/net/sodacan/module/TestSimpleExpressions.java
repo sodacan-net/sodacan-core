@@ -14,8 +14,6 @@
  */
 package test.net.sodacan.module;
 
-import static org.junit.Assert.*;
-
 import java.math.BigDecimal;
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
@@ -40,6 +38,8 @@ import net.sodacan.module.variable.Variables;
 
 public class TestSimpleExpressions extends TestConfig {
 	static final String STRING1 = "a String";
+	static final String STRING2 = "a";
+	static final String STRINGb = "b";
 	static final BigDecimal NUMBER1 = new BigDecimal("123.4");
 	static final BigDecimal NUMBER2 = new BigDecimal("100.0");
 	static final BigDecimal NUMBER2a = new BigDecimal("100");
@@ -49,7 +49,6 @@ public class TestSimpleExpressions extends TestConfig {
 	static final BigDecimal ANSWER3a = new BigDecimal("12340.0");
 	static final BigDecimal ANSWER4 = new BigDecimal("1.234");
 	static final Value ANSWER5 = new Value(ANSWER1);
-
 	@Test
 	public void testStringLiteral() {
 		Config config = setupConfig();
@@ -57,7 +56,31 @@ public class TestSimpleExpressions extends TestConfig {
 		Variables variables = new Variables();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		Value result = ex.execute(variables, now);
-		STRING1.equals(result.getValue());
+		assert(STRING1.equals(result.getValue()));
+	}
+
+	@Test
+	public void testTwoStringsForEquality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(STRING2);
+		Expression ex2 = new LiteralExpression(STRING2);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(result.getBoolean());
+	}
+
+	@Test
+	public void testTwoStringsForInequality() {
+		Config config = setupConfig();
+		Expression ex1 = new LiteralExpression(STRING1);
+		Expression ex2 = new LiteralExpression(STRING2);
+		Expression ex3 = new EqualsOperator(ex1,ex2);
+		Variables variables = new Variables();
+		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		Value result = ex3.execute(variables, now);
+		assert(!result.getBoolean());
 	}
 
 	@Test

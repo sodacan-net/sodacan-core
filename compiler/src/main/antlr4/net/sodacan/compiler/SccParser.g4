@@ -54,7 +54,7 @@ timerStatement
 	;
 	
 atStatement
-	: AT atTimeExpression atDateExpression? AtEOL+ andStatement? thenStatement+
+	: AT atTimeExpression atDateExpression AtEOL+ andStatement? thenStatement+
 	;
 
 onStatement
