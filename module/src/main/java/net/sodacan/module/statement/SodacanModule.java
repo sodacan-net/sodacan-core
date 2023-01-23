@@ -14,16 +14,21 @@
  */
 package net.sodacan.module.statement;
 
+import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.module.message.ModuleMessage;
+import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variable.Variables;
 
 /**
- * Top-level Sodacan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 
- * The Sodacan runtime will walk one of three module sub-trees, depending on the circumstance: Due to the passage of time: atStatements. 
- * Due to an incomming message: OnStatements. And, after either case: IfStatements.
+ * Top-level SodaCan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 
+ * The SodaCan runtime will walk one of three module sub-trees, depending on the circumstance: Due to the passage of time: atStatements. 
+ * Due to an incoming message: OnStatements. And, after either case is executed: execute the IfStatements.
  * @author John Churin
  *
  */
@@ -49,8 +54,35 @@ public class SodacanModule {
 	 */
 	public SodacanModule() {
 		
+	}	
+
+	/**
+	 * One time, for each instance of a module, at runtime, visit each variable definition and create a set of variables 
+	 * that are persisted and lives forever independent of the module definition.
+	 * It will need to be revalidated after a module change.
+	 * @return
+	 */
+	public Variables createVariablesMap() {
+		return variableDefs.createVariablesMap();
 	}
 
+	/**
+	 * An event (message) comes in. We first store it in variables and then look for a matching OnStatement.
+	 * If one is found, it is executed. Only the first match is executed. We then skip the rest of the ON statements.
+	 * 
+	 * This process constitutes one "cycle" through the module.
+	 * @return
+	 */
+	public boolean processEvent(Variables variables, ZonedDateTime now, ModuleMessage message) {
+		variables.resetChanged();
+		// Lookup the variable
+		Variable variable = variables.find(message.getTopic(), message.getNamespace(), message.getInstance(), message.getName());
+		setVariable(message);
+		for (OnStatement os : onStatements) {
+			Value result = os.execute(variables, now);
+		}
+		return true;
+	}
 	/**
 	 * Without errors, the module is considered executable.
 	 * @return
@@ -82,8 +114,10 @@ public class SodacanModule {
 	public void setVariableDefs(VariableDefs variableDefs) {
 		this.variableDefs = variableDefs;
 	}
+	
 	/**
-	 * Add statements to the module
+	 * Add statements to the module. Statements are ordered so they are maintained in lists that maintain the order.
+	 * 
 	 * @param statement
 	 */
 	public void addStatement(Statement statement) {
@@ -172,6 +206,6 @@ public class SodacanModule {
 		}
 		return sb.toString();
 	}
-	
+
 	
 }

@@ -28,11 +28,9 @@ import net.sodacan.module.variable.Variables;
  * @author John Churin
  *
  */
-public class AtStatement extends Statement {
+public class AtStatement extends ActionStatement {
 	TimeExpression timeExpression;
 	DateExpression dateExpression;
-	List<AndStatement> andStatements = new ArrayList<>();
-	List<ThenStatement> thenStatements = new ArrayList<>();
 
 	/**
 	 * If the date and time expressions return true and the AndStatements all return true, then 
@@ -57,17 +55,8 @@ public class AtStatement extends Statement {
 		if (!dateValue.getBoolean() || !timeValue.getBoolean()) {
 			return new Value(false);
 		}
-		for (AndStatement andStatement : andStatements) {
-			if (!andStatement.execute(variables, now).getBoolean()) {
-				return new Value(false);
-			}
-		}
-		// If we made it this far, so do all of the thens
-		for (ThenStatement thenStatement : thenStatements) {
-			thenStatement.execute(variables, now);
-		}
-		
-		return null;
+		// The rest is handled by our superclass
+		return super.execute(variables, now);
 	}
 
 }

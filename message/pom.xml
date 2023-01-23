@@ -8,7 +8,7 @@
   	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
   </parent>
-  <description>Message bus and message format</description>
+  <description>Message bus</description>
   <dependencies>
 		<dependency>
 		    <groupId>org.apache.kafka</groupId>

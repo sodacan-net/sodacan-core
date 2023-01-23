@@ -19,7 +19,7 @@ import java.time.ZonedDateTime;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variables;
 
-public class IfStatement extends Statement {
+public class IfStatement extends ActionStatement {
 
 	public IfStatement() {
 		// TODO Auto-generated constructor stub

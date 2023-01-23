@@ -164,6 +164,45 @@ public class Value {
 	public List<Value> getArray() {
 		return array;
 	}
+	/**
+	 * This serialize and deserialize methods guarantee compatibility of a value over time represented by a string
+	 * @return
+	 */
+	public String serialize() {
+		StringBuffer sb = new StringBuffer();
+		if (number!=null) {
+			sb.append("number-");
+			sb.append(number.toPlainString());
+		} else if (string!=null) {
+			sb.append("string-");
+			sb.append(string);
+		} else if (bool!=null) {
+			sb.append("boolean-");
+			sb.append(Boolean.toString(bool));
+		} else if (array!=null) { 
+			return array.toString();
+		} else {
+			sb.append("null");
+		}
+		return sb.toString();
+		
+	}
+	public static Value deserialize( String value ) {
+		if (value.startsWith("string-")) {
+			return new Value(value.substring(7));
+		}
+		if (value.startsWith("number-")) {
+			return new Value(new BigDecimal(value.substring(7)));
+		}
+		if (value.equals("boolean-true") ) {
+			return new Value(true);
+		}
+		if (value.equals("boolean-false") ) {
+			return new Value(false);
+		}
+		// Must be null
+		return new Value();
+	}
 	@Override
 	public String toString() {
 		if (number!=null) return number.toString();

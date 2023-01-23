@@ -20,7 +20,9 @@ import java.util.Map;
 import java.util.TreeMap;
 
 import net.sodacan.SodacanException;
+import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
  * Contains a map of variables.
@@ -43,6 +45,31 @@ public class Variables {
 			throw new SodacanException("Variable not found, should not happen: " + name);
 		}
 		return v;
+	}
+	/**
+	 * Variables are stored by short name so we need to iterate through the list looking be long name. 
+	 * If the list gets long, then we should have a second map by full name. Both maps are relatively 
+	 * permanent so update would be rare.
+	 * @param topic
+	 * @param namespace
+	 * @param name
+	 * @param instance
+	 * @return
+	 */
+	public Variable find(String topic, String namespace, String instance, String name) {
+		Variable v = null;
+		for (String key : variables.keySet() ) {
+			v = variables.get(key);
+			if (topic.equals(v.getVariableDef().getTopic()) &&
+			namespace.equals(v.getVariableDef().getNamespace()) && 
+			(instance==null && v.getVariableDef().getInstance()==null ||
+			instance !=null && instance.equals(v.getVariableDef().getInstance())) &&
+			name.equals(v.getVariableDef().getName())) 
+			{
+				return v;
+			}
+		}
+		throw new SodacanException("Variable not found, should not happen: " + name);
 	}
 
 	/**
@@ -79,6 +106,31 @@ public class Variables {
 		variables.forEach((name,variable)-> {if (variable.isChangedInCycle()) selected.add(variable);});
 		return selected;
 	}
+	
+	/**
+	 * Find and update a variable. It must be a subscribe variable, the only kind that make sense to 
+	 * be updated by the arrival of a message.
+	 * We also hang onto the message in the variable allowing access to, for example, when the message driving this variable arrived.
+	 * @param message
+	 * @return The variable we updated
+	 */
+	public Variable setVariable (ModuleMessage message) {
+		Variable v = variables.get(message.getName());
+		if (v==null) {
+			// If we're uninterested in this message, we should probably ignore it rather than throw an error
+//			return null;
+			throw new SodacanException("Variable from message from " + message.getProducer() + " not found in this module");
+		}
+		// Only allowed to update subscription variables
+		if (!(v.getVariableDef().getVariableType()==VariableType.subscribeVariable)) {
+			throw new SodacanException("Only messages should modify subscription variables");
+		}
+		// Store the message in the variable
+		v.setMessage(message);
+		// and finally deserialize the value and store it in the variable
+		v.setValue(Value.deserialize(message.getValue()));
+		return v;
+	}
 
 	/**
 	 * Set a value in the variables collection
@@ -92,6 +144,11 @@ public class Variables {
 		if (v==null) {
 			throw new SodacanException("Missing variable " + variableName + " at runtime");
 		}
+		// Make sure its a subscription variable
+		if (v.getVariableDef().getVariableType()==VariableType.subscribeVariable) {
+			throw new SodacanException("Only messages should modify subscription variables");
+		}
+
 		v.setValue(value);
 	}
 	@Override

@@ -15,7 +15,9 @@
 package net.sodacan.module.variable;
 
 import net.sodacan.SodacanException;
+import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
  * One variable: A variable references its variable definition (VariableDef) which is immutable and contains a value which is mutable.
@@ -26,6 +28,7 @@ public class Variable {
 	private VariableDef variableDef;
 	private Value value;
 	private boolean changedInCycle;
+	private ModuleMessage message; // Only when from a message
 
 	
 	public Variable(VariableDef variableDef, Value value) {
@@ -36,6 +39,7 @@ public class Variable {
 	public Value getValue() {
 		return value;
 	}
+	
 	public void setValue(Value value) {
 		if(!variableDef.validateAgainstConstraints(value)) {
 			throw new SodacanException("Value " + variableDef.getName() + " does not match any constraints");
@@ -45,6 +49,7 @@ public class Variable {
 			changedInCycle = true;
 		}
 	}
+	
 	public VariableDef getVariableDef() {
 		return variableDef;
 	}
@@ -59,6 +64,14 @@ public class Variable {
 
 	public void setChangedInCycle(boolean changedInCycle) {
 		this.changedInCycle = changedInCycle;
+	}
+
+	public ModuleMessage getMessage() {
+		return message;
+	}
+
+	public void setMessage(ModuleMessage message) {
+		this.message = message;
 	}
 
 	@Override

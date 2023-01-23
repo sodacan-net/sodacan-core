@@ -16,17 +16,31 @@ package net.sodacan.module.statement;
 
 import java.time.ZonedDateTime;
 
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
 
-public class OnStatement  extends Statement {
+/**
+ * An ON statement contains one expression that checks if it is interesting in the incoming event,
+ * and if so, continues evaluating its AND Statements, if any. If they all pass (or there are none) then
+ * execute each of the THEN statements.
+ * 
+ * Executing an On statement happens when there's an event due to the arrival of a message.  
+ * 
+ */
+public class OnStatement  extends ActionStatement {
+	Expression onSelectExpression;
 
+	protected boolean isMessageMatch(Variables variables, ZonedDateTime now) {
+		
+	}
+	
 	@Override
 	public Value execute(Variables variables, ZonedDateTime now) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
-
+	public boolean processMessage(Variables variables, ZonedDateTime now) {
+		return false;
+	}
 }
