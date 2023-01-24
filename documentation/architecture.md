@@ -222,3 +222,43 @@ The sodaCan web application has several top-level windows:
 - Application Console - Modules, buttons, etc 
 
 See <a href="../webserver/README.md">Web Server</a> for more details.
+
+### Comparisons to Conventional Approaches
+Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.
+
+Module Persistence in SodaCan is not unlike systems such as Apache Flink which, like SodaCan, stores persistent data with the end-point rather than having to connect to a database. This approach, along with messaging, virtually eliminates the need to deal with database concurrency, locking and similar problems.
+
+The module language is line oriented, similar to Python but without its indent sensitivity. Unlike many languages in use today, SodaCan module language is case insensitive.
+
+Aliases are used in modules and they look like a SQL alias:
+
+```
+	SELECT primaryPhoneNumber AS ppn FROM ...
+	
+```
+In a SodaCan Module
+
+```
+	MODULE lamp1
+		PUBLISH mydomain.verylongname AS shortName
+		...
+```
+
+They also work the same as in SQL and follow the expression or variable as in SQL.
+
+The module language is closer to a domain-specific language than a true programming language for several reasons:
+
+- It has very little technical chatter. Only a few very broad data types. No such thing as int, int_32, BigDecimal, etc. Just a number (Sodacan uses the term DECIMAL).
+- The hierarchy is shallow. There are modules and variables within modules and that's about it. Traditional `IF` statements and code blocks (begin-end-style) are not used to keep the module shallow. This is similar to the way some rule languages control the depth of statements.
+- Invocation is different from traditional programming languages. No such thing as a function or method call. When a message arrives in a module, it is immediately stored in a variable. This activates the module for one cycle. The module then waits for the next message to arrive. This means that open/close/loops etc are unnecessary.
+
+The `THEN` statement might seem novel. If there is more than one thing to do as a consequence of a conditional expression, then the `THEN` is repeated.
+
+```
+		...
+		THEN do the first thing
+		THEN do the second thing
+```
+
+This extra bit of typing (THEN) eliminates the need for expression separators such as a semi-colon.
+

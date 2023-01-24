@@ -392,42 +392,30 @@ SodaCan uses an administrative topic to deploy modules to the appropriate agent/
 | xxx  | All mode commands are broadcast on this topic, see CLI for details |
 | module | 
 
-### Comparisons to Conventional Approaches
-Modules can be thought of a Java/C++ class definition but in reverse. The term "static" is used to distinguish class-wide variables whereas SodaCan makes variables without any indication otherwise, a static. Conversely, when referring to an instance variable, SodaCan requires what may look like an array reference to instance variables.
+### Special Variables
+In addition to variables that you explicitly define in your module, some are special in that they provide access to the agent, system, or custom plugins. 
+Variables can also have attributes. Most special variables provide access to plugins. Some attributes are actually attributes on all variables. For example, a SUBSCRIBE variable provides access to when the message was created, which module (or plugin) sent it, etc.
 
-Module Persistence in SodaCan is not unlike systems such as Apache Flink which, like SodaCan, stores persistent data with the end-point rather than having to connect to a database. This approach, along with messaging, virtually eliminates the need to deal with database concurrency, locking and similar problems.
+Special attribute names are preceded by a hash (#) symbol. for example, assuming the following is a SUBSCRIBE variable named "mode",  `mode.#msgid' will access the message id of the last message that set that variable. Those marked *R/O* are read-only. *R/W* attributes can be assigned to. Some are write only *W/O*.
 
-The module language is line oriented, similar to Python but without its indent sensitivity. Unlike many languages in use today, SodaCan module language is case insensitive.
-
-Aliases are used in modules and they look like a SQL alias:
-
-```
-	SELECT primaryPhoneNumber AS ppn FROM ...
-	
-```
-In a SodaCan Module
-
-```
-	MODULE lamp1
-		PUBLISH mydomain.verylongname AS shortName
-		...
-```
-
-They also work the same as in SQL and follow the expression or variable as in SQL.
-
-The module language is closer to a domain-specific language than a true programming language for several reasons:
-
-- It has very little technical chatter. Only a few very broad data types. No such thing as int, int_32, BigDecimal, etc. Just a number (Sodacan uses the term DECIMAL).
-- The hierarchy is shallow. There are modules and variables within modules and that's about it. Traditional `IF` statements and code blocks (begin-end-style) are not used to keep the module shallow. This is similar to the way some rule languages control the depth of statements.
-- Invocation is different from traditional programming languages. No such thing as a function or method call. When a message arrives in a module, it is immediately stored in a variable. This activates the module for one cycle. The module then waits for the next message to arrive. This means that open/close/loops etc are unnecessary.
-
-The `THEN` statement might seem novel. If there is more than one thing to do as a consequence of a conditional expression, then the `THEN` is repeated.
-
-```
-		...
-		THEN do the first thing
-		THEN do the second thing
-```
-
-This extra bit of typing (THEN) eliminates the need for expression separators such as a semi-colon.
+| variable | Attribute| R/W |Description |
+| ----- | ---- | --- | ------------|
+| *any subscribe variables * | #timestamp|R/O | The timestamp (UTC Z-time) of the message |
+| *any subscribe variables * | #msgid|R/O | The timestamp (UTC Z-time) of the message |
+| *any subscribe variables * | #topic|R/O | The topic of the message |
+| *any subscribe variables * | #namespace|R/O | The topic of the message |
+| *any subscribe variables * | #version|R/O | The message format version |
+| system.clock | #month |R/O | The month of the current datetime |
+| system.clock | #day |R/O | The day of the current datetime |
+| system.clock | #year |R/O | The year of the current datetime |
+| system.clock | #hour |R/O | The hour of the current datetime |
+| system.clock | #minute |R/O | The minute of the current datetime |
+| system.clock | #second |R/O | The seconds of the current datetime |
+| system.clock | #sunrise |R/O | Today's sunrise |
+| system.clock | #sunset |R/O | Today's sunrise |
+| system.clock | #season |R/O | The current season |
+| system.clock | #season |R/O | Today's sunset |
+| system.log | # season |W/O | Write text to system log |
+| rpi4.gpio2 | # mode | R/W | Set mode for GPIO 2|
+| rpi4.gpio2 | # pin | R/W | Set/get pin for GPIO 2|
 

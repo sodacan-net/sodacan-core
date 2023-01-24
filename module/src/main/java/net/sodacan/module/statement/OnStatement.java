@@ -23,13 +23,14 @@ import net.sodacan.module.variable.Variables;
 
 /**
  * An ON statement contains one expression that checks if it is interesting in the incoming event,
- * and if so, continues evaluating its AND Statements, if any. If they all pass (or there are none) then
+ * and if so, continues evaluating its AND Statements, if any. If they all pass (or there non AND statements) then
  * execute each of the THEN statements.
  * 
- * Executing an On statement happens when there's an event due to the arrival of a message.  
+ * Executing an On statements happens due to the arrival of a message.  
  * 
  */
 public class OnStatement  extends ActionStatement {
+
 	Expression onSelectExpression;
 
 	protected boolean isMessageMatch(Variables variables, ZonedDateTime now) {
