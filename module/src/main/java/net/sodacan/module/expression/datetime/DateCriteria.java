@@ -14,8 +14,6 @@
  */
 package net.sodacan.module.expression.datetime;
 
-import java.time.ZonedDateTime;
-
 public abstract class DateCriteria extends Criteria {
 
 	public DateCriteria() {

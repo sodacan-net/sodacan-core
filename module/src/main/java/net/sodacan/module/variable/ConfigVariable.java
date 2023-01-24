@@ -14,67 +14,60 @@
  */
 package net.sodacan.module.variable;
 
-import java.time.ZonedDateTime;
-
 import net.sodacan.SodacanException;
+import net.sodacan.config.Config;
 import net.sodacan.module.value.Value;
-import net.sodacan.utility.SunriseSunset;
+/**
+ * Provide access to selected configuration settings
+ * @author John Churin
+ *
+ */
+public class ConfigVariable implements Variable {
+	Config config;
 
-public class ClockVariable implements Variable {
-	protected ZonedDateTime dateTime;
-	public ClockVariable(ZonedDateTime dateTime) {
-		this.dateTime = dateTime;
+	public ConfigVariable( Config config) {
+		this.config = config;
 	}
-	
 	@Override
 	public Value getValue() {
-		return new Value(dateTime);
+		return new Value("<system.config>");
 	}
-	
+
 	@Override
 	public void setValue(Value value) {
-		throw new SodacanException("Cannot set the value of the clock");
+		throw new SodacanException("Cannot set the value of configuration settings");
 	}
-	
+
 	@Override
 	public Value getAttribute(String attributeName) {
-		if ("now".equals(attributeName)) {
-			return new Value(dateTime);
-		} else if ("sunrise".equals(attributeName)) {
-			ZonedDateTime sst = SunriseSunset.getInstance().getSunrise(dateTime);
-			return new Value(sst);
-		} else if ("sunset".equals(attributeName)) {
-			ZonedDateTime sst = SunriseSunset.getInstance().getSunset(dateTime);
-			return new Value(sst);
-		} else if ("month".equals(attributeName)) {
-			return new Value(dateTime.getMonthValue());
-		} else if ("day".equals(attributeName)) {
-			return new Value(dateTime.getDayOfMonth());
-		} else if ("year".equals(attributeName)) {
-			return new Value(dateTime.getYear());
-		} else if ("hour".equals(attributeName)) {
-			return new Value(dateTime.getHour());
-		} else if ("minute".equals(attributeName)) {
-			return new Value(dateTime.getMinute());
-		} else if ("second".equals(attributeName)) {
-			return new Value(dateTime.getSecond());
+		if ("timezone".equals(attributeName)) {
+			return new Value(config.getLocation().getTimezone());
+		} else if ("locationName".equals(attributeName)) {
+			return new Value(config.getLocation().getName());
+		} else if ("locationAddress".equals(attributeName)) {
+			return new Value(config.getLocation().getAddress());
+		} else if ("latitude".equals(attributeName)) {
+			return new Value(config.getLocation().getLatitude());
+		} else if ("longitude".equals(attributeName)) {
+			return new Value(config.getLocation().getLongitude());
 		}
 		throw new SodacanException("Unknown attribute name: " + attributeName);
 	}
+
 	@Override
 	public void setAttribute(String attributeName) {
-		throw new SodacanException("Cannot set an attribute of the clock");
+		throw new SodacanException("Cannot set an attribute of the configuration");
 	}
 
 	@Override
 	public String getName() {
-		return "system.clock";
+		return "system.config";
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
-		if (obj instanceof ClockVariable) {
-			ClockVariable other = (ClockVariable)obj;
+		if (obj instanceof ConfigVariable) {
+			ConfigVariable other = (ConfigVariable)obj;
 			return (getName().equals(other.getName()));
 		}
 		return false;

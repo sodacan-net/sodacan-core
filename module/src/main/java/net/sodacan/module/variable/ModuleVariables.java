@@ -41,9 +41,6 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	 */
 	public Variable find(String name) {
 		Variable v = variables.get(name);
-		if (v==null) {
-			throw new SodacanException("Variable not found, should not happen: " + name);
-		}
 		return v;
 	}
 	

@@ -24,7 +24,7 @@ import net.sodacan.config.Config;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.ClockVariables;
+import net.sodacan.module.variable.SystemVariables;
 
 public class TestDateExpressions extends TestConfig {
 	static final BigDecimal NUMBER1 = new BigDecimal("2023");
@@ -34,7 +34,7 @@ public class TestDateExpressions extends TestConfig {
 	public void testYear() {
 		Config config = setupConfig();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		ClockVariables variables = new ClockVariables(now);
+		SystemVariables variables = new SystemVariables(now,config);
 		Expression ex1 = new VariableRefExpression("system.clock#year");
 		Value result = ex1.resolve(variables);
 //		System.out.println(result);
@@ -45,7 +45,7 @@ public class TestDateExpressions extends TestConfig {
 	public void testMonth() {
 		Config config = setupConfig();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		ClockVariables variables = new ClockVariables(now);
+		SystemVariables variables = new SystemVariables(now,config);
 		Expression ex1 = new VariableRefExpression("system.clock#month");
 		Value result = ex1.resolve(variables);
 //		System.out.println(result);
@@ -57,7 +57,7 @@ public class TestDateExpressions extends TestConfig {
 		Config config = setupConfig();
 		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
 		ZonedDateTime sunset = ZonedDateTime.of(2023, 1, 20, 17, 11, 52, 0, ZoneId.of(config.getLocation().getTimezone()));
-		ClockVariables variables = new ClockVariables(now);
+		SystemVariables variables = new SystemVariables(now,config);
 		Expression ex1 = new VariableRefExpression("system.clock#sunset");
 		Value result = ex1.resolve(variables);
 //		System.out.println(result);

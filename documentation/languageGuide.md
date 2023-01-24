@@ -411,11 +411,12 @@ Note: A module variable is a variable defined in a module: publish, subscribe, p
 | *any module variable* | #modified|R/O | True if modified in this cycle |
 | *any module variable* | #initialValue|R/O | The initial value of the variable as declared |
 | *any module variable* | #constraints|R/O | The constraints specified for this variable. |
-| *any module variable* | #attributes|R/O | A list of all attributes of this variable. |
 | *any publish variable* | #modified|R/O | True if modified in this cycle and will be published at the conclusion of the cycle |
 | system.config | #latitude | R/O | Latitude of this location |
 | system.config | #longitude | R/O | Longitude of this location |
 | system.config | #timezone | R/O | Timezone of this location |
+| system.config | #locationName | R/O | Name of this location |
+| system.config | #locationAddress | R/O | Address of this location |
 | system.clock | #month |R/O | The month of the current datetime |
 | system.clock | #day |R/O | The day of the current datetime |
 | system.clock | #year |R/O | The year of the current datetime |

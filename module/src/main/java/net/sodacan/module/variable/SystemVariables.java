@@ -15,41 +15,42 @@
 package net.sodacan.module.variable;
 
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.TreeMap;
 
+import net.sodacan.config.Config;
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
 
 /**
- * This collection of variables provides access to the clock used for this cycle.
+ * This collection of variables provides access to the clock used for this cycle and to configuration variables.
  * This set of variables is created for each clock tick (AT statements) and 
  * for each message received (ON statements). It is (usually) not persisted.
  * @author John Churin
  *
  */
-public class ClockVariables extends BaseVariables implements Variables {
+public class SystemVariables extends BaseVariables implements Variables {
 	ZonedDateTime datetime;
 	public static final String SYSTEM_CLOCK = "system.clock";
-	Variable clockVariable;
+	public static final String SYSTEM_CONFIG = "system.config";
+	protected Map<String,Variable> variables = new TreeMap<>();
 
 	/**
 	 * @param datetime
 	 */
-	public ClockVariables(ZonedDateTime datetime) {
-		clockVariable = new ClockVariable(datetime);
+	public SystemVariables(ZonedDateTime datetime, Config config) {
+		variables.put( SYSTEM_CLOCK, new ClockVariable(datetime));
+		variables.put(SYSTEM_CONFIG, new ConfigVariable(config));
 	}
 
 	/**
-	 * For a clock, the only variable we have is the clock
+	 * Out list of variables is very short
 	 */
 	@Override
 	public Variable find(String name) {
-		// If the name doesn't start with "system.clock" then we're not interested.
-		if (name.equals(SYSTEM_CLOCK)) {
-			return clockVariable;
-		} else {
-			return null;
-		}
+		return variables.get(name);
 	}
 
 	@Override
@@ -81,5 +82,10 @@ public class ClockVariables extends BaseVariables implements Variables {
 		// TODO Auto-generated method stub
 
 	}
+	@Override
+	public String toString() {
+		return variables.toString();
+	}
+
 
 }

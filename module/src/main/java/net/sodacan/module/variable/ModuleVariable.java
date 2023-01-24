@@ -72,14 +72,14 @@ public class ModuleVariable implements Variable {
 	public boolean equals(Object obj) {
 		if (obj instanceof ModuleVariable) {
 			ModuleVariable other = (ModuleVariable)obj;
-			return (getVariableDef().getFullName().equals(other.getVariableDef().getFullName()));
+			return (getName().equals(other.getName()));
 		}
 		return false;
 	}
 
 	@Override
 	public int hashCode() {
-		return getVariableDef().getFullName().hashCode();
+		return getName().hashCode();
 	}
 
 	@Override
@@ -94,6 +94,9 @@ public class ModuleVariable implements Variable {
 		
 	}
 
-	
+	@Override
+	public String getName() {
+		return getVariableDef().getName();
+	}
 
 }

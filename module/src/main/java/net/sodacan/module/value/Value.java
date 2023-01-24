@@ -49,6 +49,10 @@ public class Value {
 		this.number = number;
 	}
 
+	public Value( double number) {
+		this.number = new BigDecimal(number);
+	}
+
 	public Value(String string) {
 		this.string = string;
 	}

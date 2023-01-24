@@ -4,7 +4,7 @@
 
 ![build workflow](https://github.com/sodacan-net/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
 
-SodaCan is for home and plant automation. One might describe it as "post-IOT" but it's more like they work together. IIOT? Internet and Intranet Of Things? A little less cloud. A little more local infrastructure.
+SodaCan is for home and building automation. One might describe it as "post-IOT": A little less cloud. A little more local infrastructure.
 
 #### History
 I live on a five acre property in southern Oregon. It includes a residence, shop, electric gate, water pumps, irrigation, Christmas lighting, an outdoor movie theater, security, indoor and outdoor lighting, and more. I have a bunch of controllers running these components and I'm adding more all the time. However, most of these components run in their own little world. What I need is a way to tie them all together. If I want to turn on a light in the house when the a lawn sprinkler is running, I should be able to do so with little or no coding. If I want my electric gate to open at 3pm on Thursdays, but only during the spring, that shouldn't require complex coding or rules. Whatever happens at bedtime should not be limited to lighting. If I want to close the gate, if it's still open, then that should be easy to configure. I have a flapole which is lit from sundown to sunrise, except during Christmas season when the flagpole becomes a huge Christmas tree: Flagpole light off, Christmas lights on... at night.
