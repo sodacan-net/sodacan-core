@@ -15,12 +15,9 @@
 package test.net.sodacan.module;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
-import net.sodacan.config.Config;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.operator.AddOperator;
 import net.sodacan.module.operator.DivideOperator;
@@ -33,8 +30,8 @@ import net.sodacan.module.operator.SubtractOperator;
 import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.ModuleVariables;
+import net.sodacan.module.variable.VariableDef;
 
 public class TestSimpleExpressions extends TestConfig {
 	static final String STRING1 = "a String";
@@ -53,16 +50,14 @@ public class TestSimpleExpressions extends TestConfig {
 	static final Value ANSWER5 = new Value(ANSWER1);
 	@Test
 	public void testStringLiteral() {
-		Config config = setupConfig();
 		Expression ex = new LiteralExpression(STRING1);
 		ModuleVariables variables = new ModuleVariables();
 		Value result = ex.execute(variables);
-		assert(STRING1.equals(result.getValue()));
+		assert(STRING1.equals(result.getString()));
 	}
 
 	@Test
 	public void testTwoStringsForEquality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(STRING2);
 		Expression ex2 = new LiteralExpression(STRING2);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -75,7 +70,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testANumberAndAStringForEquality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(STRING4);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -89,7 +83,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testAStringAndANumberForEquality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(STRING4);
 		Expression ex2 = new LiteralExpression(NUMBER1);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -103,7 +96,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testAStringAndAnotherNumberForEquality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(STRING5);
 		Expression ex2 = new LiteralExpression(NUMBER1);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -116,7 +108,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testANumberStringAndANumberStringForEquality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(STRING4);
 		Expression ex2 = new LiteralExpression(STRING5);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -127,7 +118,6 @@ public class TestSimpleExpressions extends TestConfig {
 	
 	@Test
 	public void testTwoStringsForInequality() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(STRING1);
 		Expression ex2 = new LiteralExpression(STRING2);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
@@ -138,7 +128,6 @@ public class TestSimpleExpressions extends TestConfig {
 
 	@Test
 	public void testNumberLiteral() {
-		Config config = setupConfig();
 		Expression ex = new LiteralExpression(NUMBER1);
 		ModuleVariables variables = new ModuleVariables();
 		Value result = ex.execute(variables);
@@ -147,7 +136,6 @@ public class TestSimpleExpressions extends TestConfig {
 
 	@Test
 	public void testAddTwoNumbers() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new AddOperator(ex1,ex2);
@@ -158,7 +146,6 @@ public class TestSimpleExpressions extends TestConfig {
 	
 	@Test
 	public void testSubtractTwoNumbers() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new SubtractOperator(ex1,ex2);
@@ -173,7 +160,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testMultiplyTwoNumbers() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
@@ -188,7 +174,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testMultiplyTwoNumbersDifferentScale() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2a);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
@@ -202,7 +187,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testMultiplyTwoNumbersWithDifferentScale() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
@@ -213,7 +197,6 @@ public class TestSimpleExpressions extends TestConfig {
 
 	@Test
 	public void testDivideTwoNumbers() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new DivideOperator(ex1,ex2);
@@ -227,7 +210,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testCompareTwoAddedNumbers() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new AddOperator(ex1,ex2);
@@ -244,7 +226,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testCompareTwoNumbersGT() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new GreaterThanOperator(ex1,ex2);
@@ -259,7 +240,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testCompareTwoNumbersLT() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new LessThanOperator(ex1,ex2);
@@ -274,7 +254,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testCompareTwoNumbersLE() {
-		Config config = setupConfig();
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new LessOrEqualToOperator(ex1,ex2);
@@ -290,7 +269,6 @@ public class TestSimpleExpressions extends TestConfig {
 	 */
 	@Test
 	public void testAddTwoNumbersOneIsAVariable() {
-		Config config = setupConfig();
 		ModuleVariables variables = new ModuleVariables();
 //		Expression ex1 = new LiteralExpression(NUMBER1);
 		VariableDef variableDef = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();

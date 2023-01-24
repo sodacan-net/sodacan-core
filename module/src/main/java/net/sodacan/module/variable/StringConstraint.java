@@ -25,7 +25,7 @@ public class StringConstraint extends Constraint {
 	@Override
 	public boolean isMatch(Value value) {
 		if (value.isString()) {
-			return (value.getValue().equals(this.value));
+			return (value.getString().equals(this.value));
 		}
 		return false;
 	}

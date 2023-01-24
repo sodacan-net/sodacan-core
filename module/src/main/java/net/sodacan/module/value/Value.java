@@ -163,7 +163,7 @@ public class Value {
 	 * Return the string value of a Value. But this does not resolve the variable which must be done first.
 	 * @return
 	 */
-	public String getValue() {
+	public String getString() {
 		if (isVariable()) {
 			throw new SodacanException("Type cannot be determined for a variable until resolved");
 		}

@@ -33,7 +33,7 @@ public class TestValueSerialization {
 		Value v1 = new Value(STRING1);
 		String v1str = v1.serialize();
 		Value v2 = Value.deserialize(v1str);
-		assert(v2.getValue().equals(STRING1));
+		assert(v2.getString().equals(STRING1));
 	}
 
 	@Test
