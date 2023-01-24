@@ -14,75 +14,20 @@
  */
 package net.sodacan.module.variable;
 
-import net.sodacan.SodacanException;
-import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
- * One variable: A variable references its variable definition (VariableDef) which is immutable and contains a value which is mutable.
+ * Interface to access one existing variable.
  * @author John Churin
  *
  */
-public class Variable {
-	private VariableDef variableDef;
-	private Value value;
-	private boolean changedInCycle;
-	private ModuleMessage message; // Only when from a message
-
+public interface Variable {
 	
-	public Variable(VariableDef variableDef, Value value) {
-		this.variableDef = variableDef;
-		this.value = value;
-	}
+	public Value getValue();
 	
-	public Value getValue() {
-		return value;
-	}
+	public void setValue(Value value);
+		
+	public Value getAttribute(String attributeName);
 	
-	public void setValue(Value value) {
-		if(!variableDef.validateAgainstConstraints(value)) {
-			throw new SodacanException("Value " + variableDef.getName() + " does not match any constraints");
-		}
-		if (0!=this.value.compare(value)) {
-			this.value = value;
-			changedInCycle = true;
-		}
-	}
-	
-	public VariableDef getVariableDef() {
-		return variableDef;
-	}
-	
-	public void resetChanged() {
-		changedInCycle = false;
-	}
-
-	public boolean isChangedInCycle() {
-		return changedInCycle;
-	}
-
-	public void setChangedInCycle(boolean changedInCycle) {
-		this.changedInCycle = changedInCycle;
-	}
-
-	public ModuleMessage getMessage() {
-		return message;
-	}
-
-	public void setMessage(ModuleMessage message) {
-		this.message = message;
-	}
-
-	@Override
-	public String toString() {
-		StringBuffer sb = new StringBuffer();
-		sb.append(variableDef.toString());
-		sb.append('=');
-		sb.append(value.toString());
-		return sb.toString();
-	}
-
-	
-	
+	public void setAttribute( String attributeName);
 }

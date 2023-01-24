@@ -42,16 +42,16 @@ public abstract class ActionStatement extends Statement {
 
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		// Verify that all "and" statements are satisfied
 		for (AndStatement andStatement : andStatements) {
-			if (!andStatement.execute(variables, now).getBoolean()) {
+			if (!andStatement.execute(variables).getBoolean()) {
 				return new Value(false);
 			}
 		}
 		// If we made it this far, do all of the then statements
 		for (ThenStatement thenStatement : thenStatements) {
-			thenStatement.execute(variables, now);
+			thenStatement.execute(variables);
 		}
 		return new Value(true);
 	}

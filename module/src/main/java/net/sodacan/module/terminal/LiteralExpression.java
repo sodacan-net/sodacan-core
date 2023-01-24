@@ -15,7 +15,6 @@
 package net.sodacan.module.terminal;
 
 import java.math.BigDecimal;
-import java.time.ZonedDateTime;
 
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variables;
@@ -35,7 +34,7 @@ public class LiteralExpression extends TerminalExpression {
 	}
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		return value;
 	}
 

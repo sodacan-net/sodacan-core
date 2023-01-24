@@ -17,6 +17,7 @@ package test.net.sodacan.module;
 import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
@@ -49,8 +50,16 @@ public class TestValueSerialization {
 		Value v1 = new Value(true);
 		String v1str = v1.serialize();
 		Value v2 = Value.deserialize(v1str);
-		// We use the strict form of comparison
 		assert(v2.getBoolean()==v1.getBoolean());
+	}
+
+	@Test
+	public void testDateTimeValue() {
+		ZonedDateTime now = ZonedDateTime.now();
+		Value v1 = new Value(now);
+		String v1str = v1.serialize();
+		Value v2 = Value.deserialize(v1str);
+		assert(v2.getDateTime().equals(now));
 	}
 
 }

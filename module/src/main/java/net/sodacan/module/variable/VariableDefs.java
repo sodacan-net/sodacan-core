@@ -14,11 +14,8 @@
  */
 package net.sodacan.module.variable;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
-import java.util.concurrent.ConcurrentHashMap.KeySetView;
 
 import net.sodacan.SodacanException;
 
@@ -75,7 +72,7 @@ public class VariableDefs {
 	 * @return
 	 */
 	public Variables createVariablesMap() {
-		Variables vs = new Variables();
+		ModuleVariables vs = new ModuleVariables();
 		for (String key : variables.keySet()) {
 			VariableDef vd = variables.get(key);
 			vs.addVariable(vd, vd.getInitialValue());

@@ -49,9 +49,9 @@ public abstract class BinaryOperator extends Expression {
 	 * and finally, do the math (or whatever) in a specific subclass such as add two values and return the result value.
 	 */
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
-		Value resolvedLeftValue = left.resolve(variables,now );
-		Value resolvedRightValue = right.resolve(variables, now);
+	public Value execute(Variables variables) {
+		Value resolvedLeftValue = left.resolve(variables );
+		Value resolvedRightValue = right.resolve(variables);
 		// Now actually do the math part in the specific subclass
 		return evaluate( resolvedLeftValue, resolvedRightValue);
 	}

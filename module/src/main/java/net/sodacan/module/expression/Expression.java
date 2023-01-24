@@ -33,8 +33,8 @@ public abstract class Expression extends ModuleComponent {
 	 * @param value
 	 * @return
 	 */
-	public Value resolve(Variables variables, ZonedDateTime now) {
-		return execute(variables, now);
+	public Value resolve(Variables variables) {
+		return execute(variables);
 	}
 	
 }

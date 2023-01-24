@@ -24,6 +24,6 @@ public abstract class ModuleComponent {
 	int lineNumber;
 	int characterPosition;
 	
-	abstract public Value execute(Variables variables, ZonedDateTime now);
+	abstract public Value execute(Variables variables);
 	
 }

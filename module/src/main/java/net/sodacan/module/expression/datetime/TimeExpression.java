@@ -43,8 +43,9 @@ public class TimeExpression extends Expression {
 	}
 	
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
-		return new Value(isMatch(now));
+	public Value execute(Variables variables) {
+		Value v = variables.findValue("system.clock#now");
+		return new Value(isMatch(v.getDateTime()));
 	}
 	/**
 	 * You give me a datetime and I'll tell you if it's included in the set.

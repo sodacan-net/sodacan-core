@@ -14,10 +14,7 @@
  */
 package net.sodacan.module.terminal;
 
-import java.time.ZonedDateTime;
-
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.Variables;
 
 public class VariableRefExpression extends TerminalExpression {
@@ -31,10 +28,9 @@ public class VariableRefExpression extends TerminalExpression {
 	 * then we "dereference" it by returning the underlying value.
 	 */
 	@Override
-	public Value resolve(Variables variables, ZonedDateTime now) {
+	public Value resolve(Variables variables) {
 		if (value.isVariable()) {
-			Variable v = variables.find(value.getIdentifier());
-			return v.getValue();
+			return variables.findValue(value.getIdentifier());
 		}
 		return value;
 	}

@@ -23,7 +23,11 @@ import org.junit.Test;
 
 import net.sodacan.config.Config;
 import net.sodacan.module.expression.datetime.DateExpression;
-
+/**
+ * The functions tested here are very low level. See TestDateExpressions.java
+ * @author John Churin
+ *
+ */
 public class TestSimpleDateExpressions extends TestConfig {
 
 	@Test

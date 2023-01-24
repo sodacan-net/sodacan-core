@@ -1,7 +1,7 @@
 # SodaCan Module Language Guide
 
 ### Topics and Variables
-In SodaCan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variables carried by messages in a topic must be defined as well. 
+In SodaCan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variaable*carried by messages in a topic must be defined as well. 
 
 A topic defines a schema (or format) of messages for a specific purpose. You can think of a topic as a channel for information flow of similarly formatted messages. Once defined, a topic usually lasts forever, or until manually deleted.
 
@@ -398,13 +398,24 @@ Variables can also have attributes. Most special variables provide access to plu
 
 Special attribute names are preceded by a hash (#) symbol. for example, assuming the following is a SUBSCRIBE variable named "mode",  `mode.#msgid' will access the message id of the last message that set that variable. Those marked *R/O* are read-only. *R/W* attributes can be assigned to. Some are write only *W/O*.
 
+Note: A module variable is a variable defined in a module: publish, subscribe, private, or topic.
+
 | variable | Attribute| R/W |Description |
 | ----- | ---- | --- | ------------|
-| *any subscribe variables * | #timestamp|R/O | The timestamp (UTC Z-time) of the message |
-| *any subscribe variables * | #msgid|R/O | The timestamp (UTC Z-time) of the message |
-| *any subscribe variables * | #topic|R/O | The topic of the message |
-| *any subscribe variables * | #namespace|R/O | The topic of the message |
-| *any subscribe variables * | #version|R/O | The message format version |
+| *any subscribe variable* | #timestamp|R/O | The timestamp (UTC Z-time) of the message |
+| *any subscribe variable* | #msgid|R/O | The timestamp (UTC Z-time) of the message |
+| *any subscribe variable* | #topic|R/O | The topic of the message |
+| *any subscribe variable* | #namespace|R/O | The topic of the message |
+| *any subscribe variable* | #version|R/O | The message format version |
+| *any module variable* | #type|R/O | The type of variable (string, number, boolean, etc) |
+| *any module variable* | #modified|R/O | True if modified in this cycle |
+| *any module variable* | #initialValue|R/O | The initial value of the variable as declared |
+| *any module variable* | #constraints|R/O | The constraints specified for this variable. |
+| *any module variable* | #attributes|R/O | A list of all attributes of this variable. |
+| *any publish variable* | #modified|R/O | True if modified in this cycle and will be published at the conclusion of the cycle |
+| system.config | #latitude | R/O | Latitude of this location |
+| system.config | #longitude | R/O | Longitude of this location |
+| system.config | #timezone | R/O | Timezone of this location |
 | system.clock | #month |R/O | The month of the current datetime |
 | system.clock | #day |R/O | The day of the current datetime |
 | system.clock | #year |R/O | The year of the current datetime |
@@ -415,7 +426,11 @@ Special attribute names are preceded by a hash (#) symbol. for example, assuming
 | system.clock | #sunset |R/O | Today's sunrise |
 | system.clock | #season |R/O | The current season |
 | system.clock | #season |R/O | Today's sunset |
-| system.log | # season |W/O | Write text to system log |
+| system.log | # info |W/O | Write information text to system log |
+| system.log | # warn |W/O | Write warning text to system log |
+| system.module | #name | R/O | Name of this module |
+| system.module | #eventType | R/O | message or clock event |
+| system.agent | #name | R/O | Name of the agent hosting this module |
 | rpi4.gpio2 | # mode | R/W | Set mode for GPIO 2|
 | rpi4.gpio2 | # pin | R/W | Set/get pin for GPIO 2|
 

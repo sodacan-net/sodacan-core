@@ -14,12 +14,9 @@
  */
 package net.sodacan.module.expression;
 
-import java.time.ZonedDateTime;
-
 import net.sodacan.SodacanException;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
 /**
  * An assignment expression is a bit different from other binary operators in that
@@ -35,8 +32,8 @@ public class AssignmentExpression extends BinaryOperator {
 	}
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
-		Value resolvedRightValue = right.resolve(variables, now);
+	public Value execute(Variables variables) {
+		Value resolvedRightValue = right.resolve(variables);
 		if (!(left instanceof VariableRefExpression)) {
 			throw new SodacanException("Left side of assignment must be a variable");
 		}

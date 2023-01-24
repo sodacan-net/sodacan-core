@@ -45,8 +45,9 @@ public class DateExpression extends Expression {
 	}
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
-		return new Value(isMatch(now));
+	public Value execute(Variables variables) {
+		Value v = variables.findValue("system.clock#now");
+		return new Value(isMatch(v.getDateTime()));
 	}
 
 	/**

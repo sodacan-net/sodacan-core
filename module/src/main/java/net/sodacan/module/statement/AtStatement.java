@@ -37,17 +37,17 @@ public class AtStatement extends ActionStatement {
 	 * execute the ThenStatements (ignoring their return value)
 	 */
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		Value timeValue;
 		Value dateValue;
 		
 		if (timeExpression!=null) {
-			timeValue = timeExpression.execute(variables, now);
+			timeValue = timeExpression.execute(variables);
 		} else {
 			timeValue = new Value(false);
 		}
 		if (dateExpression!=null) {
-			dateValue = dateExpression.execute(variables, now);
+			dateValue = dateExpression.execute(variables);
 		} else {
 			dateValue = new Value(false);
 		}
@@ -56,7 +56,7 @@ public class AtStatement extends ActionStatement {
 			return new Value(false);
 		}
 		// The rest is handled by our superclass
-		return super.execute(variables, now);
+		return super.execute(variables);
 	}
 
 }

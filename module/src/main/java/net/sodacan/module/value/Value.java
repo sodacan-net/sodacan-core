@@ -15,6 +15,7 @@
 package net.sodacan.module.value;
 
 import java.math.BigDecimal;
+import java.time.ZonedDateTime;
 import java.util.List;
 
 import net.sodacan.SodacanException;
@@ -32,6 +33,7 @@ public class Value {
 	private String string = null;
 	private Boolean bool = null;
 	private List<Value> array = null;
+	private ZonedDateTime dateTime = null;
 	private boolean variable = false;
 	public Value() {
 		
@@ -58,6 +60,14 @@ public class Value {
 		this.bool = bool;
 	}
 
+	public Value(ZonedDateTime dateTime) {
+		this.dateTime = dateTime;
+	}
+
+	public boolean isDateTime() {
+		return (dateTime!=null);
+	}
+	
 	public boolean isArray( ) {
 		if (isVariable()) {
 			throw new SodacanException("Type cannot be determined for a variable until resolved");
@@ -141,6 +151,10 @@ public class Value {
 		return bool;
 	}
 	
+	public ZonedDateTime getDateTime() {
+		return dateTime;
+	}
+
 	/**
 	 * Return the string value of a Value. But this does not resolve the variable which must be done first.
 	 * @return
@@ -176,6 +190,9 @@ public class Value {
 		} else if (string!=null) {
 			sb.append("string-");
 			sb.append(string);
+		} else if (dateTime!=null) {
+			sb.append("datetime-");
+			sb.append(dateTime.toString());
 		} else if (bool!=null) {
 			sb.append("boolean-");
 			sb.append(Boolean.toString(bool));
@@ -194,6 +211,9 @@ public class Value {
 		if (value.startsWith("number-")) {
 			return new Value(new BigDecimal(value.substring(7)));
 		}
+		if (value.startsWith("datetime-")) {
+			return new Value(ZonedDateTime.parse(value.substring(9)));
+		}
 		if (value.equals("boolean-true") ) {
 			return new Value(true);
 		}
@@ -208,6 +228,7 @@ public class Value {
 		if (number!=null) return number.toString();
 		if (string!=null) return string;
 		if (bool!=null) return Boolean.toString(bool);
+		if (dateTime!=null) return dateTime.toString();
 		if (array!=null) return array.toString();
 		return "null";
 	}

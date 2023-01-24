@@ -26,7 +26,7 @@ public class IfStatement extends ActionStatement {
 	}
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

@@ -34,7 +34,7 @@ import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDef;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variable.ModuleVariables;
 
 public class TestSimpleExpressions extends TestConfig {
 	static final String STRING1 = "a String";
@@ -55,9 +55,8 @@ public class TestSimpleExpressions extends TestConfig {
 	public void testStringLiteral() {
 		Config config = setupConfig();
 		Expression ex = new LiteralExpression(STRING1);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex.execute(variables);
 		assert(STRING1.equals(result.getValue()));
 	}
 
@@ -67,9 +66,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(STRING2);
 		Expression ex2 = new LiteralExpression(STRING2);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(result.getBoolean());
 	}
 	/**
@@ -81,9 +79,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(STRING4);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(result.getBoolean());
 	}
 
@@ -96,9 +93,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(STRING4);
 		Expression ex2 = new LiteralExpression(NUMBER1);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(result.getBoolean());
 	}
 
@@ -111,9 +107,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(STRING5);
 		Expression ex2 = new LiteralExpression(NUMBER1);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(result.getBoolean());
 	}
 	/**
@@ -125,9 +120,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(STRING4);
 		Expression ex2 = new LiteralExpression(STRING5);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(result.getBoolean());
 	}
 	
@@ -137,9 +131,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(STRING1);
 		Expression ex2 = new LiteralExpression(STRING2);
 		Expression ex3 = new EqualsOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(!result.getBoolean());
 	}
 
@@ -147,9 +140,8 @@ public class TestSimpleExpressions extends TestConfig {
 	public void testNumberLiteral() {
 		Config config = setupConfig();
 		Expression ex = new LiteralExpression(NUMBER1);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex.execute(variables);
 		assert(NUMBER1.equals(result.getNumber()));
 	}
 
@@ -159,9 +151,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new AddOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(ANSWER1.equals(result.getNumber()));
 	}
 	
@@ -171,9 +162,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new SubtractOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(ANSWER2.equals(result.getNumber()));
 	}
 
@@ -187,9 +177,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(ANSWER3.equals(result.getNumber()));
 	}
 
@@ -203,9 +192,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2a);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(0==ANSWER3.compareTo(result.getNumber()));
 	}
 	
@@ -218,9 +206,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new MultiplyOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(0==ANSWER3a.compareTo(result.getNumber()));
 	}
 
@@ -230,9 +217,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new DivideOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex3.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex3.execute(variables);
 		assert(0==ANSWER4.compareTo(result.getNumber()));
 	}
 
@@ -247,9 +233,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex3 = new AddOperator(ex1,ex2);
 		Expression ex4 = new LiteralExpression(ANSWER1);
 		Expression ex5 = new EqualsOperator(ex3,ex4);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex5.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex5.execute(variables);
 		assert(result.getBoolean());
 	}
 
@@ -263,9 +248,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new GreaterThanOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex5.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex5.execute(variables);
 		assert(result.getBoolean());
 	}
 
@@ -279,9 +263,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new LessThanOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex5.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex5.execute(variables);
 		assert(!result.getBoolean());
 	}
 
@@ -295,9 +278,8 @@ public class TestSimpleExpressions extends TestConfig {
 		Expression ex1 = new LiteralExpression(NUMBER1);
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex5 = new LessOrEqualToOperator(ex1,ex2);
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
-		Value result = ex5.execute(variables, now);
+		ModuleVariables variables = new ModuleVariables();
+		Value result = ex5.execute(variables);
 		assert(!result.getBoolean());
 	}
 
@@ -309,15 +291,14 @@ public class TestSimpleExpressions extends TestConfig {
 	@Test
 	public void testAddTwoNumbersOneIsAVariable() {
 		Config config = setupConfig();
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		ModuleVariables variables = new ModuleVariables();
 //		Expression ex1 = new LiteralExpression(NUMBER1);
 		VariableDef variableDef = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
 		variables.addVariable(variableDef);
 		Expression ex1 = new VariableRefExpression("x");
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new AddOperator(ex1,ex2);
-		Value result = ex3.execute(variables, now);
+		Value result = ex3.execute(variables);
 		assert(0==ANSWER1.compareTo(result.getNumber()));
 	}
 	

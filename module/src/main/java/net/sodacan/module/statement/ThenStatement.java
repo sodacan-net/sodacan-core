@@ -31,7 +31,7 @@ public class ThenStatement extends Statement {
 	}
 
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		// TODO Auto-generated method stub
 		return null;
 	}

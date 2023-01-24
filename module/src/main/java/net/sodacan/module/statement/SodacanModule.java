@@ -73,13 +73,13 @@ public class SodacanModule {
 	 * This process constitutes one "cycle" through the module.
 	 * @return
 	 */
-	public boolean processEvent(Variables variables, ZonedDateTime now, ModuleMessage message) {
+	public boolean processEvent(Variables variables, ModuleMessage message) {
 		variables.resetChanged();
 		// Lookup the variable
-		Variable variable = variables.find(message.getTopic(), message.getNamespace(), message.getInstance(), message.getName());
+//		Variable variable = variables.find(message.getTopic(), message.getNamespace(), message.getInstance(), message.getName());
 //		setVariable(message);
 		for (OnStatement os : onStatements) {
-			Value result = os.execute(variables, now);
+			Value result = os.execute(variables);
 		}
 		return true;
 	}

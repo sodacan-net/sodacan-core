@@ -38,7 +38,7 @@ public abstract class TerminalExpression extends Expression {
 	 * See Resolve in AvariableRefExpression
 	 */
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		return value;	
 	}
 

@@ -26,6 +26,7 @@ import net.sodacan.module.expression.Expression;
 import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.ModuleVariables;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.Variables;
 
@@ -36,8 +37,7 @@ public class TestAssignmentExpressions extends TestConfig {
 	@Test
 	public void testNumberAssignment() {
 		Config config = setupConfig();
-		Variables variables = new Variables();
-		ZonedDateTime now = ZonedDateTime.of(2023, 1, 20, 16, 30, 0, 0, ZoneId.of(config.getLocation().getTimezone()));
+		ModuleVariables variables = new ModuleVariables();
 		// Variable x starts at 0.0
 		VariableDef variableDef = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
 		variables.addVariable(variableDef);
@@ -45,10 +45,10 @@ public class TestAssignmentExpressions extends TestConfig {
 		Expression ex1 = new VariableRefExpression("x");
 		Expression ex2 = new LiteralExpression(NUMBER2);
 		Expression ex3 = new AssignmentExpression(ex1,ex2);
-		ex3.execute(variables, now);
+		ex3.execute(variables);
 		// Get the (new) value of x
-		Value result = ex1.resolve(variables, now);		// Get the current value of x
-		Value result2 = ex1.execute(variables, now);	// Get the variable name x (unresolved)
+		Value result = ex1.resolve(variables);		// Get the current value of x
+		Value result2 = ex1.execute(variables);	// Get the variable name x (unresolved)
 		assert(0==NUMBER2.compareTo(result.getNumber()));
 		assert("x".equals(result2.getIdentifier()));
 	}

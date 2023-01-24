@@ -18,27 +18,28 @@ import java.time.ZonedDateTime;
 
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variable.Variables;
 
 /**
  * An ON statement contains one expression that checks if it is interesting in the incoming event,
- * and if so, continues evaluating its AND Statements, if any. If they all pass (or there non AND statements) then
+ * and if so, continues evaluating its AND Statements, if any. If they all pass (or there are no AND statements) then
  * execute each of the THEN statements.
  * 
- * Executing an On statements happens due to the arrival of a message.  
+ * Executing On statements happens due to the arrival of a message.  
  * 
  */
 public class OnStatement  extends ActionStatement {
-
-	Expression onSelectExpression;
+	/**
+	 * Just a normal expression, but we execute it with a one-entry variables list containing the message/variable.
+	 */
+	Expression selectExpression;
 
 	protected boolean isMessageMatch(Variables variables, ZonedDateTime now) {
 		return false;
 	}
 	
 	@Override
-	public Value execute(Variables variables, ZonedDateTime now) {
+	public Value execute(Variables variables) {
 		return new Value();
 	}
 
