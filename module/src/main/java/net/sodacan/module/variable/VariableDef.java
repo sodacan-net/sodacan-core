@@ -43,9 +43,8 @@ public class VariableDef {
 	
 	private List<Constraint> constraints = null;	// Null unless there are constraints
 
-	private VariableDef() {
-		
-	}
+	private VariableDef() { }
+	
 	private VariableDef(VariableDefBuilder builder) {
 		this.name = builder.name;
 		this.alias = builder.alias;
@@ -54,6 +53,7 @@ public class VariableDef {
 		this.variableType = builder.variableType;
 		this.initialValue = builder.initialValue;
 	}
+	
 	@JsonIgnore
 	public String getFullName( ) {
 		StringBuffer sb = new StringBuffer();

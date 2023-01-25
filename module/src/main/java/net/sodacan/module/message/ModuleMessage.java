@@ -14,8 +14,15 @@
  */
 package net.sodacan.module.message;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.Constraint;
 import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variable.VariableDef;
+import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
+import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
  * Most Sodacan messages are in this format. This structure may be serialized into Json format for transmission. In any case, it's a flat 
@@ -35,6 +42,19 @@ public class ModuleMessage {
 	private String name;		// Variable name
 	private String instance;	// Or null if none
 	private String value;		// The value
+
+	private ModuleMessage(ModuleMessageBuilder builder) {
+		this.msgid = builder.msgid;			// Offset in Kafka parlance
+		this.timestamp = builder.timestamp;	// in UTC ISO format eg 1970-01-01T00:00:00Z
+		this.producer = builder.producer;	// Sometimes is the same as the topic
+		this.topic = builder.topic;
+		this.namespace = builder.namespace;	// or domain
+		this.name = builder.name;			// Variable name
+		this.instance = builder.instance;	// Or null if none
+		this.value = builder.value;			// The value
+
+	}
+
 	public String getMsgid() {
 		return msgid;
 	}
@@ -59,5 +79,72 @@ public class ModuleMessage {
 	public String getValue() {
 		return value;
 	}
+	
+	public static ModuleMessageBuilder newModuleMessageBuilder() {
+		return new ModuleMessageBuilder();
+	}
+	public static class ModuleMessageBuilder {
 
+			private String msgid;		// Offset in Kafka parlance
+			private String timestamp;	// in UTC ISO format eg 1970-01-01T00:00:00Z
+			private String producer;	// Sometimes is the same as the topic
+			private String topic;
+			private String namespace;	// or domain
+			private String name;		// Variable name
+			private String instance;	// Or null if none
+			private String value;		// The value
+
+			protected ModuleMessageBuilder() {
+				
+			}
+			
+			public ModuleMessageBuilder msgid(String msgid) {
+				this.msgid = msgid;
+				return this;
+			}
+			public ModuleMessageBuilder timestamp(String timestamp) {
+				this.timestamp = timestamp;
+				return this;
+			}
+			
+			public ModuleMessageBuilder producer(String producer) {
+				this.producer = producer;
+				return this;
+			}
+
+			public ModuleMessageBuilder topic(String topic) {
+				this.topic = topic;
+				return this;
+			}
+
+			public ModuleMessageBuilder namespace(String namespace) {
+				this.namespace = namespace;
+				return this;
+			}
+
+			public ModuleMessageBuilder name(String name) {
+				this.name = name;
+				return this;
+			}
+
+			public ModuleMessageBuilder instance(String instance) {
+				this.instance = instance;
+				return this;
+			}
+
+			public ModuleMessageBuilder value(Value value) {
+				this.value = value.serialize();
+				return this;
+			}
+
+			/**
+			 * Validate and create a new message
+			 * @return
+			 */
+			public ModuleMessage build() {
+				return new ModuleMessage(this);
+			}
+
+		}
+	
 }

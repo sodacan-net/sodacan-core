@@ -34,7 +34,15 @@ public class OnStatement  extends ActionStatement {
 	 */
 	Expression selectExpression;
 
-	protected boolean isMessageMatch(Variables variables, ZonedDateTime now) {
+	public OnStatement( ) {
+		
+	}
+	
+	public void setSelectExpression(Expression expression) {
+		this.selectExpression = expression;
+	}
+	
+	protected boolean isMessageMatch(Variables variables) {
 		return false;
 	}
 	
@@ -43,7 +51,7 @@ public class OnStatement  extends ActionStatement {
 		return new Value();
 	}
 
-	public boolean processMessage(Variables variables, ZonedDateTime now) {
+	public boolean processMessage(Variables variables) {
 		return false;
 	}
 }

@@ -20,6 +20,7 @@ import java.util.List;
 
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.SubscribeVariable;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDefs;
@@ -76,12 +77,27 @@ public class SodacanModule {
 	public boolean processEvent(Variables variables, ModuleMessage message) {
 		variables.resetChanged();
 		// Lookup the variable
-//		Variable variable = variables.find(message.getTopic(), message.getNamespace(), message.getInstance(), message.getName());
-//		setVariable(message);
-		for (OnStatement os : onStatements) {
-			Value result = os.execute(variables);
+		StringBuffer sb = new StringBuffer();
+		sb.append(message.getName());
+		
+		Variable variable = variables.find(sb.toString());
+		if (variable==null) {
+			// We're not interested in this message
+			return false;
 		}
-		return true;
+		if (variable instanceof SubscribeVariable) {
+			SubscribeVariable sv = (SubscribeVariable)variable;
+			// The variable now knows about the message that set it's value
+			sv.setMessage(message);
+			for (OnStatement os : onStatements) {
+				Value result = os.execute(variables);
+				System.out.println(result);
+				// First match completes the "ON" statements for the cycle.
+				return true;
+			}
+		}
+		// Nothing matched
+		return false;
 	}
 	/**
 	 * Without errors, the module is considered executable.

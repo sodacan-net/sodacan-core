@@ -15,6 +15,7 @@
 package net.sodacan.module.variables;
 
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.ShortcutVariable;
 import net.sodacan.module.variable.Variable;
 
 public abstract class BaseVariables implements Variables {
@@ -43,12 +44,15 @@ public abstract class BaseVariables implements Variables {
 		}
 		Variable variable = find(variableName);
 		if (variable==null) {
-			return null;
+			return findShortcutValue(variableName);
 		}
+		// A regular variable can access attributes
 		if (attributeName==null || attributeName.isEmpty()) {
 			return variable.getValue();
 		}
 		return variable.getAttribute(attributeName);
 	}
-
+	public Value findShortcutValue(String name) {
+		return null;
+	}
 }

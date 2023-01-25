@@ -56,9 +56,15 @@ public class CompositeVariables implements Variables {
 		return null;
 	}
 
+	/**
+	 * Reset all variables at the start of a cycle.
+	 * At the composite-level, we simply tell out composite variables to reset.
+	 * we use this flag at the end to determine which producer variables will
+	 * result in a message being broadcast.
+	 */
 	@Override
 	public void resetChanged() {
-		// TODO Auto-generated method stub
+		variabless.forEach((variables)-> { variables.resetChanged();});
 
 	}
 

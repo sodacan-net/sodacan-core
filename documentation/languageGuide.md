@@ -38,6 +38,7 @@ Next, we define a module that produces a message in this topic. In this case, th
 ```
 	MODULE button23
 		PUBLISH livingRoom.lamp1 {on,off} AS lamp
+		...
 		ON <some condition>
 			THEN lamp=on
 			
@@ -48,18 +49,47 @@ And, a consumer module interested in this kind of message:
 
 ```
 	MODULE lamp1
-		SUBSCRIBE livingRoom.lamp1 {on,off} as lamp
-		ON lamp==on
+		SUBSCRIBE livingRoom.lamp1 AS lamp
+		ON lamp
+		AND lamp==on
 			THEN <do something>
 
 ```
  
 A `PUBLISH` declaration has behavior in addition to defining a topic and variable. When the module changes the value of a PUBLISH variable, that variable will be automatically published at the end of the cycle.
 
-A `SUBSCRIBE` variable will automatically subscribe to messages with that topic and variable. When a message arrives, the value of that variable will be changed in the module. Then, any `ON` statements matching that variable will be executed.
+A `SUBSCRIBE` variable will automatically subscribe to messages with that topic and variable. When a message arrives, the value of that variable will be stored in the module. Then, any `ON` statements matching that variable will be executed.
 
 Declaring both a publish and subscribe for the same variable will cause a compile error.
 
+You don't have to be specific about the contents of the message. Here's an example of an event called bedtime. It has no value component. So the ON statement can be equally brief:
+
+```
+	MODULE lamp1
+		SUBSCRIBE bedtime
+		...
+		ON bedtime
+			THEN <do something>
+
+```
+When constraints are specified on a SUBSCRIBE statement, it provides a bit more clarity about the nature of the incoming message but it also provides some shortcuts that are useful in subsequent statements. 
+
+```
+	MODULE lamp1
+		SUBSCRIBE livingRoom.lamp1 {on,off} AS lamp
+		ON lamp.on
+			THEN <do something>
+		ON lamp.off
+			THEN <do something else>
+
+```
+In this example, `ON lamp.on` and `ON lamp.off` mean the same thing as
+
+```
+	ON lamp
+		AND lamp==on
+```
+that was used in the first SUBSCRIBE example above. The SUBSCRIBE 
 
 ### Module behavior
 A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of `AT` (in the case of the passage of time) or `ON` (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one *matches*. The `THEN` statement(s) of the corresponding `ON` or `AT` is then executed. At that point, no further checks are made of the `AT`s and `ON`s. Each message or passage of time that is processed by a module is called a `cycle`.

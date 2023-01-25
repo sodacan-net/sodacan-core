@@ -17,6 +17,7 @@ package net.sodacan.module.statement;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variables.Variables;
 /**
@@ -25,32 +26,32 @@ import net.sodacan.module.variables.Variables;
  *
  */
 public abstract class ActionStatement extends Statement {
-	List<AndStatement> andStatements = new ArrayList<>();
-	List<ThenStatement> thenStatements = new ArrayList<>();
+	private List<Expression> andExpressions = new ArrayList<>();
+	private List<Expression> thenExpressions = new ArrayList<>();
 
 	public ActionStatement() {
 	}
 
-	public void addAndStatement(AndStatement andStatement) {
-		andStatements.add(andStatement);
+	public void addAndExpression(Expression expression) {
+		andExpressions.add(expression);
 	}
 
-	public void addThenStatement(ThenStatement thenStatement) {
-		thenStatements.add(thenStatement);
+	public void addThenExpression(Expression expression) {
+		thenExpressions.add(expression);
 	}
 
 
 	@Override
 	public Value execute(Variables variables) {
 		// Verify that all "and" statements are satisfied
-		for (AndStatement andStatement : andStatements) {
-			if (!andStatement.execute(variables).getBoolean()) {
+		for (Expression expression : andExpressions) {
+			if (!expression.execute(variables).getBoolean()) {
 				return new Value(false);
 			}
 		}
 		// If we made it this far, do all of the then statements
-		for (ThenStatement thenStatement : thenStatements) {
-			thenStatement.execute(variables);
+		for (Expression expression : thenExpressions) {
+			expression.execute(variables);
 		}
 		return new Value(true);
 	}

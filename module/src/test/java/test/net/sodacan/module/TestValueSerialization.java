@@ -62,4 +62,12 @@ public class TestValueSerialization {
 		assert(v2.getDateTime().equals(now));
 	}
 
+	@Test
+	public void testIdentifierValue() {
+		Value v1 = new Value("ida",true);
+		String v1str = v1.serialize();
+		Value v2 = Value.deserialize(v1str);
+		assert(v2.getIdentifier().equals(v1.getIdentifier()));
+	}
+
 }

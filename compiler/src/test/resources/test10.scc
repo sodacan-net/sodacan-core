@@ -1,6 +1,10 @@
 MODULE test10
-    SUBSCRIBE state {"on","off"}
+    SUBSCRIBE mode {"on","off"}
     // Same as mode.on
-    ON mode=="on"
+    ON mode
+    AND mode==on
+        THEN state="on"
+     ON mode
+    AND mode==off
         THEN state="off"
         

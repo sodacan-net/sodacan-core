@@ -21,11 +21,14 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import net.sodacan.SodacanException;
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.ModuleVariable;
+import net.sodacan.module.variable.ShortcutVariable;
 import net.sodacan.module.variable.SubscribeVariable;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
@@ -38,12 +41,16 @@ import net.sodacan.module.variable.VariableDef.VariableType;
 public class ModuleVariables extends BaseVariables implements Variables {
 	// This map can contain alias entries meaning more than one entry for a single variable.
 	// This becomes important for serialize/deserialize
+	@JsonIgnore
 	private transient Map<String,ModuleVariable> variables = new TreeMap<>();
-	List<ModuleVariable> uniqueVariables = new ArrayList<>();
+
+	private List<ModuleVariable> uniqueVariables = new ArrayList<>();
+	private Map<String,ShortcutVariable> shortcutVariables = new TreeMap<>();
 	
 	public ModuleVariables() {
 		
 	}
+	
 	/**
 	 * The number of unique variables
 	 * @return
@@ -69,10 +76,49 @@ public class ModuleVariables extends BaseVariables implements Variables {
 		Variable v = variables.get(name);
 		return v;
 	}
+	public Value findShortcutValue(String name) {
+		// If it's a shortcut, then we need to do one more lookup
+		ShortcutVariable sv = findShortcut(name);
+		if (sv==null) {
+			return null;	// Shortcut not found
+		}
+		String un = sv.getUnderlyingName();
+		Variable uv = find(un);
+		if (uv==null) {
+			return null;	// Underlying not there - weird
+		}
+		Value uval = uv.getValue();
+		return new Value((sv.getConstraint().equals(uval.toString())));
+
+	}
+
+	public ShortcutVariable findShortcut(String name) {
+		ShortcutVariable v = shortcutVariables.get(name);
+		return v;
+	}
 	
-	public List<ModuleVariable> getAllVariables() {
+	public List<ModuleVariable> getUniqueVariables() {
 		return uniqueVariables;
 	}
+
+	public List<ShortcutVariable> getShortcutVariables() {
+		return new ArrayList<ShortcutVariable>(shortcutVariables.values());
+	}
+	
+	public void setUniqueVariables(List<ModuleVariable> uniqueVariables) {
+		uniqueVariables.forEach((variable)->{
+			this.uniqueVariables.add(variable);
+			variables.put(variable.getName(), variable);
+			if (variable.getVariableDef().getAlias()!=null) {
+				variables.put(variable.getVariableDef().getAlias(), variable);
+			}
+		});
+	}
+
+	public void setShortcutVariables(List<ShortcutVariable> shortcutVariables) {
+		shortcutVariables.forEach((ShortcutVariable)->{this.shortcutVariables.put(ShortcutVariable.getName(), ShortcutVariable);});
+	}
+
 	/**
 	 * Add a list of variables, as from persistence
 	 * @param variables
@@ -88,6 +134,11 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	 * In any case, we maintain two collections of variables. The dictionary of
 	 * variables by alias and full name and a unique list of variable suitable for
 	 * serialization.
+	 * 
+	 * For any variableDef with constraints, we also create shorcut variables.
+	 * Because of this, we can end up with more than one variable created for a
+	 * single variable definition. The shortcut variables are conditional expressions,
+	 * returning a boolean.
 	 */
 	public void addVariable(ModuleVariable v) {
 		String alias = v.getVariableDef().getAlias();
@@ -95,20 +146,48 @@ public class ModuleVariables extends BaseVariables implements Variables {
 		if (variables.containsKey(fullName)) {
 			throw new SodacanException("Duplicate variable name: " + fullName);
 		}
-			if (alias!=null) {
-				if (variables.containsKey(alias)) {
-					throw new SodacanException("Duplicate variable (alias) name: " + alias);
-				}
-				// If alias is same a full name, don't bother
-				if (!alias.equals(fullName)) {
-					variables.put(alias, v);
-				}
+		if (alias!=null) {
+			if (variables.containsKey(alias)) {
+				throw new SodacanException("Duplicate variable (alias) name: " + alias);
 			}
-			variables.put(fullName, v);
-			// In any case, keep a list of unique variables.
-			uniqueVariables.add(v);
+			// If alias is same a full name, don't bother
+			if (!alias.equals(fullName)) {
+				variables.put(alias, v);
+			}
 		}
-
+		variables.put(fullName, v);
+		// In any case, keep a list of unique variables.
+		uniqueVariables.add(v);
+		// Add some extra variables based on constraints
+		addConstraintVariables(v);
+	}
+	/**
+	 * x {y,z} becomes x.y meaning x==y and x.z meaning x==z
+	 * @param v
+	 */
+	protected void addConstraintVariables( ModuleVariable v) {
+		String alias = v.getVariableDef().getAlias();
+		String fullName = v.getVariableDef().getFullName();
+		// Make the ShortcutVariable
+		for (String id : v.getVariableDef().getConstraintIdentifiers()) {
+			if (alias!=null) {
+				StringBuffer sb = new StringBuffer();
+				sb.append(alias);
+				sb.append('.');
+				sb.append(id);
+				String name = sb.toString();
+				shortcutVariables.put(name, new ShortcutVariable(name, id, alias));
+			}
+			if (fullName!=null) {
+				StringBuffer sb = new StringBuffer();
+				sb.append(fullName);
+				sb.append('.');
+				sb.append(id);
+				String name = sb.toString();
+				shortcutVariables.put(name, new ShortcutVariable(name, id, fullName));
+			}
+		}
+	}
 	/**
 	 * Add a variable to this collection of variables. Should be called
 	 * at the start of execution, not along the way. All variables should be 
@@ -117,8 +196,13 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	 * @param v Initial Value
 	 */
 	public void addVariable(VariableDef vd, Value v) {
-		ModuleVariable mv = new ModuleVariable(vd, v);
-		addVariable( mv );
+		if (vd.getVariableType()==VariableType.subscribeVariable) {
+			SubscribeVariable sv = new SubscribeVariable(vd, v);
+			addVariable( sv );
+		} else {
+			ModuleVariable mv = new ModuleVariable(vd, v);
+			addVariable( mv );
+		}
 	}
 	
 	/**
@@ -199,7 +283,12 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	
 	@Override
 	public String toString() {
-		return variables.toString();
+		StringBuffer sb = new StringBuffer();
+		sb.append("Variables: " );
+		sb.append(variables.toString());
+		sb.append("\nShortcuts: " );
+		sb.append(shortcutVariables.values());
+		return sb.toString();
 	}
 
 }

@@ -241,6 +241,7 @@ public class Value {
 	@Override
 	public String toString() {
 		if (number!=null) return number.toString();
+		if (identifier!=null) return identifier;
 		if (string!=null) return string;
 		if (bool!=null) return Boolean.toString(bool);
 		if (dateTime!=null) return dateTime.toString();

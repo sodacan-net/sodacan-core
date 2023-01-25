@@ -58,11 +58,11 @@ atStatement
 	;
 
 onStatement
-	: ON event EOL+  andStatement? thenStatement+
+	: ON eventCondition EOL+  andStatement* thenStatement+
 	;
 
 ifStatement
-	: IF expr EOL+  andStatement? thenStatement+
+	: IF expr EOL+  andStatement* thenStatement+
 	;
 	
 andStatement
@@ -73,14 +73,10 @@ thenStatement
 	: THEN thenExpr EOL+
 	;
 
-// Event is limited to inbound messages (variables). The 
-event
-	: idRef (eventCondition)?
-	;
+// Event is limited to inbound messages (variables).
 	
 eventCondition
-	: EQ expr					#Equality	// a == b
-	| DOT ID					#Dot		// a.b
+	: ID (DOT ID)*
 	;
 		
 // Define a variable used by PUBLISH SUBSCRIBE TOPIC and PRIVATE

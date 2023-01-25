@@ -28,7 +28,7 @@ import net.sodacan.module.variables.Variables;
  */
 public class VariableDefs {
 
-	protected Map<String,VariableDef> variables = new TreeMap<>();
+	protected Map<String,VariableDef> variablesDefs = new TreeMap<>();
 	
 	protected Map<String,String> shortNameToFullName = new TreeMap<>();
 
@@ -37,7 +37,7 @@ public class VariableDefs {
 	 * @return
 	 */
 	public VariableDef find( String name ) {
-		VariableDef v = variables.get(name);
+		VariableDef v = variablesDefs.get(name);
 		if (v!=null) {
 			return v;
 		}
@@ -45,7 +45,7 @@ public class VariableDefs {
 		if (fullName==null) {
 			return null;
 		}
-		v = variables.get(fullName);
+		v = variablesDefs.get(fullName);
 		if (v==null) {
 			throw new SodacanException("Should never happen: A variable cross reference from alias to full name is dangling");
 		}
@@ -63,20 +63,20 @@ public class VariableDefs {
 		if (priorShortName!=null) {
 			return false;
 		}
-		VariableDef prior = variables.put(variableDef.getFullName(), variableDef);
+		VariableDef prior = variablesDefs.put(variableDef.getFullName(), variableDef);
 		if (prior!=null) {
 			return false;
 		}
 		return true;
 	}
 	/**
-	 * At runtime, find each variable definition and create a set of variable.
-	 * @return
+	 * At runtime, find each variable definition and create a set of variables.
+	 * @return A map of variables
 	 */
 	public Variables createVariablesMap() {
 		ModuleVariables vs = new ModuleVariables();
-		for (String key : variables.keySet()) {
-			VariableDef vd = variables.get(key);
+		for (String key : variablesDefs.keySet()) {
+			VariableDef vd = variablesDefs.get(key);
 			vs.addVariable(vd, vd.getInitialValue());
 		}
 		return vs;
@@ -87,8 +87,8 @@ public class VariableDefs {
 		StringBuffer sb = new StringBuffer();
 		sb.append('[');
 		boolean first = true;
-		for (String key : variables.keySet()) {
-			VariableDef vd = variables.get(key);
+		for (String key : variablesDefs.keySet()) {
+			VariableDef vd = variablesDefs.get(key);
 			if (first) {
 				first = false;
 			} else {

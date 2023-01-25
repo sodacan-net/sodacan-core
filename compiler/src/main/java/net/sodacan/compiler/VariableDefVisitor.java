@@ -86,7 +86,6 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitOnStatement(OnStatementContext ctx) {
-		// TODO Auto-generated method stub
 		return super.visitOnStatement(ctx);
 	}
 
