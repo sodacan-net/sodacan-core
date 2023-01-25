@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.compiler;
+package net.sodacan.compiler.visitor;
 
+import net.sodacan.compiler.SccParser;
 import net.sodacan.module.expression.datetime.DateExpression.DateExpressionBuilder;
 import net.sodacan.module.statement.SodacanModule;
 

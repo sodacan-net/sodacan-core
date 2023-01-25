@@ -12,10 +12,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.compiler;
+package net.sodacan.compiler.visitor;
 
 import java.util.List;
 
+import net.sodacan.compiler.SccParser;
+import net.sodacan.compiler.SccParserBaseVisitor;
 import net.sodacan.compiler.SccParser.AliasNameContext;
 import net.sodacan.compiler.SccParser.AtStatementContext;
 import net.sodacan.compiler.SccParser.ConstraintContext;
