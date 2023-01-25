@@ -58,7 +58,7 @@ public class TestVariables extends TestConfig {
 		Expression ex1 = new VariableRefExpression("system.clock#");
 		Value result = ex1.resolve(cvs);
 //		System.out.println(result);
-		assert("2023-01-21T16:30-08:00[America/Los_Angeles]".equals(result.getString()));
+		assert("2023-01-21T16:30-08:00[America/Los_Angeles]".equals(result.toString()));
 	}
 
 	@Test
@@ -83,7 +83,7 @@ public class TestVariables extends TestConfig {
 		Variable v1av = v1a.find("x");
 		Value v1avv = v1av.getValue();
 //		System.out.println(v1av);
-		assert(STRING1.equals(v1avv.getString()));
+		assert(STRING1.equals(v1avv.toString()));
 	}
 
 	@Test
@@ -99,17 +99,17 @@ public class TestVariables extends TestConfig {
 		Variable shortVariable = variables.find("short");
 		Value shortValue = shortVariable.getValue();
 //		System.out.println(shortValue);
-		assert(STRING1.equals(shortValue.getString()));
+		assert(STRING1.equals(shortValue.toString()));
 		// Get the medium variable
 		Variable mediumVariable = variables.find("medium.short");
 		Value mediumValue = mediumVariable.getValue();
 //		System.out.println(mediumValue);
-		assert(STRING2.equals(mediumValue.getString()));
+		assert(STRING2.equals(mediumValue.toString()));
 		// Get the long variable
 		Variable longVariable = variables.find("long.medium.short");
 		Value longValue = longVariable.getValue();
 //		System.out.println(longValue);
-		assert(STRING3.equals(longValue.getString()));
+		assert(STRING3.equals(longValue.toString()));
 	}
 
 
