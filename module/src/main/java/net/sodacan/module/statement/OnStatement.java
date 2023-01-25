@@ -18,7 +18,7 @@ import java.time.ZonedDateTime;
 
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 /**
  * An ON statement contains one expression that checks if it is interesting in the incoming event,

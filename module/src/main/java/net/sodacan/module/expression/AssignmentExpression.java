@@ -17,7 +17,7 @@ package net.sodacan.module.expression;
 import net.sodacan.SodacanException;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 /**
  * An assignment expression is a bit different from other binary operators in that
  * only the right-hand-side of the assignment is "resolved" and then executed and the

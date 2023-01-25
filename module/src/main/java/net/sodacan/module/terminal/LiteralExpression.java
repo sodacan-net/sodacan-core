@@ -17,7 +17,7 @@ package net.sodacan.module.terminal;
 import java.math.BigDecimal;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 public class LiteralExpression extends TerminalExpression {
 

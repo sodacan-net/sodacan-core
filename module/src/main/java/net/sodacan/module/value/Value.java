@@ -28,13 +28,21 @@ import net.sodacan.SodacanException;
  *
  */
 public class Value {
+	private static final String NUMBER = "number-";
+	private static final String STRING = "string-";
+	private static final String IDENTIFIER = "identifier-";
+	private static final String DATETIME = "dateTime-";
+	private static final String BOOLEAN = "boolean-";
+	private static final String ARRAY = "array-";
+	private static final String NULL = "null-";
 	
 	private BigDecimal number = null;
 	private String string = null;
+	private String identifier = null;
 	private Boolean bool = null;
 	private List<Value> array = null;
 	private ZonedDateTime dateTime = null;
-	private boolean variable = false;
+
 	public Value() {
 		
 	}
@@ -57,8 +65,7 @@ public class Value {
 		this.string = string;
 	}
 	public Value(String string, boolean variable) {
-		this.string = string;
-		this.variable = variable;
+		this.identifier = string;
 	}
 	public Value(Boolean bool) {
 		this.bool = bool;
@@ -123,7 +130,7 @@ public class Value {
 	 * @return true if is a variable reference
 	 */
 	public boolean isVariable() {
-		return variable;
+		return (identifier!=null);
 	}
 
 	public boolean isNull() {
@@ -164,20 +171,18 @@ public class Value {
 	 * @return
 	 */
 	public String getString() {
-		if (isVariable()) {
-			throw new SodacanException("Type cannot be determined for a variable until resolved");
-		}
-		return toString();
+		return string;
+//		if (isVariable()) {
+//			throw new SodacanException("Type cannot be determined for a variable until resolved");
+//		}
+//		return toString();
 	}
 	/**
 	 * Return identifier when this value is a variableReference
 	 * @return
 	 */
 	public String getIdentifier() {
-		if (!isVariable()) {
-			throw new SodacanException("Literal Values do not have an identifier");
-		}
-		return string;
+		return identifier;
 	}
 	public List<Value> getArray() {
 		return array;
@@ -189,34 +194,40 @@ public class Value {
 	public String serialize() {
 		StringBuffer sb = new StringBuffer();
 		if (number!=null) {
-			sb.append("number-");
+			sb.append(NUMBER);
 			sb.append(number.toPlainString());
 		} else if (string!=null) {
-			sb.append("string-");
+			sb.append(STRING);
 			sb.append(string);
+		} else if (identifier!=null) {
+			sb.append(IDENTIFIER);
+			sb.append(identifier);
 		} else if (dateTime!=null) {
-			sb.append("datetime-");
+			sb.append(DATETIME);
 			sb.append(dateTime.toString());
 		} else if (bool!=null) {
-			sb.append("boolean-");
+			sb.append(BOOLEAN);
 			sb.append(Boolean.toString(bool));
 		} else if (array!=null) { 
 			return array.toString();
 		} else {
-			sb.append("null");
+			sb.append(NULL);
 		}
 		return sb.toString();
 		
 	}
 	public static Value deserialize( String value ) {
-		if (value.startsWith("string-")) {
-			return new Value(value.substring(7));
+		if (value.startsWith(STRING)) {
+			return new Value(value.substring(STRING.length()));
 		}
-		if (value.startsWith("number-")) {
-			return new Value(new BigDecimal(value.substring(7)));
+		if (value.startsWith(IDENTIFIER)) {
+			return new Value(value.substring(IDENTIFIER.length()),true);
 		}
-		if (value.startsWith("datetime-")) {
-			return new Value(ZonedDateTime.parse(value.substring(9)));
+		if (value.startsWith(NUMBER)) {
+			return new Value(new BigDecimal(value.substring(NUMBER.length())));
+		}
+		if (value.startsWith(DATETIME)) {
+			return new Value(ZonedDateTime.parse(value.substring(DATETIME.length())));
 		}
 		if (value.equals("boolean-true") ) {
 			return new Value(true);

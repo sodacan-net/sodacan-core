@@ -12,9 +12,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.variable;
+package net.sodacan.module.variables;
 
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.Variable;
 
 public abstract class BaseVariables implements Variables {
 	public static final char ATTRIBUTE = '#';

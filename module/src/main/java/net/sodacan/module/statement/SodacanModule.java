@@ -23,7 +23,7 @@ import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDefs;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 /**
  * Top-level SodaCan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 

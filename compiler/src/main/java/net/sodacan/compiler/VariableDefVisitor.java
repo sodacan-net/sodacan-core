@@ -24,15 +24,12 @@ import net.sodacan.compiler.SccParser.FullIdContext;
 import net.sodacan.compiler.SccParser.OnStatementContext;
 import net.sodacan.compiler.SccParser.PrivateStatementContext;
 import net.sodacan.compiler.SccParser.PublishStatementContext;
-import net.sodacan.compiler.SccParser.ShortIdContext;
 import net.sodacan.compiler.SccParser.SubscribeStatementContext;
-import net.sodacan.compiler.SccParser.TopicIdContext;
 import net.sodacan.compiler.SccParser.TopicStatementContext;
 import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
-import net.sodacan.module.variable.VariableDefs;
 
 /**
  * Look for variable declarations and add them to a variables list. Also, check for duplicate names.
@@ -95,22 +92,7 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 
 	@Override
 	public Void visitFullId(FullIdContext ctx) {
-		vdb.nameSpace(ctx.ID(0).getText());
-		vdb.topic(ctx.ID(1).getText());
-		vdb.name(ctx.ID(2).getText());
-		return null;
-	}
-
-	@Override
-	public Void visitTopicId(TopicIdContext ctx) {
-		vdb.topic(ctx.ID(0).getText());
-		vdb.name(ctx.ID(1).getText());
-		return null;
-	}
-
-	@Override
-	public Void visitShortId(ShortIdContext ctx) {
-		vdb.name(ctx.ID().getText());
+		vdb.name(ctx.getText());
 		return null;
 	}
 
@@ -119,7 +101,6 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		vdb.alias(ctx.ID().getText());
 		return null;
 	}
-	
 
 	@Override
 	public Void visitConstraintExpression(ConstraintExpressionContext ctx) {

@@ -16,7 +16,7 @@ package net.sodacan.module.expression;
 
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 /**
  * Expressions represent the things in language that get things done. They are primarily used in the THEN statement in a module.

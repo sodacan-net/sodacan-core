@@ -17,7 +17,7 @@ package net.sodacan.module.statement;
 import net.sodacan.module.expression.datetime.DateExpression;
 import net.sodacan.module.expression.datetime.TimeExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 /**
  * The AT statement responds to the passage of time

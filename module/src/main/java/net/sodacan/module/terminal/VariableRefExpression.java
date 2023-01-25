@@ -15,7 +15,7 @@
 package net.sodacan.module.terminal;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 public class VariableRefExpression extends TerminalExpression {
 

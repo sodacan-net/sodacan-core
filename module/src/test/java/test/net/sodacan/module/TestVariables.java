@@ -24,12 +24,12 @@ import net.sodacan.config.Config;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.CompositeVariables;
-import net.sodacan.module.variable.ModuleVariables;
-import net.sodacan.module.variable.SystemVariables;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.CompositeVariables;
+import net.sodacan.module.variables.ModuleVariables;
+import net.sodacan.module.variables.SystemVariables;
+import net.sodacan.module.variables.Variables;
 
 public class TestVariables extends TestConfig {
 	static final BigDecimal NUMBER1 = new BigDecimal("123.4");

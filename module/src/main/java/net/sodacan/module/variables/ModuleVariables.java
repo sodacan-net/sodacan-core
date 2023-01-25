@@ -12,16 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.variable;
+package net.sodacan.module.variables;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import net.sodacan.SodacanException;
 import net.sodacan.module.message.ModuleMessage;
+import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.ModuleVariable;
+import net.sodacan.module.variable.SubscribeVariable;
+import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDef.VariableType;
 /**
  * A collection of variables defined within a module.
@@ -29,13 +36,32 @@ import net.sodacan.module.variable.VariableDef.VariableType;
  *
  */
 public class ModuleVariables extends BaseVariables implements Variables {
-	Map<String,ModuleVariable> variables = new TreeMap<>();
-
+	// This map can contain alias entries meaning more than one entry for a single variable.
+	// This becomes important for serialize/deserialize
+	private transient Map<String,ModuleVariable> variables = new TreeMap<>();
+	List<ModuleVariable> uniqueVariables = new ArrayList<>();
+	
 	public ModuleVariables() {
+		
+	}
+	/**
+	 * The number of unique variables
+	 * @return
+	 */
+	public int uniqueVariableCount() {
+		return uniqueVariables.size();
 	}
 
 	/**
-	 * Lookup a variable. This should never fail. If it does, we throw an exception.
+	 * The number of names pointing to variables
+	 * @return
+	 */
+	public int nameCount() {
+		return variables.size();
+	}
+
+	/**
+	 * Lookup a variable in this module's variables.
 	 * @param name
 	 * @return
 	 */
@@ -44,16 +70,57 @@ public class ModuleVariables extends BaseVariables implements Variables {
 		return v;
 	}
 	
+	public List<ModuleVariable> getAllVariables() {
+		return uniqueVariables;
+	}
 	/**
-	 * Add a variable to this collection of variable. Should be called
+	 * Add a list of variables, as from persistence
+	 * @param variables
+	 */
+	public void addAllVariables( List<ModuleVariable> variables) {
+		variables.forEach((variable) -> {addVariable(variable);});
+	}
+	
+	/**
+	 * Add a variable to this collection of variables. Should be called
+	 * at the start of execution, not along the way. All variables should be 
+	 * defined prior to execution. This may add a second entry for an alias.
+	 * In any case, we maintain two collections of variables. The dictionary of
+	 * variables by alias and full name and a unique list of variable suitable for
+	 * serialization.
+	 */
+	public void addVariable(ModuleVariable v) {
+		String alias = v.getVariableDef().getAlias();
+		String fullName = v.getVariableDef().getFullName();
+		if (variables.containsKey(fullName)) {
+			throw new SodacanException("Duplicate variable name: " + fullName);
+		}
+			if (alias!=null) {
+				if (variables.containsKey(alias)) {
+					throw new SodacanException("Duplicate variable (alias) name: " + alias);
+				}
+				// If alias is same a full name, don't bother
+				if (!alias.equals(fullName)) {
+					variables.put(alias, v);
+				}
+			}
+			variables.put(fullName, v);
+			// In any case, keep a list of unique variables.
+			uniqueVariables.add(v);
+		}
+
+	/**
+	 * Add a variable to this collection of variables. Should be called
 	 * at the start of execution, not along the way. All variables should be 
 	 * defined prior to execution.
 	 * @param vd ValueDefinition
 	 * @param v Initial Value
 	 */
 	public void addVariable(VariableDef vd, Value v) {
-		variables.put(vd.getShortName(), new ModuleVariable(vd, v));
+		ModuleVariable mv = new ModuleVariable(vd, v);
+		addVariable( mv );
 	}
+	
 	/**
 	 * Add a variable using it's initial value as the value
 	 * @param vd
@@ -133,12 +200,6 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	@Override
 	public String toString() {
 		return variables.toString();
-	}
-
-	@Override
-	public Variable findByFullName(String fullName) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 }

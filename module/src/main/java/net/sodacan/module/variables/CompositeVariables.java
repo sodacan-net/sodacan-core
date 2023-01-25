@@ -12,50 +12,47 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.variable;
+package net.sodacan.module.variables;
 
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import net.sodacan.config.Config;
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
-
+import net.sodacan.module.variable.Variable;
 /**
- * This collection of variables provides access to the clock used for this cycle and to configuration variables.
- * This set of variables is created for each clock tick (AT statements) and 
- * for each message received (ON statements). It is (usually) not persisted.
+ * A composite list of Variable collections
  * @author John Churin
  *
  */
-public class SystemVariables extends BaseVariables implements Variables {
-	ZonedDateTime datetime;
-	public static final String SYSTEM_CLOCK = "system.clock";
-	public static final String SYSTEM_CONFIG = "system.config";
-	protected Map<String,Variable> variables = new TreeMap<>();
+public class CompositeVariables implements Variables {
+	List<Variables> variabless = new ArrayList<>();
 
-	/**
-	 * @param datetime
-	 */
-	public SystemVariables(ZonedDateTime datetime, Config config) {
-		variables.put( SYSTEM_CLOCK, new ClockVariable(datetime));
-		variables.put(SYSTEM_CONFIG, new ConfigVariable(config));
+	public CompositeVariables(Variables... variabless) {
+		for (Variables v : variabless) {
+			this.variabless.add(v);
+		}
 	}
 
-	/**
-	 * Out list of variables is very short
-	 */
 	@Override
 	public Variable find(String name) {
-		return variables.get(name);
+		for (Variables vs : variabless) {
+			Variable v = vs.find(name);
+			if (v!=null) {
+				return v;
+			}
+		}
+		return null;
 	}
 
 	@Override
-	public Variable findByFullName(String fullName) {
-		// TODO Auto-generated method stub
+	public Value findValue(String name) {
+		for (Variables vs : variabless) {
+			Value va = vs.findValue(name);
+			if (va!=null) {
+				return va;
+			}
+		}
 		return null;
 	}
 
@@ -82,10 +79,5 @@ public class SystemVariables extends BaseVariables implements Variables {
 		// TODO Auto-generated method stub
 
 	}
-	@Override
-	public String toString() {
-		return variables.toString();
-	}
-
 
 }

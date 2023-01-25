@@ -12,24 +12,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.value;
 
-import java.time.ZonedDateTime;
+import java.io.IOException;
 
-import net.sodacan.module.value.Value;
-import net.sodacan.module.variables.Variables;
+import com.fasterxml.jackson.core.JsonGenerator;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonSerializer;
+import com.fasterxml.jackson.databind.SerializerProvider;
 
-public class IfStatement extends ActionStatement {
+public class ValueSerializer extends JsonSerializer<Value>{
 
-	public IfStatement() {
-		// TODO Auto-generated constructor stub
-	}
-
-	@Override
-	public Value execute(Variables variables) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-
+   @Override
+    public void serialize(Value value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
+        // put your desired money style here
+        jgen.writeString(value.serialize());
+    }
 }

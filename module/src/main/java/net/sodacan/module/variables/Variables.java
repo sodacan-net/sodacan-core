@@ -12,17 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.variable;
+package net.sodacan.module.variables;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
 
-import net.sodacan.SodacanException;
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDef.VariableType;
+import net.sodacan.module.variable.Variable;
 
 /**
  * Use this interface to find and modify variables. 
@@ -41,18 +37,6 @@ public interface Variables {
 	public Variable find(String name);
 	public Value findValue(String name);
 	
-	/**
-	 * Variables are stored by short name so we need to iterate through the list looking be long name. 
-	 * If the list gets long, then we should have a second map by full name. Both maps are relatively 
-	 * permanent so update would be rare.
-	 * @param topic
-	 * @param namespace
-	 * @param name
-	 * @param instance
-	 * @return
-	 */
-	public Variable findByFullName(String fullName);
-
 	/**
 	 * Reset the changed flag in all variables
 	 */

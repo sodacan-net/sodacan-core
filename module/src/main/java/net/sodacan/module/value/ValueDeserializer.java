@@ -12,24 +12,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.statement;
+package net.sodacan.module.value;
 
-import java.time.ZonedDateTime;
+import java.io.IOException;
 
-import net.sodacan.module.value.Value;
-import net.sodacan.module.variables.Variables;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.DeserializationContext;
+import com.fasterxml.jackson.databind.JsonDeserializer;
 
-public class IfStatement extends ActionStatement {
-
-	public IfStatement() {
-		// TODO Auto-generated constructor stub
-	}
+public class ValueDeserializer extends JsonDeserializer<Value> {
 
 	@Override
-	public Value execute(Variables variables) {
-		// TODO Auto-generated method stub
-		return null;
+	public Value deserialize(JsonParser p, DeserializationContext ctxt) throws IOException, JsonProcessingException {
+		String str = p.getText();
+		Value v = Value.deserialize(str);
+		return v;
 	}
-
-
 }

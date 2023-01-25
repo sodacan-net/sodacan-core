@@ -24,7 +24,7 @@ import net.sodacan.config.Config;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.SystemVariables;
+import net.sodacan.module.variables.SystemVariables;
 
 public class TestDateExpressions extends TestConfig {
 	static final BigDecimal NUMBER1 = new BigDecimal("2023");

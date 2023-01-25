@@ -30,8 +30,8 @@ import net.sodacan.module.operator.SubtractOperator;
 import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.ModuleVariables;
 import net.sodacan.module.variable.VariableDef;
+import net.sodacan.module.variables.ModuleVariables;
 
 public class TestSimpleExpressions extends TestConfig {
 	static final String STRING1 = "a String";

@@ -89,9 +89,7 @@ variableDef
 	;
 	
 identifier
-	: ID DOT ID DOT ID			# FullId
-	| ID DOT ID					# TopicId
-	| ID 						# ShortId
+	: ID (DOT ID)*			# FullId
 	;
 
 idRef

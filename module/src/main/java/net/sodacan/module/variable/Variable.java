@@ -22,6 +22,7 @@ import net.sodacan.module.value.Value;
  *
  */
 public interface Variable {
+
 	public String getName();
 	
 	public Value getValue();

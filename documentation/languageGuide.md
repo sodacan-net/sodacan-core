@@ -267,7 +267,7 @@ How does the SodaCan agent responsible for that module determine all of the modu
 This approach is very efficient and does not cause any concurrency issues. 
 
 ### Message-Variable Duality
-In SodaCan, a variable defined in a module becomes the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
+In SodaCan, a variable defined in a module can be the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
 
 ```
 MODULE lamp1
@@ -292,6 +292,16 @@ In the background, the SodaCan agent monitors each `PUBLISH` variable and, if an
 
 > Semantics: You cannot `SUBSCRIBE` and `PUBLISH` the same variable. 
 
+The message causing the current value of a variable remains with the variable. This makes it easy to access meta-information such as when the message was sent:
+
+```
+MODULE lamp1
+	SUBSCRIBE switch1.state {on,off}
+	...
+	ON switch1.state==on
+		*THEN system.log#info = switch1.state#timestamp
+```
+*which says: "send the timestamp of the message that populated `switch1.state` to the system log".
 ### Module Instantiation
 In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty `key` attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in all (or most) locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of
 
@@ -396,42 +406,43 @@ SodaCan uses an administrative topic to deploy modules to the appropriate agent/
 In addition to variables that you explicitly define in your module, some are special in that they provide access to the agent, system, or custom plugins. 
 Variables can also have attributes. Most special variables provide access to plugins. Some attributes are actually attributes on all variables. For example, a SUBSCRIBE variable provides access to when the message was created, which module (or plugin) sent it, etc.
 
-Special attribute names are preceded by a hash (#) symbol. for example, assuming the following is a SUBSCRIBE variable named "mode",  `mode.#msgid' will access the message id of the last message that set that variable. Those marked *R/O* are read-only. *R/W* attributes can be assigned to. Some are write only *W/O*.
+Special attribute names are preceded by a hash (#) symbol. for example, assuming the following is a SUBSCRIBE variable named "mode",  `mode.#msgid' will access the message id of the last message that set that variable. Those marked *read* are read-only. *read/write* attributes can be assigned to. Some are write only *write*.
 
 Note: A module variable is a variable defined in a module: publish, subscribe, private, or topic.
 
-| variable | Attribute| R/W |Description |
+| variable | Attribute| read/write |Description |
 | ----- | ---- | --- | ------------|
-| *any subscribe variable* | #timestamp|R/O | The timestamp (UTC Z-time) of the message |
-| *any subscribe variable* | #msgid|R/O | The timestamp (UTC Z-time) of the message |
-| *any subscribe variable* | #topic|R/O | The topic of the message |
-| *any subscribe variable* | #namespace|R/O | The topic of the message |
-| *any subscribe variable* | #version|R/O | The message format version |
-| *any module variable* | #type|R/O | The type of variable (string, number, boolean, etc) |
-| *any module variable* | #modified|R/O | True if modified in this cycle |
-| *any module variable* | #initialValue|R/O | The initial value of the variable as declared |
-| *any module variable* | #constraints|R/O | The constraints specified for this variable. |
-| *any publish variable* | #modified|R/O | True if modified in this cycle and will be published at the conclusion of the cycle |
-| system.config | #latitude | R/O | Latitude of this location |
-| system.config | #longitude | R/O | Longitude of this location |
-| system.config | #timezone | R/O | Timezone of this location |
-| system.config | #locationName | R/O | Name of this location |
-| system.config | #locationAddress | R/O | Address of this location |
-| system.clock | #month |R/O | The month of the current datetime |
-| system.clock | #day |R/O | The day of the current datetime |
-| system.clock | #year |R/O | The year of the current datetime |
-| system.clock | #hour |R/O | The hour of the current datetime |
-| system.clock | #minute |R/O | The minute of the current datetime |
-| system.clock | #second |R/O | The seconds of the current datetime |
-| system.clock | #sunrise |R/O | Today's sunrise |
-| system.clock | #sunset |R/O | Today's sunrise |
-| system.clock | #season |R/O | The current season |
-| system.clock | #season |R/O | Today's sunset |
-| system.log | # info |W/O | Write information text to system log |
-| system.log | # warn |W/O | Write warning text to system log |
-| system.module | #name | R/O | Name of this module |
-| system.module | #eventType | R/O | message or clock event |
-| system.agent | #name | R/O | Name of the agent hosting this module |
-| rpi4.gpio2 | # mode | R/W | Set mode for GPIO 2|
-| rpi4.gpio2 | # pin | R/W | Set/get pin for GPIO 2|
+| *any subscribe variable* | #timestamp|read | The timestamp (UTC Z-time) of the message |
+| *any subscribe variable* | #msgid|read | The timestamp (UTC Z-time) of the message |
+| *any subscribe variable* | #topic|read | The topic of the message |
+| *any subscribe variable* | #namespace|read | The topic of the message |
+| *any subscribe variable* | #version|read | The message format version |
+| *any module variable* | #type|read | The type of variable (string, number, boolean, etc) |
+| *any module variable* | #modified|read | True if modified in this cycle |
+| *any module variable* | #initialValue|read | The initial value of the variable as declared |
+| *any module variable* | #constraints|read | The constraints specified for this variable. |
+| *any publish variable* | #modified|read | True if modified in this cycle and will be published at the conclusion of the cycle |
+| system.config | #latitude | read | Latitude of this location |
+| system.config | #longitude | read | Longitude of this location |
+| system.config | #timezone | read | Timezone of this location |
+| system.config | #locationName | read | Name of this location |
+| system.config | #locationAddress | read | Address of this location |
+| system.clock | #month |read | The month of the current datetime |
+| system.clock | #day |read | The day of the current datetime |
+| system.clock | #year |read | The year of the current datetime |
+| system.clock | #hour |read | The hour of the current datetime |
+| system.clock | #minute |read | The minute of the current datetime |
+| system.clock | #second |read | The seconds of the current datetime |
+| system.clock | #sunrise |read | Today's sunrise |
+| system.clock | #sunset |read | Today's sunrise |
+| system.clock | #season |read | The current season |
+| system.clock | #season |read | Today's sunset |
+| system.log | # info |write | Write informational text to system log |
+| system.log | # warn |write | Write warning text to system log |
+| system.log | # alert |write | Send general alert message and log it |
+| system.module | #name | read | Name of this module |
+| system.module | #eventType | read | message or clock event |
+| system.agent | #name | read | Name of the agent hosting this module |
+| rpi4.gpio2 | # mode | read/write | Set mode for GPIO 2|
+| rpi4.gpio2 | # pin | read/write | Set/get pin for GPIO 2|
 

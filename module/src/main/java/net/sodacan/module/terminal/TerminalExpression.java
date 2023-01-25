@@ -20,7 +20,7 @@ import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDefs;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 /**
  * Terminal expressions just have a value and of course there are no children to execute.
  * Our subclasses just make construction easy. But they always result in a value.

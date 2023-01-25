@@ -23,7 +23,7 @@ import java.util.Set;
 
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 /**
  * A TimeExpression has a number of constraints. In general, if
  * no time is specified, then it means midnight on the specified day.

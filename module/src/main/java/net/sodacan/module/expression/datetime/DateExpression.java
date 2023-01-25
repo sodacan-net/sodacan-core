@@ -22,7 +22,7 @@ import java.util.List;
 import net.sodacan.SodacanException;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.Variables;
 
 /**
  * Combining date criteria in one expression provides "and" and "or" combinations.

@@ -26,9 +26,9 @@ import net.sodacan.module.expression.Expression;
 import net.sodacan.module.terminal.LiteralExpression;
 import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.ModuleVariables;
 import net.sodacan.module.variable.VariableDef;
-import net.sodacan.module.variable.Variables;
+import net.sodacan.module.variables.ModuleVariables;
+import net.sodacan.module.variables.Variables;
 
 public class TestAssignmentExpressions extends TestConfig {
 	static final BigDecimal NUMBER1 = new BigDecimal("0.0");

@@ -17,7 +17,12 @@ package net.sodacan.module.variable;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import net.sodacan.module.value.Value;
+import net.sodacan.module.value.ValueSerializer;
 
 /**
  * A Single Variable. In SodaCan, all messages begin (publish) as variables or end (subscribe) as variables.
@@ -26,19 +31,22 @@ import net.sodacan.module.value.Value;
  */
 public class VariableDef {
 	public enum VariableType {topicVariable, publishVariable,subscribeVariable,privateVariable};
-	private String namespace;
-	private String topic;
+	public final String version = "1.1";
 	private String name;
 	private String alias;
 	private String instance;
 	private VariableType variableType;
+
+	@JsonProperty("initialValue")
+	@JsonSerialize(using = ValueSerializer.class)
 	private Value initialValue;
 	
 	private List<Constraint> constraints = null;	// Null unless there are constraints
 
+	private VariableDef() {
+		
+	}
 	private VariableDef(VariableDefBuilder builder) {
-		this.namespace = builder.namespace;
-		this.topic = builder.topic;
 		this.name = builder.name;
 		this.alias = builder.alias;
 		this.instance = builder.instance;
@@ -46,17 +54,9 @@ public class VariableDef {
 		this.variableType = builder.variableType;
 		this.initialValue = builder.initialValue;
 	}
-	
+	@JsonIgnore
 	public String getFullName( ) {
 		StringBuffer sb = new StringBuffer();
-		if (namespace!=null) {
-			sb.append(namespace);
-			sb.append('.');
-		}
-		if (topic!=null) {
-			sb.append(topic);
-			sb.append('.');
-		}
 		if (name!=null) {
 			sb.append(name);
 		}
@@ -68,6 +68,7 @@ public class VariableDef {
 		return sb.toString();
 	}
 	
+	@JsonIgnore
 	public String getShortName() {
 		if (alias!=null) {
 			return alias;
@@ -75,14 +76,9 @@ public class VariableDef {
 		return name;
 	}
 	
-	public String getNamespace() {
-		return namespace;
+	public String getVersion() {
+		return version;
 	}
-
-	public String getTopic() {
-		return topic;
-	}
-
 	public String getName() {
 		return name;
 	}
@@ -98,6 +94,7 @@ public class VariableDef {
 	public VariableType getVariableType() {
 		return variableType;
 	}
+	
 	public Value getInitialValue() {
 		return initialValue;
 	}
@@ -167,7 +164,7 @@ public class VariableDef {
 	
 	/**
 	 * Two variable defs are equal if their namespace, topic, name, and instance are equal.
-	 * They are also equal (in a bad way) if heir aliases are the same.
+	 * They are also equal (in a bad way) if their aliases are the same.
 	 */
 	@Override
 	public boolean equals(Object obj) {
@@ -193,7 +190,7 @@ public class VariableDef {
 		StringBuffer sb = new StringBuffer();
 		sb.append(variableType.toString());
 		sb.append(':');
-		sb.append(getFullName());
+		sb.append(getName());
 		if (constraints!=null) {
 			sb.append('{');
 			boolean first = true;
@@ -214,8 +211,6 @@ public class VariableDef {
 		return new VariableDefBuilder();
 	}
 	public static class VariableDefBuilder {
-		private String namespace;
-		private String topic;
 		private String name;
 		private String alias;
 		private String instance;
@@ -227,14 +222,6 @@ public class VariableDef {
 			
 		}
 		
-		public VariableDefBuilder nameSpace(String namespace) {
-			this.namespace = namespace;
-			return this;
-		}
-		public VariableDefBuilder topic(String topic) {
-			this.topic = topic;
-			return this;
-		}
 		public VariableDefBuilder name(String name) {
 			this.name = name;
 			return this;
