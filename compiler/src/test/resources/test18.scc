@@ -1,0 +1,4 @@
+MODULE test18
+    AT 10 minutes before sunset
+        THEN system.log#info = some.device#pin
+        

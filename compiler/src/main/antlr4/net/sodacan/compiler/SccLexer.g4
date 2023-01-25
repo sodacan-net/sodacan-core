@@ -146,6 +146,11 @@ RBRACKET
 ASSIGN
 	: '='
 	;
+	
+HASH
+	: '#'
+	;
+	
 INT
 	: [0-9]+
 	;

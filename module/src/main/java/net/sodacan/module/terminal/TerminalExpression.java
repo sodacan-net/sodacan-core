@@ -44,7 +44,7 @@ public abstract class TerminalExpression extends Expression {
 
 	@Override
 	public String toString() {
-		return value.getString();
+		return value.toString();
 	}
 
 }

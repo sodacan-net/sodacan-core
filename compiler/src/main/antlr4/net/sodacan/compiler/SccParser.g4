@@ -89,11 +89,11 @@ variableDef
 	;
 	
 identifier
-	: ID (DOT ID)*			# FullId
+	: ID (DOT ID)*		# FullId
 	;
 
 idRef
-	: ID (DOT ID)?
+	: ID (DOT ID)* (HASH ID)?
 	;
 
 identifierFun

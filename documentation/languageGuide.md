@@ -442,7 +442,9 @@ Note: A module variable is a variable defined in a module: publish, subscribe, p
 | system.log | # alert |write | Send general alert message and log it |
 | system.module | #name | read | Name of this module |
 | system.module | #eventType | read | message or clock event |
+| system.module | #source | read | Current source code of module |
 | system.agent | #name | read | Name of the agent hosting this module |
 | rpi4.gpio2 | # mode | read/write | Set mode for GPIO 2|
 | rpi4.gpio2 | # pin | read/write | Set/get pin for GPIO 2|
+| dmx.fixture2 | #red | write | Set the red color value in (lighting) fixture2 |
 
