@@ -12,28 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
+import java.time.temporal.ChronoUnit;
 
-import net.sodacan.module.expression.datetime.criteria.DateCriteria;
+import net.sodacan.utility.SunriseSunset;
 
-public class DayOfWeekCriteria extends DateCriteria {
-	int dayOfWeek;
+public class SunsetCriteria extends ShortcutTimeCriteria {
 
-	public DayOfWeekCriteria(int dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
+	public SunsetCriteria(int offset, ChronoUnit units ) {
+		super(offset, units);
 	}
 
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		int dow = date.getDayOfWeek().getValue();
-		return (dow==dayOfWeek);
+		ZonedDateTime sst = SunriseSunset.getInstance().getSunset(date);
+		sst = applyOffset(sst);
+		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
 	}
 
 	@Override
 	public String toString() {
-		return "DOW=" + dayOfWeek;
+		return "Sunset";
 	}
 
 }

@@ -12,20 +12,33 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
 
-public class WeekdayCriteria extends DateCriteria {
+public class MonthDayYearCriteria extends DateCriteria {
 
-	public WeekdayCriteria() {
+	protected int month;
+	protected int day;
+	protected int year;
+	
+	public MonthDayYearCriteria(int month, int day, int year) {
+		this.month = month;
+		this.day = day;
+		this.year = year;
 	}
 
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		int dow = date.getDayOfWeek().getValue();
-		if (dow< 6) return true;
-		return false;
+		int month=date.getMonthValue();
+		int day=date.getDayOfMonth();
+		int year=date.getYear();
+		return (this.month==month && this.day==day && year==year);
+	}
+
+	@Override
+	public String toString() {
+		return "M/D/Y " + month + '/' + day + '/' + year;
 	}
 
 }

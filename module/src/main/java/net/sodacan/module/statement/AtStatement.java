@@ -55,4 +55,20 @@ public class AtStatement extends ActionStatement {
 		return super.execute(variables);
 	}
 
+	public TimeExpression getTimeExpression() {
+		return timeExpression;
+	}
+
+	public void setTimeExpression(TimeExpression timeExpression) {
+		this.timeExpression = timeExpression;
+	}
+
+	public DateExpression getDateExpression() {
+		return dateExpression;
+	}
+
+	public void setDateExpression(DateExpression dateExpression) {
+		this.dateExpression = dateExpression;
+	}
+
 }

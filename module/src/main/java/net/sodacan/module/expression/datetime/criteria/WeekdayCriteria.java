@@ -12,7 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
-public abstract class TimeCriteria extends Criteria {
+import java.time.ZonedDateTime;
+
+public class WeekdayCriteria extends DateCriteria {
+
+	public WeekdayCriteria() {
+	}
+
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		int dow = date.getDayOfWeek().getValue();
+		if (dow< 6) return true;
+		return false;
+	}
+	@Override
+	public String toString() {
+		return "weekday";
+	}
+
 }

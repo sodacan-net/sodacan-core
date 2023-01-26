@@ -34,7 +34,7 @@ public class TimeExpressionVisitor extends SccParserBaseVisitor<Void> {
 	protected SccParser parser;
 	protected TimeExpressionBuilder teb;
 	
-	public TimeExpressionVisitor(SodacanModule module,SccParser parser, TimeExpressionBuilder teb) {
+	public TimeExpressionVisitor(SodacanModule module, SccParser parser, TimeExpressionBuilder teb) {
 		super();
 		this.module = module;
 		this.parser = parser;

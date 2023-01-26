@@ -12,24 +12,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
-import net.sodacan.utility.SunriseSunset;
+/**
+ * The current date has to be beyond the date held here.
+ * @author John Churin
+ *
+ */
+public class StartingCriteria extends MonthDayYearCriteria {
 
-public class SunsetCriteria extends ShortcutTimeCriteria {
-
-	public SunsetCriteria(int offset, ChronoUnit units ) {
-		super(offset, units);
+	public StartingCriteria(int month, int day, int year) {
+		super(month, day, year);
 	}
 
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		ZonedDateTime sst = SunriseSunset.getInstance().getSunset(date);
-		sst = applyOffset(sst);
-		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
+		ZonedDateTime datec = ZonedDateTime.of(year, month, month, day, 0, 0, 0, date.getZone());
+		return date.isAfter(datec);
+	}
+	@Override
+	public String toString() {
+		return "Starting " + month + '/' + day + '/' + year;
 	}
 
 }

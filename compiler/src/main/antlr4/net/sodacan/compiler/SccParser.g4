@@ -54,7 +54,7 @@ timerStatement
 	;
 	
 atStatement
-	: AT atTimeExpression atDateExpression AtEOL+ andStatement? thenStatement+
+	: AT atTimeExpression atDateExpression AtEOL+ andStatement* thenStatement+
 	;
 
 onStatement
@@ -235,22 +235,22 @@ atDateExpression
 	;
 	
 atDateSpecs
-	: AtON atOnSpec+
-	| AtIN atInSpec+
-	| AtSTARTING atFullDate
-	| AtENDING atFullDate
-	| AtFROM atOnAnnualDate AtTHROUGH atOnAnnualDate
+	: AtON atOnSpec+									#AtOn
+	| AtIN atInSpec+									#AtIn
+	| AtSTARTING atFullDate								#AtStarting
+	| AtENDING atFullDate								#AtEnding
+	| AtFROM atOnAnnualDate AtTHROUGH atOnAnnualDate	#AtFrom
 	;
 
 atOnSpec
-	: atOnDaysOfWeek
+	: atOnDaysOfWeek		
 	| atOnAnnualDate
 	;
 
 atInSpec
-	: atMonth
-	| atSeason
-	| atYear
+	: atInMonth
+	| atInSeason
+	| atInYear
 	;
 	
 atOnDaysOfWeek
@@ -269,10 +269,16 @@ atFullDate
 	: atMonth atDay AtCOMMA atYear
 	;		
 
+atInYear
+	: AtINT
+	;
 atYear
 	: AtINT
 	;
 
+atInMonth
+	: AtMONTH
+	;
 atMonth
 	: AtMONTH
 	;
@@ -289,6 +295,9 @@ atDay
 	: AtINT
 	;
 
+atInSeason
+	: AtSEASON
+	;
 atSeason
 	: AtSEASON
 	;

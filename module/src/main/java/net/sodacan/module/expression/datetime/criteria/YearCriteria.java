@@ -12,22 +12,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
 
-public class TimeOfDayCriteria extends TimeCriteria {
-	int hour;
-	int minute;
-
-	public TimeOfDayCriteria(int hour, int minute) {
-		this.hour = hour;
-		this.minute = minute;
+public class YearCriteria extends DateCriteria {
+	private int year = 0;
+	
+	public YearCriteria(int year) {
+		this.year = year;
 	}
 
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		return (hour==date.getHour() && minute==date.getMinute());
+		return (date.getYear()==year);
+	}
+
+	@Override
+	public String toString() {
+		return "Year " + Integer.toString(year);
 	}
 
 }

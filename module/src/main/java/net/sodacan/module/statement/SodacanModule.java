@@ -33,7 +33,7 @@ import net.sodacan.module.variables.Variables;
  * @author John Churin
  *
  */
-public class SodacanModule {
+public class SodacanModule extends ModuleComponent{
 	String name;
 	String instanceName;
 	String source;
@@ -221,6 +221,11 @@ public class SodacanModule {
 			sb.append(']');
 		}
 		return sb.toString();
+	}
+
+	@Override
+	public Value execute(Variables variables) {
+		return null;
 	}
 
 	

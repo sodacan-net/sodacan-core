@@ -12,31 +12,28 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
-public abstract class ShortcutTimeCriteria extends TimeCriteria {
-	private long offset;
-	private ChronoUnit units;
-
-	public ShortcutTimeCriteria(long offset, ChronoUnit units) {
-		super();
-		this.offset = offset;
-		this.units = units;
-	}
+public class MonthDayCriteria extends DateCriteria {
+	protected int month;
+	protected int day;
 	
-	public long getOffset() {
-		return offset;
+	public MonthDayCriteria(int month, int day) {
+		this.month = month;
+		this.day = day;
 	}
-	public ChronoUnit getUnits() {
-		return units;
+
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		int month=date.getMonthValue();
+		int day=date.getDayOfMonth();
+		return (this.month==month && this.day==day);
 	}
-	public ZonedDateTime applyOffset( ZonedDateTime time ) {
-		if (units!=null) {
-			return time.plus(getOffset(), getUnits());		
-		}
-		return time;
+	@Override
+	public String toString() {
+		return "Month/Day " + month + '/' + day ;
 	}
+
 }

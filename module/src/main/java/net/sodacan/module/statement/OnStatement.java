@@ -42,6 +42,10 @@ public class OnStatement  extends ActionStatement {
 		this.selectExpression = expression;
 	}
 	
+	public Expression getSelectExpression() {
+		return selectExpression;
+	}
+
 	protected boolean isMessageMatch(Variables variables) {
 		return false;
 	}
@@ -54,4 +58,12 @@ public class OnStatement  extends ActionStatement {
 	public boolean processMessage(Variables variables) {
 		return false;
 	}
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append("ON " );
+		sb.append(this.getSelectExpression());
+		return sb.toString();
+	}
+
 }

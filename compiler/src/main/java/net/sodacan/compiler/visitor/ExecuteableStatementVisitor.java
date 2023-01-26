@@ -15,17 +15,21 @@
 package net.sodacan.compiler.visitor;
 
 import net.sodacan.compiler.SccParser;
-import net.sodacan.compiler.SccParserBaseVisitor;
 import net.sodacan.compiler.SccParser.AndStatementContext;
+import net.sodacan.compiler.SccParser.AtStatementContext;
 import net.sodacan.compiler.SccParser.EventConditionContext;
 import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.ModuleInstanceContext;
-import net.sodacan.compiler.SccParser.ModuleNameContext;
 import net.sodacan.compiler.SccParser.OnStatementContext;
 import net.sodacan.compiler.SccParser.SccContext;
-import net.sodacan.compiler.SccParser.StatementListContext;
 import net.sodacan.compiler.SccParser.ThenStatementContext;
+import net.sodacan.compiler.SccParserBaseVisitor;
 import net.sodacan.module.expression.Expression;
+import net.sodacan.module.expression.datetime.DateExpression;
+import net.sodacan.module.expression.datetime.DateExpression.DateExpressionBuilder;
+import net.sodacan.module.expression.datetime.TimeExpression;
+import net.sodacan.module.expression.datetime.TimeExpression.TimeExpressionBuilder;
+import net.sodacan.module.statement.AtStatement;
 import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.statement.OnStatement;
 import net.sodacan.module.statement.SodacanModule;
@@ -44,7 +48,6 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<ModuleComp
 		super();
 		this.module = module;
 		this.parser = parser;
-
 	}
 	
 	/**
@@ -59,14 +62,7 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<ModuleComp
 	 */
 	@Override
 	public ModuleComponent visitModule(ModuleContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitModule(ctx);
-	}
-
-	@Override
-	public ModuleComponent visitModuleName(ModuleNameContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitModuleName(ctx);
+		return visit(ctx.statements());
 	}
 
 	@Override
@@ -75,12 +71,6 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<ModuleComp
 		return super.visitModuleInstance(ctx);
 	}
 
-	@Override
-	public ModuleComponent visitStatementList(StatementListContext ctx) {
-		// TODO Auto-generated method stub
-		return super.visitStatementList(ctx);
-	}
-	
 	/**
 	 * Return one ON statement. It has the following components: event selector, 
 	 * zero or more AND statements, and zero or more THEN statements.
@@ -95,17 +85,48 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<ModuleComp
 		// Add the EventSelector
 		os.setSelectExpression((Expression)visit(ctx.eventCondition()));
 		// Add Additional filtering (AND), if any
-		for (AndStatementContext tsc : ctx.andStatement()) {
-			os.addAndExpression((Expression)visit(tsc.expr()));
+		for (AndStatementContext asc : ctx.andStatement()) {
+			os.addAndExpression((Expression)visit(asc.expr()));
 		}
-		// Add the Then expressions (syntax requires at least one, 
-		// semantics doesn't care)
+		// Add the Then expressions (syntax requires at least one. 
+		// But the runtime doesn't care)
 		for (ThenStatementContext tsc : ctx.thenStatement()) {
 			os.addThenExpression((Expression)visit(tsc.thenExpr()));
 		}
 		// Return the on statement
 		return os;
 	}
+	
+	@Override
+	public ModuleComponent visitAtStatement(AtStatementContext ctx) {
+		// The AT statement
+		AtStatement as = new AtStatement();
+		// TimeComponent
+		TimeExpressionBuilder teb = TimeExpression.newTimeExpressionBuilder();
+		TimeExpressionVisitor tev = new TimeExpressionVisitor(module,parser,teb);
+		tev.visit(ctx.atTimeExpression());
+		TimeExpression te = teb.build();
+		as.setTimeExpression(te);
+		// Date component
+		DateExpressionBuilder deb = DateExpression.newDateExpressionBuilder();
+		DateExpressionVisitor dev = new DateExpressionVisitor(module,parser,deb);
+		dev.visit(ctx.atDateExpression());
+		DateExpression de = deb.build();
+		System.out.println(de);
+		as.setDateExpression(de);
+		// And statements, if any
+		for (AndStatementContext asc : ctx.andStatement()) {
+			as.addAndExpression((Expression)visit(asc.expr()));
+		}
+		// Add the Then statements (syntax requires at least one. 
+		// But the runtime doesn't care)
+		for (ThenStatementContext tsc : ctx.thenStatement()) {
+			as.addThenExpression((Expression)visit(tsc.thenExpr()));
+		}
+		// finally, return the AT statement
+		return as;
+	}
+
 	/**
 	 * An event creates a small expression used to determine if a message
 	 * applies to the ON statement.
@@ -114,6 +135,12 @@ public class ExecuteableStatementVisitor extends SccParserBaseVisitor<ModuleComp
 	public ModuleComponent visitEventCondition(EventConditionContext ctx) {
 		Expression var = new VariableRefExpression(ctx.getText());
 		return var;
+	}
+
+	@Override
+	public ModuleComponent visitAndStatement(AndStatementContext ctx) {
+		// TODO Auto-generated method stub
+		return super.visitAndStatement(ctx);
 	}
 
 	

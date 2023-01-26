@@ -1,6 +1,3 @@
-package net.sodacan.module.expression.datetime;
-import java.time.ZonedDateTime;
-
 /*
  * Copyright 2023 John M Churin
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -15,19 +12,25 @@ import java.time.ZonedDateTime;
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+package net.sodacan.module.expression.datetime.criteria;
 
-public abstract class Criteria {
+import java.time.ZonedDateTime;
 
-	public Criteria() {
-		// TODO Auto-generated constructor stub
+public class WeekendCriteria extends DateCriteria {
+
+	public WeekendCriteria() {
 	}
-	/**
-	 * Return true of the date passed in meets the this criteria.
-	 * For example, the Weekend subclass returns true of the
-	 * passed-in date is a weekend day
-	 * @param date
-	 * @return
-	 */
-	public abstract boolean isMatch( ZonedDateTime date);
+
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		int dow = date.getDayOfWeek().getValue();
+		if (dow==6 || dow==7) return true;
+		return false;
+	}
+	@Override
+	public String toString() {
+		return "weekend";
+	}
+
 
 }

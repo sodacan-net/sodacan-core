@@ -12,13 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
-public abstract class DateCriteria extends Criteria {
+import java.time.ZonedDateTime;
 
-	public DateCriteria() {
-		super();
+public class MonthCriteria extends DateCriteria {
+	protected int month;
+	public MonthCriteria(int month) {
+		this.month = month;
 	}
 
-		
+	@Override
+	public boolean isMatch(ZonedDateTime date) {
+		return (this.month==date.getMonthValue());
+	}
+	@Override
+	public String toString() {
+		return "Month " + month;
+	}
+
 }

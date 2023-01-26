@@ -12,28 +12,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
-import java.time.ZonedDateTime;
+public abstract class DateCriteria extends Criteria {
 
-import net.sodacan.module.expression.datetime.criteria.DateCriteria;
-
-public class DayOfWeekCriteria extends DateCriteria {
-	int dayOfWeek;
-
-	public DayOfWeekCriteria(int dayOfWeek) {
-		this.dayOfWeek = dayOfWeek;
+	public DateCriteria() {
+		super();
 	}
 
-	@Override
-	public boolean isMatch(ZonedDateTime date) {
-		int dow = date.getDayOfWeek().getValue();
-		return (dow==dayOfWeek);
-	}
-
-	@Override
-	public String toString() {
-		return "DOW=" + dayOfWeek;
-	}
-
+		
 }

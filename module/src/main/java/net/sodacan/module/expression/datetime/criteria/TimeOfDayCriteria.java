@@ -12,23 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
-import java.time.temporal.ChronoUnit;
 
-import net.sodacan.utility.SunriseSunset;
+public class TimeOfDayCriteria extends TimeCriteria {
+	int hour;
+	int minute;
 
-public class SunriseCriteria extends ShortcutTimeCriteria {
-
-	public SunriseCriteria(int offset, ChronoUnit units) {
-		super(offset, units);
+	public TimeOfDayCriteria(int hour, int minute) {
+		this.hour = hour;
+		this.minute = minute;
 	}
+
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		ZonedDateTime sst = SunriseSunset.getInstance().getSunrise(date);
-		sst = applyOffset(sst);
-		return (sst.getHour()==date.getHour() && sst.getMinute()==date.getMinute());
+		return (hour==date.getHour() && minute==date.getMinute());
+	}
+	@Override
+	public String toString() {
+		return "Time Of Day " + hour + ':' + minute;
 	}
 
 }

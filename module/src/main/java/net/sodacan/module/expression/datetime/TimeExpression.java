@@ -22,6 +22,12 @@ import java.util.List;
 import java.util.Set;
 
 import net.sodacan.module.expression.Expression;
+import net.sodacan.module.expression.datetime.criteria.Criteria;
+import net.sodacan.module.expression.datetime.criteria.MidnightCriteria;
+import net.sodacan.module.expression.datetime.criteria.NoonCriteria;
+import net.sodacan.module.expression.datetime.criteria.SunriseCriteria;
+import net.sodacan.module.expression.datetime.criteria.SunsetCriteria;
+import net.sodacan.module.expression.datetime.criteria.TimeOfDayCriteria;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variables.Variables;
 /**

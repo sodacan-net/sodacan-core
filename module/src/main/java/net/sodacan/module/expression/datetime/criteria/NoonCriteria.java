@@ -12,19 +12,23 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.module.expression.datetime;
+package net.sodacan.module.expression.datetime.criteria;
 
 import java.time.ZonedDateTime;
 
-public class MidnightCriteria extends TimeCriteria {
+public class NoonCriteria extends TimeCriteria {
 
-	public MidnightCriteria() {
+	public NoonCriteria() {
 		super();
 	}
 
 	@Override
 	public boolean isMatch(ZonedDateTime date) {
-		return (date.getHour()==0 && date.getMinute()==0);
+		return (date.getHour()==12 && date.getMinute()==0);
+	}
+	@Override
+	public String toString() {
+		return "Noon";
 	}
 
 }
