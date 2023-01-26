@@ -222,6 +222,21 @@ public class DateExpression extends Expression {
 			return month(12);
 		}
 
+		public DateExpressionBuilder spring() {
+			return season("spring");
+		}
+		public DateExpressionBuilder summer() {
+			return season("summer");
+		}
+		public DateExpressionBuilder fall() {
+			return season("fall");
+		}
+		public DateExpressionBuilder autumn() {
+			return season("autumn");
+		}
+		public DateExpressionBuilder winter() {
+			return season("winter");
+		}
 		public DateExpressionBuilder season(String season) {
 			if ("spring".equalsIgnoreCase(season)) {
 				return this.april().may().june();
