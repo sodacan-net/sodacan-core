@@ -56,6 +56,15 @@ public class CompositeVariables implements Variables {
 		return null;
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		for (Variables vs : variabless) {
+			sb.append(vs.toString());
+		}
+		return sb.toString();
+	}
+
 	/**
 	 * Reset all variables at the start of a cycle.
 	 * At the composite-level, we simply tell out composite variables to reset.

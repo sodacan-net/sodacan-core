@@ -37,6 +37,8 @@ import net.sodacan.module.terminal.VariableRefExpression;
 /**
  * After collecting the variable definitions, we need to visit the module tree to construct the executable portion of the module.
  * Compile errors generated in this phase include references to non-existing variables.
+ * The visitor also used two other specialized visitors for date and time expressions in the AT statement.
+ * 
  * @author John Churin
  *
  */

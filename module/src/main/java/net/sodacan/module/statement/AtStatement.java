@@ -45,7 +45,7 @@ public class AtStatement extends ActionStatement {
 		if (dateExpression!=null) {
 			dateValue = dateExpression.execute(variables);
 		} else {
-			dateValue = new Value(false);
+			dateValue = new Value(true);
 		}
 		// If no match on date/time, we're done
 		if (!dateValue.getBoolean() || !timeValue.getBoolean()) {
