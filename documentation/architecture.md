@@ -86,22 +86,56 @@ A distributed configuration also uses Apache Kafka but with multiple brokers and
 
 
 ```mermaid
-mindmap;
-  Runtime
-    API
-      CLI
-        Kafka Admin
-        O/S Admin
-      WebServer
-        REST API
-      User App
-    Mode
-      State<br/>Store
-      Clock
-      MsgIn
-      MsgOut
-    Agent
-      Compiler
+---
+---
+title: Dependencies
+---
+flowchart TB;
+ag(Agent)
+ap(API)
+cl(Clock)
+cli(CLI)
+co(Compiler)
+ka(Kafka Admin)
+m(Module)
+mb(Message<br/>Bus)
+mc(MicroController)
+mod(Mode)
+oa(O/S Admin)
+ra(REST API)
+rt(Runtime)
+ss(State<br/>Store)
+ua(User App)
+wp(Web Pages)
+ws(WebServer)
+cli --- ap
+ap --- mod
+ag --- rt
+rt --- mod
+rt --- co
+mod --- cl
+mod --- mb
+ra --- ws
+ws --- ap
+cli --- oa
+cli --- ka
+ua --- ap
+mc --- ra
+wp --- ra
+wp --- ws
+mb --- k
+mb --- f
+cl --- rtc
+cl --- tc
+mod --- ss
+rt --- m
+ss --- f
+subgraph plugin
+f(File)
+k(Kafka)
+tc(Testing<br/>Clock)
+rtc(Real Clock)
+end
 
 ```
 
