@@ -83,6 +83,28 @@ A Single-node configuration uses Apache Kafka in a more-or-less real configurati
 A distributed configuration also uses Apache Kafka but with multiple brokers and topic partitioning. This configuration provides the highest throughput, scalability and best reliability. The transition from single-node to a distributed configuration is possible without having to start-stop the system. However, it does require careful planning and execution.
 
 ### System Components
+
+
+```mermaid
+mindmap
+  Runtime
+    API
+      CLI
+        Kafka Admin
+        O/S Admin
+      WebServer
+        REST API
+      User App
+    Mode
+      State<br/>Store
+      Clock
+      MsgIn
+      MsgOut
+    Agent
+      Compiler
+
+```
+
 #### SodaCan API
 The SodaCan API provides a way to perform administrative, operational, and application functions. Many of its functions are passed through messages to other components including the SodaCan web server, the underlying Kafka system, and mostly to SodaCan agents.
 The API in SodaCan is separate from the RESTful API in the web browser. Both provide similar capabilities but the SodaCan API talks directly to the message bus whereas the RESTful API is, of course, HTML-based which in turn uses the SodaCan API. The RESTful API is useful when the SodaCan message bus is behind a firewall.
