@@ -86,7 +86,7 @@ A distributed configuration also uses Apache Kafka but with multiple brokers and
 
 
 ```mermaid
-mindmap
+mindmap;
   Runtime
     API
       CLI
