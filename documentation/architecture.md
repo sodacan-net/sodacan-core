@@ -110,18 +110,18 @@ oa(O/S Admin)
 ra(REST API)
 rt(Runtime)
 ws(Web Server)
-cli --- ap
+cli --- ka
+cli -.Sodacan Admin.- ap
+cli --- oa
 ap --- IO
 ag --- rt
-rt -.Execute.- m
 rt --- IO
-rt --- co
+rt -.Execute.- m
+rt -.Compile.- co
 mod --- cl
 mod --- mb
 ra --- ws
 ws --- ap
-cli --- oa
-cli --- ka
 ua --- ap
 dc --- ra
 dc -.alternate.- ap
