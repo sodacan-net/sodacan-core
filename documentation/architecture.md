@@ -87,30 +87,34 @@ A distributed configuration also uses Apache Kafka but with multiple brokers and
 
 ```mermaid
 ---
----
 title: Dependencies
 ---
 flowchart TB;
-ag(Agent)
-ap(API)
-cl(Clock)
-cli(CLI)
+subgraph application
+  wp(Web Pages)
+  mc(Dev<br/>Controller)
+  ua(<a href='#'>User App</a>)
+  cli(Command<br/>Line<br/> Interface)
+  ag(Agent)
+end
+subgraph IO
+  mod(Mode)
+  ss(State<br/>Store)
+  mb(Message<br/>Bus)
+  cl(Clock)
+end
+ap(Java API)
 co(Compiler)
 ka(Kafka Admin)
 m(Module)
-mb(Message<br/>Bus)
-mc(MicroController)
-mod(Mode)
 oa(O/S Admin)
 ra(REST API)
 rt(Runtime)
-ss(State<br/>Store)
-ua(User App)
-wp(Web Pages)
 ws(WebServer)
 cli --- ap
 ap --- mod
 ag --- rt
+rt --- m
 rt --- mod
 rt --- co
 mod --- cl
@@ -128,13 +132,15 @@ mb --- f
 cl --- rtc
 cl --- tc
 mod --- ss
-rt --- m
 ss --- f
+ss --- mem
+mb --- mem
 subgraph plugin
-f(File)
-k(Kafka)
-tc(Testing<br/>Clock)
-rtc(Real Clock)
+  f(File)
+  k(Kafka)
+  tc(Testing<br/>Clock)
+  rtc(Real Clock)
+  mem(Memory)
 end
 
 ```
