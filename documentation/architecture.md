@@ -84,7 +84,7 @@ A distributed configuration also uses Apache Kafka but with multiple brokers and
 
 ### System Components
 
-```
+```mermaid
 ---
 title: Dependencies
 ---
