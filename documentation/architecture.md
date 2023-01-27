@@ -84,8 +84,6 @@ A distributed configuration also uses Apache Kafka but with multiple brokers and
 
 ### System Components
 
-
-```mermaid
 ---
 title: Dependencies
 ---
@@ -94,8 +92,8 @@ subgraph application
   wp(Web Pages)
   mc(Dev<br/>Controller)
   ua(<a href='#'>User App</a>)
-  cli(Command<br/>Line<br/> Interface)
-  ag(Agent)
+  cli(<a href='#command-line-tool'>Command<br/>Line<br/>Tool</a>)
+  ag(<a href='#module-agent'>Module Agent</a>)
 end
 subgraph IO
   mod(Mode)
@@ -103,14 +101,14 @@ subgraph IO
   mb(Message<br/>Bus)
   cl(Clock)
 end
-ap(Java API)
+ap(<a href='#sodacan-api'>Sodacan API</a>)
 co(Compiler)
 ka(Kafka Admin)
 m(Module)
 oa(O/S Admin)
 ra(REST API)
 rt(Runtime)
-ws(WebServer)
+ws(Web Server)
 cli --- ap
 ap --- mod
 ag --- rt
@@ -163,10 +161,10 @@ The message bus in SodaCan is responsible for reliably storing messages for howe
 
 If the stand alone configuration is used, then messages are not stored reliably.
 
-#### ModuleAgent
+#### Module Agent
 Module agent(s) are the workhorse of SodaCan. These agents host one or more modules and provide the timer, clock, persistence, and interface to the Message Bus.
 
-#### LoggingAgent
+#### Logging Agent
 
  | Component         | stand-alone | Single Node | Distributed |
  | :----             |  :--------: | :---------: | :---------: |
