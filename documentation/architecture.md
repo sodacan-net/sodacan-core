@@ -91,10 +91,10 @@ title: Dependencies
 flowchart TB;
 subgraph application
   wp(Web Pages)
-  mc(Dev<br/>Controller)
-  ua(<a href='#'>User App</a>)
-  cli(<a href='#command-line-tool'>Command<br/>Line<br/>Tool</a>)
-  ag(<a href='#module-agent'>Module Agent</a>)
+  dc(Dev<br/>Controller)
+  ua(User App)
+  cli(Command<br/>Line<br/>Tool)
+  ag(Module Agent)
 end
 subgraph IO
   mod(Mode)
@@ -102,7 +102,7 @@ subgraph IO
   mb(Message<br/>Bus)
   cl(Clock)
 end
-ap(<a href='#sodacan-api'>Sodacan API</a>)
+ap(Sodacan API)
 co(Compiler)
 ka(Kafka Admin)
 m(Module)
@@ -111,10 +111,10 @@ ra(REST API)
 rt(Runtime)
 ws(Web Server)
 cli --- ap
-ap --- mod
+ap --- IO
 ag --- rt
-rt --- m
-rt --- mod
+rt -.Execute.- m
+rt --- IO
 rt --- co
 mod --- cl
 mod --- mb
@@ -123,17 +123,17 @@ ws --- ap
 cli --- oa
 cli --- ka
 ua --- ap
-mc --- ra
+dc --- ra
+dc -.alternate.- ap
+wp -.static.- ws
 wp --- ra
-wp --- ws
 mb --- k
-mb --- f
 cl --- rtc
 cl --- tc
 mod --- ss
-ss --- f
 ss --- mem
 mb --- mem
+ss --- f
 subgraph plugin
   f(File)
   k(Kafka)
