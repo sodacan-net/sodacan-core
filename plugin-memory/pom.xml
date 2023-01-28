@@ -1,23 +1,17 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>mode</artifactId>
-    <name>mode</name>
-    <packaging>jar</packaging>
+  <groupId>net.sodacan.plugin</groupId>
+  <artifactId>plugin-memory</artifactId>
+  <packaging>jar</packaging>
   <parent>
   	<groupId>net.sodacan</groupId>
   	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
   </parent>
-  <description>Mode and SPIs</description>
   <dependencies>
-		<dependency>
+  		<dependency>
 			<groupId>net.sodacan.mode</groupId>
 			<artifactId>mode-api</artifactId>
-			<version>0.0.1</version>
-		</dependency>
-		<dependency>
-			<groupId>net.sodacan</groupId>
-			<artifactId>utility</artifactId>
 			<version>0.0.1</version>
 		</dependency>
   </dependencies>

@@ -14,13 +14,33 @@
  */
 package net.sodacan.mode.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import net.sodacan.mode.Mode;
+import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
 
-public class StateStoreService extends ModeService{
+public class StateStoreService extends ModeService {
+	protected List<StateStoreProvider> providers = new ArrayList<>();
 
 	public StateStoreService(Mode mode) {
 		super(mode, StateStoreProvider.class);
+	}
+
+	@Override
+	public void loadProviders(Set<String> types) {
+		for (ModeProvider provider : getLoader()) {
+			if (provider.isMatch(types)) {
+				providers.add((StateStoreProvider) provider);
+			}
+		}
+	}
+
+	@Override
+	protected List<StateStoreProvider> getProviders() {
+		return providers;
 	}
 	
 }

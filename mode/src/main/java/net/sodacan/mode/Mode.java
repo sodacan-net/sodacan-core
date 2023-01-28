@@ -66,13 +66,21 @@ public class Mode {
 	private static Map<String,Mode> instances = new ConcurrentHashMap<>();
 
 	private static ThreadLocal<Mode> threadMode = new ThreadLocal<>();
-	
+
+	/**
+	 * Setup the mode, services, and providers underneath mode.
+	 * @param mb
+	 */
 	private Mode(ModeBuilder mb) {	
 		this.name = mb.name;
 		this.messageBusTypes = mb.messageBusTypes;
 		this.clockTypes = mb.clockTypes;
 		this.loggerTypes = mb.loggerTypes; 
 		this.stateStoreTypes = mb.stateStoreTypes;
+		this.messageBusService.loadProviders(messageBusTypes);
+		this.clockService.loadProviders(clockTypes);
+		this.loggerService.loadProviders(loggerTypes);
+		this.stateStoreService.loadProviders(stateStoreTypes);
 	}
 	
 	public Set<String> getMessageBusTypes() {

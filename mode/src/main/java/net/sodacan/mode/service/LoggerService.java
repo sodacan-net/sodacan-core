@@ -14,13 +14,42 @@
  */
 package net.sodacan.mode.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.LoggerProvider;
+import net.sodacan.mode.spi.ModeProvider;
 
 public class LoggerService extends ModeService {
+	protected List<LoggerProvider> providers = new ArrayList<>();
 
 	public LoggerService(Mode mode) {
 		super(mode, LoggerProvider.class);
 	}
 
+	@Override
+	public void loadProviders( Set<String> types) {
+		for (ModeProvider provider : getLoader()) {
+			if (provider.isMatch(types)) {
+				providers.add((LoggerProvider) provider);
+			}
+		}
+	}
+
+	@Override
+	protected List<LoggerProvider> getProviders() {
+		return (List<LoggerProvider>) providers; 
+	}
+	
+	/**
+	 * Send a log message to all providers
+	 * @param msg
+	 */
+	public void log(String msg) {
+		for (LoggerProvider provider : getProviders()) {
+			provider.log(getMode().getName(), msg);
+		}
+	}
 }

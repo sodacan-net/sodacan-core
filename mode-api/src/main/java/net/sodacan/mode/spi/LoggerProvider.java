@@ -15,5 +15,5 @@
 package net.sodacan.mode.spi;
 
 public interface LoggerProvider extends ModeProvider {
-
+	public void log( String mode, String msg );
 }

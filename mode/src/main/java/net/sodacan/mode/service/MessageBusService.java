@@ -14,8 +14,13 @@
  */
 package net.sodacan.mode.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.MessageBusProvider;
+import net.sodacan.mode.spi.ModeProvider;
 /**
  * @author John Churin
  *
@@ -24,6 +29,21 @@ public class MessageBusService extends ModeService {
 
 	public MessageBusService(Mode mode) {
 		super(mode, MessageBusProvider.class);
+	}
+	protected List<MessageBusProvider> providers = new ArrayList<>();
+
+	@Override
+	public void loadProviders(Set<String> types) {
+		for (ModeProvider provider : getLoader()) {
+			if (provider.isMatch(types)) {
+				providers.add((MessageBusProvider) provider);
+			}
+		}
+	}
+
+	@Override
+	protected List<MessageBusProvider> getProviders() {
+		return providers;
 	}
 
 }

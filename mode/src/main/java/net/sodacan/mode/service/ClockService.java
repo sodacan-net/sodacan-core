@@ -14,13 +14,34 @@
  */
 package net.sodacan.mode.service;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ClockProvider;
+import net.sodacan.mode.spi.ModeProvider;
 
 public class ClockService extends ModeService {
 
 	public ClockService(Mode mode) {
 		super(mode, ClockProvider.class);
+	}
+
+	protected List<ClockProvider> providers = new ArrayList<>();
+
+	@Override
+	public void loadProviders(Set<String> types) {
+		for (ModeProvider provider : getLoader()) {
+			if (provider.isMatch(types)) {
+				providers.add((ClockProvider) provider);
+			}
+		}
+	}
+
+	@Override
+	protected List<ClockProvider> getProviders() {
+		return providers;
 	}
 
 }

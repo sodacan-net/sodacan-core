@@ -20,8 +20,6 @@ public interface ModeProvider {
 	/**
 	* Provider must implement this method which the service will use to filter only selected providers.
 	*/
-	public String getProviderType();
-	
 	public boolean isMatch(Set<String> types);
 	
 }

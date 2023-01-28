@@ -11,6 +11,8 @@
   	<module>cli</module>
   	<module>compiler</module>
   	<module>mode</module>
+  	<module>mode-api</module>
+  	<module>plugin-memory</module>
   	<module>runtime</module>
   	<module>utility</module>
   	<module>webserver</module>

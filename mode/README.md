@@ -59,3 +59,16 @@ Persisting modes is a bit tricky because of Sodacan rules about no cross-mode in
 So, we leave Mode persistence to the individual services. On startup, we poll each of the
 services asking for which mode(s) they apply to, if any. This allows the service to use its own method for persisting it's state.
 This process reconstitutes the Mode list.
+
+### Mode Structure
+Mode is a wrapper class around a number of Service classes, each having it's own list of one or more providers of that service.
+From the Service Provider (plugin) perspective, Sodacan will call into the provider methods with a mode name. The provider is expected 
+to *partition* its behavior by mode.
+
+From the Sodacan perspective, the current mode is acquired from thread-local storage using `Mode.getInstance()` and then get the service needed.
+That service will, in turn, talk to the providers as appropriate for the method.
+
+```
+    Mode.getInstance().getLoggerService().log("hello");
+    
+```
