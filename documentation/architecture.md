@@ -92,7 +92,9 @@ flowchart TB;
 subgraph application
   wp(Web Pages)
   dc(Dev<br/>Controller)
+  style dc fill:#f9f,stroke:#000
   ua(User App)
+  style ua fill:#f9f,stroke:#000
   cli(Command<br/>Line<br/>Tool)
   ag(Module Agent)
 end
@@ -113,9 +115,9 @@ ws(Web Server)
 cli --- ka
 cli -.Sodacan Admin.- ap
 cli --- oa
-ap --- IO
 ag --- rt
-rt --- IO
+ap --- mod
+rt --- mod
 rt -.Execute.- m
 rt -.Compile.- co
 mod --- cl
