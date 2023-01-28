@@ -16,8 +16,10 @@ package net.sodacan.mode;
 
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sodacan.SodacanException;
@@ -49,10 +51,11 @@ import net.sodacan.mode.service.StateStoreService;
 public class Mode {
 	
 	private String name;
-	private String messageBusType;
-	private String clockType;
-	private List<String> loggerTypes; 
-	private String stateStoreType;
+	private Set<String> messageBusTypes;
+	private Set<String> clockTypes;
+	private Set<String> loggerTypes; 
+	private Set<String> stateStoreTypes;
+	
 	private MessageBusService messageBusService = new MessageBusService(this);
 	private ClockService clockService = new ClockService(this);
 	private LoggerService loggerService = new LoggerService(this);
@@ -66,26 +69,26 @@ public class Mode {
 	
 	private Mode(ModeBuilder mb) {	
 		this.name = mb.name;
-		this.messageBusType = mb.messageBusType;
-		this.clockType = mb.clockType;
+		this.messageBusTypes = mb.messageBusTypes;
+		this.clockTypes = mb.clockTypes;
 		this.loggerTypes = mb.loggerTypes; 
-		this.stateStoreType = mb.stateStoreType;
+		this.stateStoreTypes = mb.stateStoreTypes;
 	}
 	
-	public String getMessageBusType() {
-		return messageBusType;
+	public Set<String> getMessageBusTypes() {
+		return messageBusTypes;
 	}
 	
-	public String getClockType() {
-		return clockType;
+	public Set<String> getClockTypes() {
+		return clockTypes;
 	}
 	
-	public List<String> getLoggerTypes() {
+	public Set<String> getLoggerTypes() {
 		return loggerTypes;
 	}
 	
-	public String getStateStoreType() {
-		return stateStoreType;
+	public Set<String> getStateStoreTypes() {
+		return stateStoreTypes;
 	}
 	
 	public MessageBusService getMessageBusService() {
@@ -148,10 +151,10 @@ public class Mode {
 
 	public static class ModeBuilder {
 		private String name = null;
-		private String messageBusType = null;
-		private String clockType = null;
-		private List<String> loggerTypes = new ArrayList<>(); 
-		private String stateStoreType = null;
+		private Set<String> messageBusTypes = new HashSet<String>();
+		private Set<String> clockTypes = new HashSet<String>();
+		private Set<String> loggerTypes = new HashSet<String>(); 
+		private Set<String> stateStoreTypes = new HashSet<String>();
 
 		protected ModeBuilder() {
 		}
@@ -167,16 +170,21 @@ public class Mode {
 		}
 		
 		public ModeBuilder messageBus( String messageBusType ) {
-			this.messageBusType = messageBusType;
+			this.messageBusTypes.add(messageBusType);
 			return this;
 		}
 
 		public ModeBuilder clock( String clockType ) {
-			this.clockType = clockType;
+			this.clockTypes.add(clockType);
 			return this;
 		}
 
-		public ModeBuilder addLogger( String loggerType ) {
+		public ModeBuilder stateStore( String stateStoreType ) {
+			this.stateStoreTypes.add(stateStoreType);
+			return this;
+		}
+
+		public ModeBuilder logger( String loggerType ) {
 			this.loggerTypes.add(loggerType);
 			return this;
 		}

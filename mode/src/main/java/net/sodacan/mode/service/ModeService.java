@@ -14,7 +14,10 @@
  */
 package net.sodacan.mode.service;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.ServiceLoader;
+import java.util.Set;
 
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ModeProvider;
@@ -28,8 +31,20 @@ public abstract class ModeService {
 	    this.loader = ServiceLoader.load(providerClass);
 	}
 
-	public Mode getMode() {
-		return mode;
+	/**
+	 * Return a list of providers that satisfy at least one of the requested types.
+	 * For example, if the mode wants a memory-based logger, then file or message
+	 * based loggers are skipped (for this mode).
+	 * @param types A set of one or more types requested
+	 * @return A list of providers matching the criteria
+	 */
+	public List<ModeProvider> loadProviders( Set<String> types) {
+		List<ModeProvider> providers = new ArrayList<>();
+		for (ModeProvider provider : loader) {
+			if (provider.isMatch(types)) {
+				providers.add(provider);
+			}
+		}
+		return providers;
 	}
-
 }
