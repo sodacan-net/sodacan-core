@@ -11,9 +11,9 @@
   <description>Message bus</description>
   <dependencies>
 		<dependency>
-		    <groupId>org.apache.kafka</groupId>
-		    <artifactId>kafka-clients</artifactId>
-		    <version>${kafka.version}</version>
+			<groupId>net.sodacan</groupId>
+			<artifactId>utility</artifactId>
+			<version>0.0.1</version>
 		</dependency>
   </dependencies>
 </project>

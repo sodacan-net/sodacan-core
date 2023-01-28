@@ -1,7 +1,6 @@
-# SodaCan Agent
-The SodaCan agent provides a framework around the execution of one or more  `modules`. It also is where custom or plugin code can be added to a module for specific kinds of interfaces.
+# Sodacan Agent
+The SodaCan agent provides a framework around the execution of one or more  `modules`. 
 
-An agent contains timer and clock capabilities used by modules. And, finally, it is an agent which subscribes and responds to inbound messages from the message bus. And it publishes messages at the conclusion of a "message cycle" through the runtime.
+The Sodacan agent is mostly a thin wrapper around the Sodacan runtime. It manages the top-level list of modules handled by that agent and creates the thread used by each module.
 
-The actual processing of a message is done but the <a href="../runtime/README.md">Runtime</a> component.
-
+As with other aspects of Sodacan, modules are organized by *mode* in an agent. So, it is possible that one agent is hosting the same module in tw different modes. One being completely independent from the other, including, possibly, different versions of the module in each mode.
