@@ -10,7 +10,7 @@
   	<module>agent</module>
   	<module>cli</module>
   	<module>compiler</module>
-  	<module>message</module>
+  	<module>mode</module>
   	<module>runtime</module>
   	<module>utility</module>
   	<module>webserver</module>

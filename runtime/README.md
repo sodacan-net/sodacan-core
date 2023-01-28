@@ -19,17 +19,7 @@ The runtime does no input or output. Everything that it needs to function is pas
 ### Mode and Plugins
 Sodacan maintains a mode during processing of messages. Mode is a very strong partitioning in Sodacan, and most that partitioning is enforced in this `runtime` component. In Java terms, the Mode class sits between `sodacan-core` code and the service providers that accompany the core code.
 
-As an example of the flow involving mode and a service, start with the arrival of  REST API request that needs something from a service provider plugin. In this case, the name of the mode accompanying the request is in a cookie. The REST API call is intercepted in a filter so that the behavior is the same for all requests.
-
-In the filter, a call is made to the mode object with the name of the mode. The mode object finds the mode, adds a references to the matching Mode object in thread-local storage. A thread only has one mode so a simple `Mode.getInstance()` in the runtime code gets the correct mode.
-
-The mode object, when it was created, discovers and keeps a pointer to the services needed by that mode. For example, a test `mode` might write a log entry to the console whereas a production `mode` would write the log entry to a database or monitoring system.
-
-In general, service requests usually don't pass through the mode object. Rather, the service will provide a factory (a proxy) to the runtime which in turn uses factory directly. Both the runtime should have and keep track of the mode. Why? The runtime handles any number of modes at the same time, each potentially configured with different service providers.
-
-However, a service provider can easily find itself dealing with requests for multiple modes. Sodacan architecture requires that modes don't talk to each other nor do they share I-O. But this is a grey area: Sodacan doesn't care how a service is implemented. Consider a database plugin. It could connect to a single DB server and simply partition the data by include mode in the primary key(s). But the spirit remains the same. Modes are separate from each other.
-
-Sodacan includes the mode (or it's name) in every call to the service and that the service should partition its behavior accordingly.
+The Mode project goes into detail about how modes work in Sodacan.
 
 ### Temporal Serialization
 Under normal operation, the runtime introduces a clock "tick" into the modules it maintains. This allows time-based events to occur. These ticks are interleaved with data messages based on the timestamp of the message and the time of a clock tick. 
