@@ -26,7 +26,7 @@ public class TestPlugins {
 	public void testMemoryLogger() {
 		// Do this only on time per mode. This example is small. Usually, messageBus, clock, and stateStore also also
 		// setup at this time.
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("test-memory").stateStore("test-memory").build();
+		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("memory").stateStore("memory").build();
 		
 		// This would normally be called when a thread is recently started or restarted. For example, 
 		// in a filter before processing a REST api call.
@@ -49,8 +49,8 @@ public class TestPlugins {
 		{
 		// Do this only on time per mode. This example is small. Usually, messageBus, clock, and stateStore also also
 		// setup at this time.
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("test-memory").stateStore("test-memory").build();
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode2").logger("test-memory").stateStore("test-memory").build();
+		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("memory").stateStore("memory").build();
+		/* Mode mode = */ Mode.newModeBuilder().name("Mode2").logger("memory").stateStore("memory").build();
 		
 		// This would normally be called when a thread is recently started or restarted. For example, 
 		// in a filter before processing a REST api call.
