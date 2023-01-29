@@ -115,20 +115,26 @@ public class Mode {
 	public LoggerService getLoggerService() {
 		return loggerService;
 	}
-	
-	
+		
 	/**
 	 * Find the named mode and set it in thread local storage.
 	 * Access the "current" mode using the static method getInstance()
 	 * @param modeName
 	 * @return mode
 	 */
-	public static void setupThreadMode(String modeName) {
+	public static void setModeInThread(String modeName) {
 		Mode mode = instances.get(modeName);
 		if (mode==null) {
 			throw new SodacanException("Missing mode: " + modeName);
 		}
+		if (threadMode.get()!=null) {
+			throw new SodacanException("Clear the mode in this thread before setting a another mode: " + modeName);
+		}
 		threadMode.set(mode);
+	}
+	
+	public static void clearModeInThread( ) {
+		threadMode.remove();
 	}
 	
 	/**

@@ -14,22 +14,28 @@
  */
 package net.sodacan.plugin.memory;
 
-import com.google.auto.service.AutoService;
+import java.util.Set;
 
-import net.sodacan.mode.spi.LoggerProvider;
+import net.sodacan.mode.spi.ModeProvider;
 
-/**
- * This simple logger plugin responds to mode names that begin with "test-"
- * @author John Churin
- *
- */
-@AutoService(LoggerProvider.class)
-final public class Logger extends Plugin implements LoggerProvider {
-	private int count = 0;
+public abstract class Plugin implements ModeProvider {
+	protected String mode;
 
 	@Override
-	public void log(String msg) {
-		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Msg: " + msg);
+	public boolean isMatch(Set<String> types) {
+		for (String type : types ) {
+			if (type.startsWith("test-")) {
+				return true;
+			}
+		}
+		return false;
+	}
+	public void setMode(String mode) {
+		this.mode = mode;
 	}
 
+	public String getMode() {
+		return mode;
+	}
+	
 }

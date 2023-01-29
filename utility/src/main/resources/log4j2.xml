@@ -11,7 +11,6 @@
 	<logger name="org.glassfish.jersey" level="debug"/>
 	<logger name="net.sodacan" level="DEBUG">
       <!-- <AppenderRef ref="LogAppender"/>  -->
-      <AppenderRef ref="Console"/>
 	</logger>
     <Root level="DEBUG">
       <AppenderRef ref="Console"/>

@@ -18,11 +18,16 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 
 public class LoggerService extends ModeService {
+	private final static Logger logger = LogManager.getLogger();
+
 	protected List<LoggerProvider> providers = new ArrayList<>();
 
 	public LoggerService(Mode mode) {
@@ -34,6 +39,8 @@ public class LoggerService extends ModeService {
 		for (ModeProvider provider : getLoader()) {
 			if (provider.isMatch(types)) {
 				providers.add((LoggerProvider) provider);
+				provider.setMode(getMode().getName());
+				logger.info("Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
 			}
 		}
 	}
@@ -49,7 +56,7 @@ public class LoggerService extends ModeService {
 	 */
 	public void log(String msg) {
 		for (LoggerProvider provider : getProviders()) {
-			provider.log(getMode().getName(), msg);
+			provider.log(msg);
 		}
 	}
 }

@@ -17,6 +17,7 @@ package net.sodacan.mode.spi;
 import java.util.Set;
 
 public interface ModeProvider {
+	public void setMode( String mode);
 	/**
 	* Provider must implement this method which the service will use to filter only selected providers.
 	*/

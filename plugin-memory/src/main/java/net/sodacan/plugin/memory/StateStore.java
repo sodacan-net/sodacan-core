@@ -14,22 +14,25 @@
  */
 package net.sodacan.plugin.memory;
 
-import com.google.auto.service.AutoService;
+import java.util.Set;
 
-import net.sodacan.mode.spi.LoggerProvider;
+import com.google.auto.service.AutoService;
+import net.sodacan.mode.spi.StateStoreProvider;
 
 /**
- * This simple logger plugin responds to mode names that begin with "test-"
- * @author John Churin
- *
+* This simple state store plugin is not fussy about mode, it accepts all as long as it's found on the classpath.
+ * 
  */
-@AutoService(LoggerProvider.class)
-final public class Logger extends Plugin implements LoggerProvider {
-	private int count = 0;
 
+@AutoService(StateStoreProvider.class)
+public class StateStore extends Plugin implements StateStoreProvider {
+	
+	private int count = 0;
+	
 	@Override
-	public void log(String msg) {
-		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Msg: " + msg);
+	public void save(String state) {
+		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Variable to save: " + state);
+
 	}
 
 }
