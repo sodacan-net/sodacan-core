@@ -21,11 +21,28 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
+import net.sodacan.SodacanException;
 import net.sodacan.mode.Mode;
-import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
-
+import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variables.Variables;
+/**
+ * <p>StateStore could be called Variable Store because the collection of variables for a module
+ * comprise the totality of state for that module.</p>
+ * <p>Save Variable State to all providers. Even though we're passed the entire set of variables for a module, our job is to pick
+ * through the variables and save only those that have changed. We leave behind the class structure of variables and serialize to
+ * json which in turn is what we pass to the interested plugin(s) for storage.</p>
+ * <p>When restoring state, we'll collect all variables from all plugins interested. If a plugin just wants to lurk, that's fine. 
+ * It should then return zero variables when asked to return stored variables.</p>
+ * 
+ * @author John Churin
+ *
+ */
 public class StateStoreService extends ModeService {
 	private final static Logger logger = LogManager.getLogger();
 	protected List<StateStoreProvider> providers = new ArrayList<>();
@@ -52,13 +69,32 @@ public class StateStoreService extends ModeService {
 	}
 	
 	/**
-	 * Save State to all providers
+	 * <p>Save Variable State to all providers. Even though we're passed the entire set of variables for a module, our job is to pick
+	 * through the variables and save only those that have changed. We leave behind the class structure of variables and serialize to
+	 * json which in turn is what we pass to the interested plugin(s) for storage.</p>
+	 * 
 	 * @param msg
 	 */
-	public void save(String variable) {
-		for (StateStoreProvider provider : getProviders()) {
-			provider.save(variable);
+	public void save(Variables variables) {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		for (Variable variable : variables.getListOfChangedVariables()) {
+			try {
+				String json;
+				json = mapper
+							.writerWithDefaultPrettyPrinter()
+							.writeValueAsString(variable);
+				System.out.println("Save: " + json);
+				
+				for (StateStoreProvider provider : getProviders()) {
+					provider.save(json);
+				}
+			} catch (JsonProcessingException e) {
+				throw new SodacanException("Error serializing a variable: " + variable, e);
+			}
 		}
+
 	}
 	
 }

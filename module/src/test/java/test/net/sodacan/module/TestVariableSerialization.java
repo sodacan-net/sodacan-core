@@ -38,6 +38,7 @@ import net.sodacan.module.value.ValueDeserializer;
 import net.sodacan.module.value.ValueSerializer;
 import net.sodacan.module.variable.IdentifierConstraint;
 import net.sodacan.module.variable.ModuleVariable;
+import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variables.ModuleVariables;
 /**
@@ -93,7 +94,7 @@ public class TestVariableSerialization {
 	}
 	
 	@Test
-	public void testSerialize() throws IOException {
+	public void testSerializeVariables() throws IOException {
 		ModuleVariables mvs = new ModuleVariables();
 		VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
 		mvs.addVariable(vd1);
@@ -115,6 +116,23 @@ public class TestVariableSerialization {
 		ModuleVariables mvs2 = new ModuleVariables();
 		mvs2.addAllVariables(vl2);
 		System.out.println(mvs2);
+	}
+
+	@Test
+	public void testSerializeOneVariable() throws IOException {
+		ModuleVariables mvs = new ModuleVariables();
+		VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
+		mvs.addVariable(vd1);
+		VariableDef vd2 = VariableDef.newVariableDefBuilder().name("y").alias("z").initialValue(new Value(STRING1)).build();
+		Variable v2 = mvs.addVariable(vd2);
+		// What does it look like as json?
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		String json = mapper
+				.writerWithDefaultPrettyPrinter()
+				.writeValueAsString(v2);
+		System.out.println(json);
 	}
 
 	@Test

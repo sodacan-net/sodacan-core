@@ -16,6 +16,7 @@ package net.sodacan.config;
 
 public class Producer {
 	private String url;
+	private long lingerMS;
 
 	public String getUrl() {
 		return url;
@@ -23,6 +24,14 @@ public class Producer {
 
 	public void setUrl(String url) {
 		this.url = url;
+	}
+
+	public long getLingerMS() {
+		return lingerMS;
+	}
+
+	public void setLingerMS(long lingerMS) {
+		this.lingerMS = lingerMS;
 	}
 
 }

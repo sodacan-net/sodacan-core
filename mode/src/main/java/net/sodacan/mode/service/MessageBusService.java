@@ -18,6 +18,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.MessageBusProvider;
 import net.sodacan.mode.spi.ModeProvider;
@@ -26,6 +29,7 @@ import net.sodacan.mode.spi.ModeProvider;
  *
  */
 public class MessageBusService extends ModeService {
+	private final static Logger logger = LogManager.getLogger();
 
 	public MessageBusService(Mode mode) {
 		super(mode, MessageBusProvider.class);
@@ -37,6 +41,8 @@ public class MessageBusService extends ModeService {
 		for (ModeProvider provider : getLoader()) {
 			if (provider.isMatch(types)) {
 				providers.add((MessageBusProvider) provider);
+				provider.setMode(getMode().getName());
+				logger.info("Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
 			}
 		}
 	}

@@ -28,12 +28,12 @@
 		<dependency>
 			<groupId>net.sodacan</groupId>
 			<artifactId>module</artifactId>
-			<version>0.0.1</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sodacan</groupId>
 			<artifactId>utility</artifactId>
-			<version>0.0.1</version>
+			<version>${project.parent.version}</version>
 		</dependency>
     </dependencies>
     <build>

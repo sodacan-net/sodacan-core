@@ -19,6 +19,11 @@ import org.junit.Test;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.service.LoggerService;
 import net.sodacan.mode.service.StateStoreService;
+import net.sodacan.module.value.Value;
+import net.sodacan.module.variable.ModuleVariable;
+import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variable.VariableDef;
+import net.sodacan.module.variables.ModuleVariables;
 
 public class TestPlugins {
 
@@ -39,8 +44,16 @@ public class TestPlugins {
 			ls.log("Hello: "+ x);
 		}
 		
+		ModuleVariables mvs = new ModuleVariables();
+		VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(123)).build();
+		ModuleVariable v1 = (ModuleVariable)mvs.addVariable(vd1);
+		v1.setChangedInCycle(true);
+		VariableDef vd2 = VariableDef.newVariableDefBuilder().name("y").alias("z").initialValue(new Value(456)).build();
+		ModuleVariable v2 = (ModuleVariable)mvs.addVariable(vd2);
+		v2.setChangedInCycle(true);
 		StateStoreService ss = Mode.getInstance().getStateStoreService();
-		ss.save("A Little Nothing");
+
+		ss.save(mvs);
 		Mode.clearModeInThread();
 	}
 
@@ -63,7 +76,7 @@ public class TestPlugins {
 			ls.log("Hello: "+ x);
 		}
 		StateStoreService ss = Mode.getInstance().getStateStoreService();
-		ss.save("A Little Nothing");
+//		ss.save("A Little Nothing");
 		Mode.clearModeInThread();
 		}
 		{
@@ -79,7 +92,7 @@ public class TestPlugins {
 		}
 		
 		StateStoreService ss = Mode.getInstance().getStateStoreService();
-		ss.save("A Little Nothing2");
+//		ss.save("A Little Nothing2");
 		Mode.clearModeInThread();
 		}
 	}

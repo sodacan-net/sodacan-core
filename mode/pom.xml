@@ -11,19 +11,24 @@
   <description>Mode and SPIs</description>
   <dependencies>
 		<dependency>
+			<groupId>net.sodacan</groupId>
+			<artifactId>module</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
+		<dependency>
 			<groupId>net.sodacan.mode</groupId>
 			<artifactId>mode-api</artifactId>
-			<version>0.0.1</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 			<groupId>net.sodacan</groupId>
 			<artifactId>utility</artifactId>
-			<version>0.0.1</version>
+			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
 		    <groupId>net.sodacan.plugin</groupId>
   			<artifactId>plugin-memory</artifactId>
-			<version>0.0.1</version>
+			<version>${project.parent.version}</version>
 		</dependency>
   </dependencies>
 </project>

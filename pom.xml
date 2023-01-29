@@ -19,6 +19,7 @@
   </modules>
   <packaging>pom</packaging>
       <properties>
+		<sodacan.version>0.0.1</sodacan.version>
         <antlr4.version>4.11.1</antlr4.version>
 		<jackson.version>2.14.1</jackson.version>
         <java.version>11</java.version>

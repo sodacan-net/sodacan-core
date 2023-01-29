@@ -188,6 +188,7 @@ public class ModuleVariables extends BaseVariables implements Variables {
 			}
 		}
 	}
+
 	/**
 	 * Add a variable to this collection of variables. Should be called
 	 * at the start of execution, not along the way. All variables should be 
@@ -195,13 +196,15 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	 * @param vd ValueDefinition
 	 * @param v Initial Value
 	 */
-	public void addVariable(VariableDef vd, Value v) {
+	public Variable addVariable(VariableDef vd, Value v) {
 		if (vd.getVariableType()==VariableType.subscribeVariable) {
 			SubscribeVariable sv = new SubscribeVariable(vd, v);
 			addVariable( sv );
+			return sv;
 		} else {
 			ModuleVariable mv = new ModuleVariable(vd, v);
 			addVariable( mv );
+			return mv;
 		}
 	}
 	
@@ -210,8 +213,8 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	 * @param vd
 	 * @param v
 	 */
-	public void addVariable(VariableDef vd) {
-		addVariable(vd, vd.getInitialValue());
+	public Variable addVariable(VariableDef vd) {
+		return addVariable(vd, vd.getInitialValue());
 	}
 
 	/**

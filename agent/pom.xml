@@ -3,8 +3,8 @@
   <artifactId>agent</artifactId>
   <parent>
   	<groupId>net.sodacan</groupId>
-  	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
+  	<version>0.0.1</version>
   </parent>
 
 </project>

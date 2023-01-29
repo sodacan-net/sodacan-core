@@ -18,11 +18,19 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ClockProvider;
 import net.sodacan.mode.spi.ModeProvider;
-
+/**
+ * Instances of this service provide clock services. Sodacan will 
+ * @author John Churin
+ *
+ */
 public class ClockService extends ModeService {
+	private final static Logger logger = LogManager.getLogger();
 
 	public ClockService(Mode mode) {
 		super(mode, ClockProvider.class);
@@ -35,6 +43,8 @@ public class ClockService extends ModeService {
 		for (ModeProvider provider : getLoader()) {
 			if (provider.isMatch(types)) {
 				providers.add((ClockProvider) provider);
+				provider.setMode(getMode().getName());
+				logger.info("Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
 			}
 		}
 	}
