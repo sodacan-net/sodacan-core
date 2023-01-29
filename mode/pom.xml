@@ -20,5 +20,10 @@
 			<artifactId>utility</artifactId>
 			<version>0.0.1</version>
 		</dependency>
+		<dependency>
+		    <groupId>net.sodacan.plugin</groupId>
+  			<artifactId>plugin-memory</artifactId>
+			<version>0.0.1</version>
+		</dependency>
   </dependencies>
 </project>

@@ -81,6 +81,7 @@ public class Mode {
 		this.clockService.loadProviders(clockTypes);
 		this.loggerService.loadProviders(loggerTypes);
 		this.stateStoreService.loadProviders(stateStoreTypes);
+		instances.put(mb.name, this);
 	}
 	
 	public Set<String> getMessageBusTypes() {
@@ -146,8 +147,10 @@ public class Mode {
 		return name;
 	}
 
-	public void setName(String name) {
-		this.name = name;
+
+	@Override
+	public String toString() {
+		return "Mode: " + getName();
 	}
 
 	/**

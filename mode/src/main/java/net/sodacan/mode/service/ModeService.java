@@ -37,7 +37,7 @@ import net.sodacan.mode.spi.ModeProvider;
  */
 public abstract class ModeService {
 	private Mode mode;
-	private static ServiceLoader<? extends ModeProvider> loader = null;
+	private ServiceLoader<? extends ModeProvider> loader = null;
 
 	public ModeService(Mode mode, Class<? extends ModeProvider> providerClass) {
 		this.mode = mode;
@@ -59,7 +59,7 @@ public abstract class ModeService {
 		return mode;
 	}
 
-	public static ServiceLoader<? extends ModeProvider> getLoader() {
+	public ServiceLoader<? extends ModeProvider> getLoader() {
 		return loader;
 	}
 
