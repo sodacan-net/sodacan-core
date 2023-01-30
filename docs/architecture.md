@@ -1,5 +1,5 @@
 ---
-title: Sodacan Architecture
+title: Architecture
 ---
 # Architecture
 Sodacan is designed as a collection of microservices with an infrastructure to support them. Decision-making microservices in Sodacan are called `Modules`. Microservices that interface with external systems and devices are called "Message Adapters".
