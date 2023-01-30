@@ -1,0 +1,947 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../languageGuide/">
+      
+      
+        <link rel="next" href="../operations/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.8">
+    
+    
+      
+        <title>Sodacan Control (SCC) - Sodacan</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sodacan-control-scc" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Sodacan" class="md-header__button md-logo" aria-label="Sodacan" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sodacan
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              Sodacan Control (SCC)
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Sodacan" class="md-nav__button md-logo" aria-label="Sodacan" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Sodacan
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Welcome to MkDocs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        Adapters
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        Sodacan Architecture
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer/" class="md-nav__link">
+        Developer Guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingStarted/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/" class="md-nav__link">
+        SodaCan Internals
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../languageGuide/" class="md-nav__link">
+        SodaCan Module Language Guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          Sodacan Control (SCC)
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        Sodacan Control (SCC)
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-lexical-rules" class="md-nav__link">
+    General lexical rules
+  </a>
+  
+    <nav class="md-nav" aria-label="General lexical rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#case-sensitivity" class="md-nav__link">
+    Case Sensitivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    Modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#naming" class="md-nav__link">
+    Naming
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous" class="md-nav__link">
+    Asynchronous
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topics" class="md-nav__link">
+    Topics
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statements" class="md-nav__link">
+    Statements
+  </a>
+  
+    <nav class="md-nav" aria-label="Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module-statement" class="md-nav__link">
+    Module Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-statement" class="md-nav__link">
+    Topic Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscription-statement" class="md-nav__link">
+    Subscription Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-statement" class="md-nav__link">
+    Public Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-statement" class="md-nav__link">
+    Private Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-statement" class="md-nav__link">
+    At Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-statement" class="md-nav__link">
+    On Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-statement" class="md-nav__link">
+    With Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#then-statement" class="md-nav__link">
+    Then Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-statement" class="md-nav__link">
+    When Statement
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        Operations Guide
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#general-lexical-rules" class="md-nav__link">
+    General lexical rules
+  </a>
+  
+    <nav class="md-nav" aria-label="General lexical rules">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#case-sensitivity" class="md-nav__link">
+    Case Sensitivity
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#modules" class="md-nav__link">
+    Modules
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#naming" class="md-nav__link">
+    Naming
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#asynchronous" class="md-nav__link">
+    Asynchronous
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topics" class="md-nav__link">
+    Topics
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#statements" class="md-nav__link">
+    Statements
+  </a>
+  
+    <nav class="md-nav" aria-label="Statements">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#module-statement" class="md-nav__link">
+    Module Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#topic-statement" class="md-nav__link">
+    Topic Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#subscription-statement" class="md-nav__link">
+    Subscription Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#public-statement" class="md-nav__link">
+    Public Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#private-statement" class="md-nav__link">
+    Private Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#at-statement" class="md-nav__link">
+    At Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#on-statement" class="md-nav__link">
+    On Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#with-statement" class="md-nav__link">
+    With Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#then-statement" class="md-nav__link">
+    Then Statement
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#when-statement" class="md-nav__link">
+    When Statement
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="sodacan-control-scc">Sodacan Control (SCC)</h1>
+<p>A declarative language for controlling things. 
+The goal of this language is to be concise and to the extent possible declarative. </p>
+<h2 id="general-lexical-rules">General lexical rules</h2>
+<p>The SCC language is relatively simple. In fact, it is designed to be used by non-programmers. While tabs and whitespace improve human readability, they are ignored in the language. Should more complicated logic be needed, other languages such as Java or C++ can be used.<br />
+Very few reserved words are needed for any particular statement. Each statement will be described below.</p>
+<p>SCC is line oriented with one statement per line. Therefore, line endings are significant.</p>
+<h3 id="case-sensitivity">Case Sensitivity</h3>
+<p>Key words are capitalized. User-created identifiers must be lowercase in order to avoid a possible conflict with keywords.</p>
+<p>&amp;&amp;&amp;&amp;This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
+<div class="highlight"><pre><span></span><code>    THEN
+    then
+    Then
+</code></pre></div>
+All mean the same thing. Likewise, identifiers are case insensitive
+```LOCAL myIdentifer
+   ON myIdentifier
+   ON MYIDENTIFIER
+   ON myidentifier
+<div class="highlight"><pre><span></span><code>Are equivalent.
+
+Quoted strings, of course, retain the case as specified in the string. A string literal
+</code></pre></div>
+    "Any string in a storm"
+<div class="highlight"><pre><span></span><code>### Literal values and variables
+Enumerations are the most commonly used literals used to constrain a variable. For example:
+</code></pre></div>
+    PUBLIC state {off,on}
+<div class="highlight"><pre><span></span><code>describes a variable named &#39;state&#39; and it has two possible values, `on` and `off`.
+The braces are what identify the declaration of a variable as having having enumerated values.
+
+An decimal variable is declared in either of these forms:
+</code></pre></div>
+    PUBLIC count 0
+    PUBLIC price 0.00
+<div class="highlight"><pre><span></span><code>with the `0` or `0.0` being the initial value of the variable.
+
+A boolean variable is similar to an enumeration with the possible values limited to `true` and `false`.
+</code></pre></div>
+    PUBLIC available {false,true}
+<div class="highlight"><pre><span></span><code>Date and time literals are more complicated and are covered in a separate section, below.
+
+A string literal contains any alphanumeric characters. A variable containing a string must 
+be initialized with a string literal, even if the string literal is empty:
+</code></pre></div>
+    PUBLIC myName "John"
+<div class="highlight"><pre><span></span><code>Some variables have no value whatsoever. Such a variable is still quite useful. For example, if we declare a variable named
+`bedtime`, the variable can be **activated**. In other words, &quot;it&#39;s bedtime&quot;. This causes that variable to be published as a message so that other modules can subscribe to it. Other than triggering an action, the message does not carry any other useful information.
+</code></pre></div>
+    MODULE topics
+        TOPIC myhouse.bedtime
+<div class="highlight"><pre><span></span><code>A simple button can be declared the same way:
+</code></pre></div>
+    MODULE livingRoomButton
+        PUBLIC active
+<div class="highlight"><pre><span></span><code>### Reserved Words
+The following are reserved and recognized at the beginning of a line. Elsewhere, they are allowed as identifiers:
+
+ | Word        | Description |
+ | ----------- | ----------- |
+ | MODULE      | Defines a module       |
+ | AT          | Activates when the specified time occurs        |
+ | PUBLIC | Declare a variable that will be published as its value changes.|
+ | PRIVATE | Declare a variable that is only visible within a module |
+ | ON | Activates when a variable (PUBLIC or PRIVATE) changes |
+ | SUBSCRIBE | Declares an interest in messages from outside the module|
+
+### Comments
+Comments begin with // and continue to the end of line
+```// A Comment
+    AT noon // Another comment
+    // AT midnight // This line of code is &quot;commented out&quot;
+</code></pre></div></p>
+<h3 id="modules">Modules</h3>
+<p>A module is, in essence, a way of specifying an intermediate name space. The next section covers the details of naming and scope.</p>
+<p>Unlike most other areas of the code, module names are <strong>case sensitive</strong>.</p>
+<p>The controller scans the directory or directories specified in the configuration for one or more <code>module</code> files with an extension of <code>.scc</code>. The name of the module must match the file name (not including the <code>.scc</code>). For example, if the module file is named <code>myModule.scc</code> then the module should have the name.
+<div class="highlight"><pre><span></span><code>    module myModule
+</code></pre></div></p>
+<h3 id="naming">Naming</h3>
+<p>Every item in a module has a name. For example, the <code>test</code> module has a variable named <code>level</code>. 
+<div class="highlight"><pre><span></span><code>MODULE test
+    PUBLIC level 0.0
+    ...
+</code></pre></div>
+Surrounding all of this is a domain name that names the system containing the modules. This name is used as a namespace name, not a specific bit of hardware or software. However, it can be used to name a messaging broker which does usually run on a single computer or a cluster of computer. </p>
+<table>
+<thead>
+<tr>
+<th>Scope</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>domain</td>
+<td>A server or cluster of servers</td>
+</tr>
+<tr>
+<td>module</td>
+<td>A module</td>
+</tr>
+<tr>
+<td>variable name</td>
+<td>An individual variable within a module</td>
+</tr>
+</tbody>
+</table>
+<p>The domain scope is intended to be globally unique. However, in a small setup, this requirement can be relaxed so that the domain is something simple like <code>MyHouse</code>. 
+Such a simple name would be inappropriate if, for example, two houses (properties) could communicate with each other (for example, property owner A knows if property owner B's garage door is open or not and if so to delay turning on his lawn sprinklers).</p>
+<p>The module scope means any variable contained in that module is implicitly named by the module. So, a variable such as <code>state</code> within the <code>lamp1</code> module which is part of the <code>net.sodacan.scc</code> domain has the full, globally unique, name of <code>net.sodacan.scc.lamp1.state</code>.</p>
+<p>Within the <code>lamp1</code> module, the name <code>state</code> is sufficient. And, within the <code>net.sodan.scc</code> domain, <code>lamp1.state</code> is sufficient. In fact, the domain should only be used sparingly. The system will add and remove the outer name scopes as needed. Of course if within a module you subscribe to a variable outside of your local domain, the the full name must be specified.</p>
+<div class="highlight"><pre><span></span><code>    SUBSCRIBE my.neighor.garageDoor.state {on,off}
+</code></pre></div>
+<p>Notice that the enumeration constraint is specified on the subscription above even though it is your neighbor that defines the state variable. This restatement of the constraint is used to help ensure that the module is correct during compilation even if the neighbors system is not, yet, operational.</p>
+<p>Two or more modules within the same domain, such as a lamp and the button that controls it can (and should) dispense with domain names completely.
+In the following two modules, a message <em>from</em> button1 is subscribed to by the <code>lamp1</code> module. </p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE button1.press // This subscribes to button1.press
+        PUBLIC state
+        ON button1.press
+          AND state==off
+          THEN state=on
+        ON button1.press
+          AND state==on
+          THEN state=off
+
+    MODULE button1
+        PUBLIC press
+        PRIVATE pin2
+        ON pin2==true
+          THEN activate(press)  // This publishes button1.press
+        ...
+</code></pre></div>
+<h3 id="asynchronous">Asynchronous</h3>
+<p>In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response from another module. In SodaCan, this process is reversed by using a <a href="https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern">publish-subscribe</a> approach.</p>
+<p>In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only <strong>published</strong> information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is <code>ourDomain.button1.press</code>. The <code>lamp1</code> module then <strong>subscribes</strong> to  that message. The module responds to that message in the <code>ON</code> statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. </p>
+<p>Any number of modules (including none) can subscribe to the same message and react how it sees fit. The following is a simple bedtime button setup. Any lamp participating in the bedtime event initiated by the bedtime button does something, usually to turn itself off although some could turn it on as well.</p>
+<h3 id="topics">Topics</h3>
+<p><div class="highlight"><pre><span></span><code>    MODULE bedtime
+        PUBLIC activate
+        PRIVATE pin2
+        ON pin2==true
+          THEN activate(activate)   // This publishes button1.press
+        ...
+
+    MODULE lamp1
+        SUBSCRIBE bedtime.activate  // This subscribes to button1.press
+        PUBLIC state
+        ON bedtime.activate
+          THEN state=off            // Turn off this light
+</code></pre></div>
+Now, the name of <code>bedtime</code> module is a little restrictive. It assumes that there is only one source of the bedtime message which is in the bedtime(button) module. If we had a phone app that could initiate bedtime, we would want it to generate the same message. So, to make this setup more flexible we ignore the lamp1 module name and name a neutral <code>topic</code> which will carry the message. This is what the button module looks like now:</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE bedtimeButton
+        PUBLIC activate AS bedtime
+        PRIVATE pin2
+        ON pin2==true
+          THEN activate(activate)   // This publishes bedtime
+        ... 
+</code></pre></div>
+Notice that we changed the name of the module to be more descriptive ie <code>bedtimeButton</code> and modified 
+the declaration of the activate variable to use the alias <code>AS bedtime.activate</code>.</p>
+<p>It is important to point out a restriction in this setup: when a public variable uses the <code>AS</code> clause, 
+it could, in theory, spoof another module. Or, it could name a topic that has not been defined. 
+To prevent this from happening, a simple check is made that prevents an alias from naming an 
+existing module other than itself. In the above example, there should be no module named 'bedtime' and there isn't 
+but how can we be sure that <code>bedtime</code> is reserved so that a future module doesn't use that name?</p>
+<p>Reserve the name (<code>bedtime</code> in this case) using a <strong>TOPIC</strong> definition. A topic is a channel for messages to
+be exchanged. Each <code>PUBLIC</code> variable defines a topic and each <code>SUBSCRIBE</code> statement subscribes to a topic.
+This new topic, <code>bedtime</code>, is defined explicitly in a <code>TOPIC</code> declaration. In most respects, it is the same as a <code>PUBLIC</code>
+declaration. The main difference is that the name of a topic does not include the name of the module. By convention,
+a module that declares one or more topics should not contain any other type of statement.</p>
+<div class="highlight"><pre><span></span><code>    MODULE topics
+        TOPIC bedtime.activate
+        TOPIC ...
+</code></pre></div>
+<p>When a variable is published or subscribed to, SCC can validate that the name is contained in either a module name or a topic name.</p>
+<h2 id="statements">Statements</h2>
+<p>One statement per line. Empty lines are ignored.</p>
+<table>
+<thead>
+<tr>
+<th>Statement</th>
+<th>Parent Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="#Module-Statement">module</a></td>
+<td>-</td>
+</tr>
+<tr>
+<td><a href="#Topic-Statement">topic</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#Subscription-Statement">subscription</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#Private-Statement">private</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#Public-Statement">public</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#At-Statement">at</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#An-Statement">on</a></td>
+<td>module</td>
+</tr>
+<tr>
+<td><a href="#With-Statement">with</a></td>
+<td>at,on</td>
+</tr>
+<tr>
+<td><a href="#Then-Statement">then</a></td>
+<td>at,on</td>
+</tr>
+</tbody>
+</table>
+<h3 id="module-statement">Module Statement</h3>
+<p>Module...</p>
+<h3 id="topic-statement">Topic Statement</h3>
+<p>A topic</p>
+<h3 id="subscription-statement">Subscription Statement</h3>
+<p>A subscription declares an interest in a particular type of message. "When you send it, I want to receive it."</p>
+<h3 id="public-statement">Public Statement</h3>
+<p>A public variable will automatically be published when it changes.</p>
+<h3 id="private-statement">Private Statement</h3>
+<p>A private variable is...</p>
+<h3 id="at-statement">At Statement</h3>
+<p>With the passage of time, the <code>AT</code> statement determines if it is interested in the current time (now). For example,
+<div class="highlight"><pre><span></span><code>    AT Noon
+        THEN ...
+</code></pre></div>
+means that at noon on any particular day, something should happen. In other words, the attached <code>THEN</code> will be executed.</p>
+<h3 id="on-statement">On Statement</h3>
+<p>The <code>ON</code> statement reacts a specific message that the module subscribed to.
+<div class="highlight"><pre><span></span><code>    ON bedtime
+      THEN ...
+</code></pre></div></p>
+<h3 id="with-statement">With Statement</h3>
+<h3 id="then-statement">Then Statement</h3>
+<h3 id="when-statement">When Statement</h3>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>

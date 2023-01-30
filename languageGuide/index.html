@@ -1,0 +1,1197 @@
+
+<!doctype html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      
+      
+      
+      
+        <link rel="prev" href="../internals/">
+      
+      
+        <link rel="next" href="../languageReference/">
+      
+      <link rel="icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-1.4.2, mkdocs-material-9.0.8">
+    
+    
+      
+        <title>SodaCan Module Language Guide - Sodacan</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/main.0d440cfe.min.css">
+      
+        
+        <link rel="stylesheet" href="../assets/stylesheets/palette.2505c338.min.css">
+      
+      
+
+    
+    
+    
+      
+        
+        
+        <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,300i,400,400i,700,700i%7CRoboto+Mono:400,400i,700,700i&display=fallback">
+        <style>:root{--md-text-font:"Roboto";--md-code-font:"Roboto Mono"}</style>
+      
+    
+    
+    <script>__md_scope=new URL("..",location),__md_hash=e=>[...e].reduce((e,_)=>(e<<5)-e+_.charCodeAt(0),0),__md_get=(e,_=localStorage,t=__md_scope)=>JSON.parse(_.getItem(t.pathname+"."+e)),__md_set=(e,_,t=localStorage,a=__md_scope)=>{try{t.setItem(a.pathname+"."+e,JSON.stringify(_))}catch(e){}}</script>
+    
+      
+
+    
+    
+    
+  </head>
+  
+  
+    
+    
+    
+    
+    
+    <body dir="ltr" data-md-color-scheme="default" data-md-color-primary="" data-md-color-accent="">
+  
+    
+    
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="__drawer" autocomplete="off">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="__search" autocomplete="off">
+    <label class="md-overlay" for="__drawer"></label>
+    <div data-md-component="skip">
+      
+        
+        <a href="#sodacan-module-language-guide" class="md-skip">
+          Skip to content
+        </a>
+      
+    </div>
+    <div data-md-component="announce">
+      
+    </div>
+    
+    
+      
+
+<header class="md-header" data-md-component="header">
+  <nav class="md-header__inner md-grid" aria-label="Header">
+    <a href=".." title="Sodacan" class="md-header__button md-logo" aria-label="Sodacan" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    <label class="md-header__button md-icon" for="__drawer">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M3 6h18v2H3V6m0 5h18v2H3v-2m0 5h18v2H3v-2Z"/></svg>
+    </label>
+    <div class="md-header__title" data-md-component="header-title">
+      <div class="md-header__ellipsis">
+        <div class="md-header__topic">
+          <span class="md-ellipsis">
+            Sodacan
+          </span>
+        </div>
+        <div class="md-header__topic" data-md-component="header-topic">
+          <span class="md-ellipsis">
+            
+              SodaCan Module Language Guide
+            
+          </span>
+        </div>
+      </div>
+    </div>
+    
+    
+    
+      <label class="md-header__button md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+      </label>
+      <div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="__search"></label>
+  <div class="md-search__inner" role="search">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" aria-label="Search" placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="search-query" required>
+      <label class="md-search__icon md-icon" for="__search">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M9.5 3A6.5 6.5 0 0 1 16 9.5c0 1.61-.59 3.09-1.56 4.23l.27.27h.79l5 5-1.5 1.5-5-5v-.79l-.27-.27A6.516 6.516 0 0 1 9.5 16 6.5 6.5 0 0 1 3 9.5 6.5 6.5 0 0 1 9.5 3m0 2C7 5 5 7 5 9.5S7 14 9.5 14 14 12 14 9.5 12 5 9.5 5Z"/></svg>
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M20 11v2H8l5.5 5.5-1.42 1.42L4.16 12l7.92-7.92L13.5 5.5 8 11h12Z"/></svg>
+      </label>
+      <nav class="md-search__options" aria-label="Search">
+        
+        <button type="reset" class="md-search__icon md-icon" title="Clear" aria-label="Clear" tabindex="-1">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 6.41 17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12 19 6.41Z"/></svg>
+        </button>
+      </nav>
+      
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="search-result">
+          <div class="md-search-result__meta">
+            Initializing search
+          </div>
+          <ol class="md-search-result__list" role="presentation"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+    
+    
+  </nav>
+  
+</header>
+    
+    <div class="md-container" data-md-component="container">
+      
+      
+        
+          
+        
+      
+      <main class="md-main" data-md-component="main">
+        <div class="md-main__inner md-grid">
+          
+            
+              
+              <div class="md-sidebar md-sidebar--primary" data-md-component="sidebar" data-md-type="navigation" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+
+<nav class="md-nav md-nav--primary" aria-label="Navigation" data-md-level="0">
+  <label class="md-nav__title" for="__drawer">
+    <a href=".." title="Sodacan" class="md-nav__button md-logo" aria-label="Sodacan" data-md-component="logo">
+      
+  
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 8a3 3 0 0 0 3-3 3 3 0 0 0-3-3 3 3 0 0 0-3 3 3 3 0 0 0 3 3m0 3.54C9.64 9.35 6.5 8 3 8v11c3.5 0 6.64 1.35 9 3.54 2.36-2.19 5.5-3.54 9-3.54V8c-3.5 0-6.64 1.35-9 3.54Z"/></svg>
+
+    </a>
+    Sodacan
+  </label>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href=".." class="md-nav__link">
+        Welcome to MkDocs
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../adapters/" class="md-nav__link">
+        Adapters
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../architecture/" class="md-nav__link">
+        Sodacan Architecture
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../developer/" class="md-nav__link">
+        Developer Guide
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../gettingStarted/" class="md-nav__link">
+        Getting Started
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../internals/" class="md-nav__link">
+        SodaCan Internals
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+    
+  
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          SodaCan Module Language Guide
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
+        SodaCan Module Language Guide
+      </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#topics-and-variables" class="md-nav__link">
+    Topics and Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-behavior" class="md-nav__link">
+    Module behavior
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance" class="md-nav__link">
+    Module Instance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-time" class="md-nav__link">
+    Module Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance-time" class="md-nav__link">
+    Module Instance Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-timers" class="md-nav__link">
+    Module Timers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-processing-cycle" class="md-nav__link">
+    Module Processing Cycle
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance-topic-persistence" class="md-nav__link">
+    Module Instance Topic Persistence
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-variable-duality" class="md-nav__link">
+    Message-Variable Duality
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instantiation" class="md-nav__link">
+    Module Instantiation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapters" class="md-nav__link">
+    Adapters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-persistence" class="md-nav__link">
+    Message Persistence
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-messages" class="md-nav__link">
+    System Messages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#special-variables" class="md-nav__link">
+    Special Variables
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../languageReference/" class="md-nav__link">
+        Sodacan Control (SCC)
+      </a>
+    </li>
+  
+
+    
+      
+      
+      
+
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="../operations/" class="md-nav__link">
+        Operations Guide
+      </a>
+    </li>
+  
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="sidebar" data-md-type="toc" >
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#topics-and-variables" class="md-nav__link">
+    Topics and Variables
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-behavior" class="md-nav__link">
+    Module behavior
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance" class="md-nav__link">
+    Module Instance
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-time" class="md-nav__link">
+    Module Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance-time" class="md-nav__link">
+    Module Instance Time
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-timers" class="md-nav__link">
+    Module Timers
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-processing-cycle" class="md-nav__link">
+    Module Processing Cycle
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instance-topic-persistence" class="md-nav__link">
+    Module Instance Topic Persistence
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-variable-duality" class="md-nav__link">
+    Message-Variable Duality
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#module-instantiation" class="md-nav__link">
+    Module Instantiation
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#adapters" class="md-nav__link">
+    Adapters
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#message-persistence" class="md-nav__link">
+    Message Persistence
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#system-messages" class="md-nav__link">
+    System Messages
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#special-variables" class="md-nav__link">
+    Special Variables
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          
+            <div class="md-content" data-md-component="content">
+              <article class="md-content__inner md-typeset">
+                
+                  
+
+
+
+<h1 id="sodacan-module-language-guide">SodaCan Module Language Guide</h1>
+<h3 id="topics-and-variables">Topics and Variables</h3>
+<p>In SodaCan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variaable*carried by messages in a topic must be defined as well. </p>
+<p>A topic defines a schema (or format) of messages for a specific purpose. You can think of a topic as a channel for information flow of similarly formatted messages. Once defined, a topic usually lasts forever, or until manually deleted.</p>
+<p>In a simple configuration topics can be created close to where they are commonly published. </p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp1Control
+        PUBLISH livingRoom.lamp1 {off,on} AS lamp1
+
+        ...
+            THEN lamp1=on
+</code></pre></div>
+<p>In the example above, the topic <code>livingRoom</code> and its one variable <code>lamp1</code> are created automatically with the declaration of the <code>PUBLISH</code> variable. The module is then free to publish to that topic immediately as shown in the example. In this case, <code>lamp1.on</code> causes the on value to be published.</p>
+<p>But this approach is somewhat restrictive because one module seems to own the topic even though the topic in fact is defined globally. </p>
+<p>We can make this much tidier if we create a separate module that defines all or at least some of the topics and variables needed. Nothing else changes in either the producer or consumer. However, a neutral module can be thought of at the owner of the declaration thus allowing the other modules to come and go.</p>
+<div class="highlight"><pre><span></span><code>    MODULE livingRoomVariables
+        PUBLISH livingRoom.lamp1 {off,on}
+        // No other logic in this module
+</code></pre></div>
+<p>In the above, "livingRoom" is the topic and "lamp1" is a variable that will be exchanged via this topic. The <code>{off,on}</code> syntax means that the variable will hold an enumerated value of either "on" or "off". </p>
+<blockquote>
+<p>Syntactic Sugar: SodaCan blurs the lines between string literals and identifiers. For example, no quotes are needed in the list of possible values of an enumerated variable. Likewise, the identifier expression <code>variable.value</code> is a shortcut. In <code>ON</code> and <code>WHEN</code> statements, it means the same as <code>variable == "value"</code> (true if variable equals the value). In a <code>THEN</code> statement, it means the same as <code>variable = "value"</code> (assign "value" to variable). </p>
+</blockquote>
+<p>Next, we define a module that produces a message in this topic. In this case, the message is conveying the state of lamp1 as "on" in a message to the named topic.</p>
+<div class="highlight"><pre><span></span><code>    MODULE button23
+        PUBLISH livingRoom.lamp1 {on,off} AS lamp
+        ...
+        ON &lt;some condition&gt;
+            THEN lamp=on
+</code></pre></div>
+<p>And, a consumer module interested in this kind of message:</p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE livingRoom.lamp1 AS lamp
+        ON lamp
+        AND lamp==on
+            THEN &lt;do something&gt;
+</code></pre></div>
+<p>A <code>PUBLISH</code> declaration has behavior in addition to defining a topic and variable. When the module changes the value of a PUBLISH variable, that variable will be automatically published at the end of the cycle.</p>
+<p>A <code>SUBSCRIBE</code> variable will automatically subscribe to messages with that topic and variable. When a message arrives, the value of that variable will be stored in the module. Then, any <code>ON</code> statements matching that variable will be executed.</p>
+<p>Declaring both a publish and subscribe for the same variable will cause a compile error.</p>
+<p>You don't have to be specific about the contents of the message. Here's an example of an event called bedtime. It has no value component. So the ON statement can be equally brief:</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE bedtime
+        ...
+        ON bedtime
+            THEN &lt;do something&gt;
+</code></pre></div>
+When constraints are specified on a SUBSCRIBE statement, it provides a bit more clarity about the nature of the incoming message but it also provides some shortcuts that are useful in subsequent statements. </p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE livingRoom.lamp1 {on,off} AS lamp
+        ON lamp.on
+            THEN &lt;do something&gt;
+        ON lamp.off
+            THEN &lt;do something else&gt;
+</code></pre></div>
+In this example, <code>ON lamp.on</code> and <code>ON lamp.off</code> mean the same thing as</p>
+<p><div class="highlight"><pre><span></span><code>    ON lamp
+        AND lamp==on
+</code></pre></div>
+that was used in the first SUBSCRIBE example above. The SUBSCRIBE </p>
+<h3 id="module-behavior">Module behavior</h3>
+<p>A module waits quietly for either the passage of time or a message to arrive. If two or more messages arrive at the same time, one is chosen to go first. At that point, the list of <code>AT</code> (in the case of the passage of time) or <code>ON</code> (the arrival of a message) statements is considered, one at a time, in the order which they are declared, until one <em>matches</em>. The <code>THEN</code> statement(s) of the corresponding <code>ON</code> or <code>AT</code> is then executed. At that point, no further checks are made of the <code>AT</code>s and <code>ON</code>s. Each message or passage of time that is processed by a module is called a <code>cycle</code>.</p>
+<p>Processing then continues to the <code>WHEN</code> statements. These <code>WHEN</code> statements are not tied to any message in particular but they do react to changes made from the <code>THEN</code>s executed above. <code>WHEN</code> statements are optional but can greatly improve the maintainability of a module. First, a bad example, without using a <code>WHEN</code>:</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE mode {off,auto,on}    
+        SUBSCRIBE event {toggle}
+        PUBLISH state {on,off}
+        AT midnight ON Fridays   // If it&#39;s midnight Friday
+          AND mode==auto        // And auto mode is on
+          THEN state=on             // set the lamp state to on
+    -&gt;    THEN log(&quot;Lamp is on&quot;)    // Say so
+        AT sunset ON Thursdays   // If it&#39;s sunset on Thursdays
+          AND mode==auto        // and in auto mode
+          THEN state=on             // set lamp state to on
+    -&gt;    THEN log(&quot;Lamp is on&quot;)    // Say so
+</code></pre></div>
+The "lamp is on" message is duplicated in the example above. </p>
+<p>We can fix this problem by using a <code>WHEN</code>in the example below. It will send a message regardless of which condition caused the state variable to change.</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp1
+        SUBSCRIBE mode {off,auto,on}    
+        SUBSCRIBE event {toggle}
+        PUBLISH state {on,off}
+        AT midnight ON Fridays   // If it&#39;s midnight Friday
+          AND mode==auto        // And auto mode is on
+          THEN state=on             // set the lamp state to on
+        AT sunset ON Thursdays   // If it&#39;s sunset on Thursdays
+          AND mode==auto        // and in auto mode
+          THEN state=on             // set lamp state to on
+    -&gt;  WHEN state==on              // If state is on
+          THEN log(&quot;Lamp is on&quot;)    // say so.
+</code></pre></div>
+A <code>WHEN</code> only executes when the stated variable changes during a cycle. In the example above, if the state variable was already <code>on</code> then the <code>WHEN</code> statement will have no effect.</p>
+<p>The passage of time may not trigger any <code>ON</code> statements. That's normal. However, for messages, if no matching <code>ON</code> statement is found, then an error is thrown. Why? When a <code>module</code> subscribes to a particular topic, it declares its intent to deal with that message. If that doesn't happen, there's a problem: Either the <code>SUBSCRIBE</code> is wrong or the <code>ON</code>s are wrong or missing. </p>
+<h3 id="module-instance">Module Instance</h3>
+<p>The examples so far are typically called lamp1, lamp2, etc. suggesting that a different module definition is needed for each device, even if the behavior of all of the devices so numbered are identical. An alternate is to define a module with instances. That is simple enough. Here is an example:</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp[location]
+        SUBSCRIBE mode[location] {off,auto,on}  
+        ...
+</code></pre></div>
+One module definition that handles all devices of a certain type.</p>
+<p>In this example, we made the following changes:</p>
+<ol>
+<li>Change the name of the module to <code>lamp</code> (this just looks cleaner, SodaCan doesn't care what you call a module as long as it is unique),</li>
+<li>Add the square brackets on the module line. This indicates that the module supports multiple instances. </li>
+<li>The name of a variable in the square brackets will be used to differentiate between different instances. </li>
+<li>It also means that messages we want to subscribe to must specify the location.  For example, another module that represents an individual button will need to publish a message that contains the location in addition to naming the variable to publish.</li>
+</ol>
+<p>Here is an over-simplified example of an individual button that is not an instance-based module. But you'll see that when it is ready to publish an event, the message will specify the location. In this case, "hallway".</p>
+<div class="highlight"><pre><span></span><code>    MODULE button3                  // A specific button
+        PUBLISH mode[location] {off,auto,on}
+        ...
+            THEN mode[&quot;hallway&quot;]=auto
+</code></pre></div>
+<p>If a module can be useful for many different devices but the behavior of each device is the same, then rather than making copies of the module with a slight name change, the module can be written to have module instances.<br />
+When a module has instances, a mechanism is needed to create and keep track of such instances. Here is an example of a module that has instances. In this case, location is what differentiates each instance. And you'll notice that the <code>SUBSCRIBE</code> statement shown is qualified by the name of the instance. In other words, that subscription will listen for messages by location (with a variable name of <code>event</code>.</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp[location]
+        SUBSCRIBE event[location] {toggle}
+        ...
+        ON event==toggle
+        ...
+</code></pre></div>
+Instance creation is done by the command-line interface, the SodacanAPI or the browser-based control panel. You cannot create an instance from a module.
+However, the creation process, as usual, is done via message and we can be notified after the new instance is created:
+For that, you simply subscribe to the instance event. In this case, named "location". This event is sent to the module itself, not an instance.</p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp[location]
+        SUBSCRIBE state[location] {off,on}
+        SUBSCRIBE location  // Respond to a new instance being created
+        ...
+        ON event==toggle
+        ...
+        ON location         // Respond to a new instance being created
+            THEN state=off
+            THEN print(location)
+</code></pre></div>
+<p>Now, a module can also keep and publish variables and messages module-wide. Think of the module as having a special instance that represents the whole module (A 'static' variable in some languages). But there's a problem: SodaCan never allows peeking into another module which means no peeking into another instance. To solve this problem, we simply send a hidden message from one instance to another including from the top-level instance to it's instances. This is all handled transaparently.</p>
+<p>Why so strict even in this situation? Because all instances of one module, including the top-level module, don't necessarily run in the same agent and maybe not even the same server. </p>
+<p>This approach works great when the top-level module makes a change that needs to be propagated to the children. 
+However, children to parent is not so obvious. Basically, this should be avoided unless the purpose is to collect statistics such as a count. From an instance, in the following. When the 'count` variable is modified, it is broadcast, as usual. </p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp[location]
+        SUBSCRIBE state[location] {off,on}
+        SUBSCRIBE new.location    // Respond to a new instance being created
+        PUBLISH count 0           // published by the top-level module
+        SUBSCRIBE count[location]  // received by each instance
+        ON new.location
+            THEN count++
+        ...
+</code></pre></div>
+<h3 id="module-time">Module Time</h3>
+<p>Detecting the passage of time is often important for automation problems. Within a module, the <code>AT</code> statement demonstrates the need for time based events, however, the infrastructure has the responsibility to interpret the requirements specified in a module and respond accordingly. And do it efficiently. One particularly complex aspect is being able to reproduce the passage of time in the future. In other words, we need to be able to look back in time and see that an <code>AT</code> event was actually triggered. 
+Conceptually, it looks like this (but don't try this at home). The lines with * are imaginary.</p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp
+        *PUBLISH AtNoonOnFridays
+        ...
+        AT noon ON Fridays // Raise an event at noon on Fridays
+            *THEN activate(AtNoonOnFridays)
+            THEN ... what happens at noon on Fridays
+        *ON AtNoonOnFridays
+            *THEN ... what happens at noon on Fridays
+</code></pre></div>
+<p>Here's how this works in Sodacan: Unlike <code>ON</code> statements, which respond to explicit messages, <code>AT</code>statements are simply watching a clock looking for a match. To make these time-based events auditable and reproducible, the <code>AT</code> statements do watch the clock, but when one matches, it doesn't take action directly. Rather, a special message is sent to the module (itself) which then reacts as if it were an <code>ON</code> statement (This special message is invisible to the module author).</p>
+<ol>
+<li>"AT noon ON Fridays" matches the current time (it <em>is</em> noon and it <em>is</em> a Friday). </li>
+<li>The agent running the module constructs and sends a special message with the id of the matching <code>AT</code> statement. </li>
+<li>The special message is then processed as usual a moment later. Should the module currently be busy with a different message, then the special message will be processes after that one is done. At this point, <code>ON</code> message flow and <code>AT</code> message flow have been synchronized.</li>
+<li>When the special message is processed but the module, the <code>THEN</code> statement of the corresponding <code>AT</code> is executed. If there is a <code>WHEN</code> statement as part of the <code>AT</code> statement, it is also evaluated and may result in the special message being ignored.</li>
+<li>At this point, the module can go back to listening for new messages.</li>
+</ol>
+<p>Then, when needed, there is a complete audit trail in the message stream including hard <code>ON</code> events and timed <code>AT</code> events in the order in which they were processed.</p>
+<blockquote>
+<p>Race Condition (not a bug): The special message originates from an instance of the module which may be different from the instance of the module when the special message is processed, due to an intervening update to the module. The time gap is very small and their are most likely no ill effects with one exception: If updating a module results in a deletion of the AT statement, then the special message has nothing to match and will simply be dropped. It would be nice to insure that the special message could synchronously get in front of the queue, but that's not how message serialization works.</p>
+</blockquote>
+<h3 id="module-instance-time">Module Instance Time</h3>
+<p>A slight complication in modules involves <code>AT</code> statements. If a module is declared as having an instance key and one ore more <code>AT</code> statements, such as:</p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp[location]
+        ...
+        AT noon ON fridays
+            THEN ...
+</code></pre></div>
+<p>that means that there is actually one module per instance. And that means that if a time event is triggered, it will be sent to each "instance" of the module. And that may be exactly what is desired. For example, at the time of the time event, the special message is sent to all known instances <strong>at that time</strong>. Looking back in time, it will be obvious that a newly added instance would not have received the special message.</p>
+<h3 id="module-timers">Module Timers</h3>
+<p>A timer is used when an action is to be taken in the future. And in many cases, one should be able to cancel or reset the timer. Here's an example:</p>
+<div class="highlight"><pre><span></span><code>    MODULE lamp1
+        ...
+        SUBSCRIBE state {off, on}
+        SUBSCRIBE livingRoom.motion AS motion
+        TIMER offTimer 30 minutes
+        ...
+        ON offTimer                 // If we get a message from the offTimer
+            THEN state=off              // Turn the light off
+        ON state==on                    // When state becomes on    
+            THEN offTimer=start         // Set a timer to turn it off
+        ON motion                       // On motion, reset the timer
+            THEN offTimer=reset
+        WHEN state==off                 // When lamp1 goes off, time is no longer needed
+            THEN offTimer=cancel
+</code></pre></div>
+<p>This example is simplified but it does explain the basic timer mechanism.</p>
+<p>What is actually happening? The <code>ON state.on</code> is saying: When the state variable transitions to  <code>on</code>, do the <code>THEN</code> statement that follows it.
+The <code>THEN</code> statement says to publish the <code>offTimer</code> message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer that will send a message to the module (itself) which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an <code>ON state.on</code> that picks it up and its <code>THEN</code> says to set the <code>state</code> to <code>off</code>.</p>
+<blockquote>
+<p>You'll notice a subtlety in the module compiler: the keyword <code>ON</code> begins a statement but it is no longer a keyword <em>within</em> the statement so you are free to use a state name such as <code>on</code> without conflict.  </p>
+</blockquote>
+<p>Because this timer publishes a real message, some other module could also subscribe to the message and take some unrelated action to the offTimer message goes off (separate from the state.off and .on messages). This message also joins the other messages in the topic which forms the historical audit log and maintains the sequential nature of message processing (no side effects).</p>
+<blockquote>
+<p>If for any reason the state is already "off" when the <code>OffTimer</code> message is processed, then the <code>state.off</code> action has no effect. If the state does transition to off, then any <code>WHEN</code>s in the module that react to that state change will trigger as usual.</p>
+</blockquote>
+<h3 id="module-processing-cycle">Module Processing Cycle</h3>
+<p><code>ON</code> and <code>WHEN</code> statements may seem to work the same way. While it is true that the contents of the statement can look the same, the behavior is very different. During a processing cycle, the first 'AT' to match a change in the module state "wins" and all other <code>AT</code>s are ignored for that cycle. Conversely, <em>all</em> of the <code>WHEN</code>s that <em>match</em> during that same cycle are executed. </p>
+<blockquote>
+<p>In a procedural language, the <code>ON</code>s are like a series of <code>IF THEN ELSE</code> statements and the <code>WHEN</code>s are like a series of <code>IF THEN</code> statements following the <code>IF THEN ELSE</code> statements.</p>
+</blockquote>
+<h3 id="module-instance-topic-persistence">Module Instance Topic Persistence</h3>
+<p>How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list of topics. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:</p>
+<table>
+<thead>
+<tr>
+<th>Key Component</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>instance</td>
+<td>The instance key (for example, location of a light switch)</td>
+</tr>
+</tbody>
+</table>
+<p>This approach is very efficient and does not cause any concurrency issues. </p>
+<h3 id="message-variable-duality">Message-Variable Duality</h3>
+<p>In SodaCan, a variable defined in a module can be the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.</p>
+<p><div class="highlight"><pre><span></span><code>MODULE lamp1
+    SUBSCRIBE switch1.state {on,off}
+    ...
+    ON switch1.state==on
+        THEN ...
+</code></pre></div>
+Behind the scenes, SodaCan consumes a message and makes a note that its value has changed. In that case, it signals an event which the <code>ON</code> statements in the module will react to. </p>
+<p>The publishing side is similar. A <code>PUBLISH</code> variable is a message-in-waiting. Once a processing cycle is completed, <code>PUBLISH</code> variables that have been modified will be published.</p>
+<div class="highlight"><pre><span></span><code>MODULE switch1
+    PUBLISH state {on,off}
+    ...
+    ON ...
+        THEN state==on      // Set the state to on
+</code></pre></div>
+<p>In the background, the SodaCan agent monitors each <code>PUBLISH</code> variable and, if any changes are made to it by any of the module's <code>THEN</code> statements, a message will be published containing that variable. In this example, <code>state</code> is the variable so the message will be published as <code>switch1.state</code> with a value of <code>on</code>.</p>
+<blockquote>
+<p>Semantics: You cannot <code>SUBSCRIBE</code> and <code>PUBLISH</code> the same variable. </p>
+</blockquote>
+<p>The message causing the current value of a variable remains with the variable. This makes it easy to access meta-information such as when the message was sent:</p>
+<p><div class="highlight"><pre><span></span><code>MODULE lamp1
+    SUBSCRIBE switch1.state {on,off}
+    ...
+    ON switch1.state==on
+        *THEN system.log#info = switch1.state#timestamp
+</code></pre></div>
+*which says: "send the timestamp of the message that populated <code>switch1.state</code> to the system log".</p>
+<h3 id="module-instantiation">Module Instantiation</h3>
+<p>In simple configurations, there may only be a single instance of each type of module. One living room lamp, one living room light switch, etc. In this case, messages will have an empty <code>key</code> attribute.  Other modules can be configured to handle a class of devices. For example, an organization might have a single lighting configuration which is used in all (or most) locations. Each office, for example, could behave the same but independent of other offices. In this case, the `'key' attribute of a message will contain the office (or location) name. Not much changes when a module is representing a class of devices rather than a single device. The module name would normally change. Instead of</p>
+<div class="highlight"><pre><span></span><code>    MODULE JoesOfficeLight
+</code></pre></div>
+<p>a more appropriate module name in this case will be</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE OficeLight[location]
+</code></pre></div>
+which says there is a single office light <em>class</em> of module but that a separate <em>instances</em> of the module are created for each location.
+Of course in this case we also need to make sure our variables are separated by location. </p>
+<p><div class="highlight"><pre><span></span><code>    MODULE OficeLight[location]
+        PUBLISH state[location] {on,off}
+</code></pre></div>
+which tells SodaCan that the <code>state</code> variable is separate for each location.</p>
+<p>While the state variable (and consequently messages) are per-location, we might need other variables that apply to the entire class. Consider a company that has a policy of putting all lights into auto mode at a certain time of day requiring motion detecting for the light to remain on. That time is set company-wide. In this case we would like to send a single message to the "OfficeLight" module with the time all offices should go into auto mode. </p>
+<p><div class="highlight"><pre><span></span><code>    MODULE OficeLight[location]
+        SUBSCRIBE autoModeOnTime 00:00
+        PUBLISH state[location] {on,off}
+</code></pre></div>
+Notice that the <code>autoModeOnTime</code> variable has no key associated with it. A subsequent <code>AT statement</code> will refer to <code>autoModeOnTime</code>, without a key qualifier.</p>
+<div class="highlight"><pre><span></span><code>    MODULE OficeLight[location]
+        SUBSCRIBE autoModeOnTime 00:00
+        PUBLISH mode[location] {auto,manual}
+        PUBLISH state[location] {on,off}
+        AT autoModeOnTime
+            THEN mode[location]=auto
+        ...
+</code></pre></div>
+<h3 id="adapters">Adapters</h3>
+<p>A SodaCan adapter is an end node in a SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can also be both a consumer and producer at the same time. 
+The following is a very simple interaction between a lamp and a button and a module that controls the behavior of the lamp (on or off). A real-world example would likely have additional capabilities but we keep it simple here:</p>
+<p><pre class="mermaid"><code>sequenceDiagram
+    buttonAdapter-&gt;&gt;messageBus: button.press
+    messageBus-&gt;&gt;lampModule: button.press
+    lampModule-&gt;&gt;messageBus: lamp=on
+    messageBus-&gt;&gt;lampAdapter: lamp=on
+</code></pre>
+Flow of control:
+1. <code>buttonAdapter</code> running on a microcontroller such as a Raspberry PI, monitors a <em>digital in</em> pin and when it goes positive (ignoring debounce logic), a message is published to the SodaCan <code>messageBus</code>.
+2. The message is delivered to the <code>lampModule</code> which has subscribed to this type of message.
+3. The <code>lampModule</code> determines if the button press is and off or on transition (it keeps track of the state of the lamp).
+When the state of the lamp in the <code>lampModule</code> changes, another message containing the new state is published to the <code>messageBus</code>.
+4. The <code>lampAdapter</code>, running on a microcontroller subscribes to lamp's state message and upon receipt of this message sets a digital output pin high or low depending on the content of the message.</p>
+<p>If there is no need for logic in the lampModule, then it can be eliminated and the message published by the button read directly by the adapter module, like this:</p>
+<pre class="mermaid"><code>sequenceDiagram
+    buttonAdapter-&gt;&gt;messageBus: lamp=on
+    messageBus-&gt;&gt;lampAdapter: lamp=on
+</code></pre>
+<p>Technically, an adapter is really just another module that has a bit of low-level code attached to it. It is also may be tied to a specific host if necessary. The low-level code (C, Java, etc) handles the details of device access: DIGITAL IN, OUT, SPI, D-A, A-D, etc. It also can do database IO or whatever else one can imagine. In the example below, the adapter module waits for a message about the state of the <code>lamp</code>. As usual, the <code>ON</code> detects the message, updates the variable with the new value and <code>THEN</code> makes a function call:</p>
+<p><div class="highlight"><pre><span></span><code>    MODULE lamp3
+        SUBSCRIBE livingRoom.lamp AS lamp
+        EXTERNAL someFunction
+        ON lamp
+            THEN someFunction
+</code></pre></div>
+The function in the custom code attached to the module can then access any variables in the module. When the <code>someFunction</code> function call returns, the cycle is complete. The module then waits for the next message.</p>
+<h3 id="message-persistence">Message Persistence</h3>
+<p>When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned and stored (persisted) by the message bus. 
+There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that <em>might</em> consume a particular type of message 
+may not exist yet. If resources were infinite, there is no reason SodaCan would need to recover space used by any messages.
+The messages within a topic can come and go. Indeed, most topics define the lifetime of messages contained within that topic.</p>
+<p>Consider, for example, that we want to add a new module to an existing configuration that reports on the average number of uses of a certain button per month. In a traditional system, the data could be a challenge to create. Historical data may not even exist. But in SodaCan, the data already exists in the topic that was used to get the button press notification to the lamp that is controlled by that button press. (Just because the message was <em>consumed</em> by one module does not mean that the message will be discarded). So, the new reporting module simply subscribes to that same topic and it will get all of the messages from the past in chronological order.</p>
+<p>Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.</p>
+<h3 id="system-messages">System Messages</h3>
+<p>The messaging system is also used for administrative and operational purposes. Any agent running a module or an adapter routes error messages to a log topic.
+SodaCan uses an administrative topic to deploy modules to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. </p>
+<table>
+<thead>
+<tr>
+<th>Topic</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>xxx</td>
+<td>All mode commands are broadcast on this topic, see CLI for details</td>
+</tr>
+<tr>
+<td>module</td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<h3 id="special-variables">Special Variables</h3>
+<p>In addition to variables that you explicitly define in your module, some are special in that they provide access to the agent, system, or custom plugins. 
+Variables can also have attributes. Most special variables provide access to plugins. Some attributes are actually attributes on all variables. For example, a SUBSCRIBE variable provides access to when the message was created, which module (or plugin) sent it, etc.</p>
+<p>Special attribute names are preceded by a hash (#) symbol. for example, assuming the following is a SUBSCRIBE variable named "mode",  `mode.#msgid' will access the message id of the last message that set that variable. Those marked <em>read</em> are read-only. <em>read/write</em> attributes can be assigned to. Some are write only <em>write</em>.</p>
+<p>Note: A module variable is a variable defined in a module: publish, subscribe, private, or topic.</p>
+<table>
+<thead>
+<tr>
+<th>variable</th>
+<th>Attribute</th>
+<th>read/write</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><em>any subscribe variable</em></td>
+<td>#timestamp</td>
+<td>read</td>
+<td>The timestamp (UTC Z-time) of the message</td>
+</tr>
+<tr>
+<td><em>any subscribe variable</em></td>
+<td>#msgid</td>
+<td>read</td>
+<td>The timestamp (UTC Z-time) of the message</td>
+</tr>
+<tr>
+<td><em>any subscribe variable</em></td>
+<td>#topic</td>
+<td>read</td>
+<td>The topic of the message</td>
+</tr>
+<tr>
+<td><em>any subscribe variable</em></td>
+<td>#namespace</td>
+<td>read</td>
+<td>The topic of the message</td>
+</tr>
+<tr>
+<td><em>any subscribe variable</em></td>
+<td>#version</td>
+<td>read</td>
+<td>The message format version</td>
+</tr>
+<tr>
+<td><em>any module variable</em></td>
+<td>#type</td>
+<td>read</td>
+<td>The type of variable (string, number, boolean, etc)</td>
+</tr>
+<tr>
+<td><em>any module variable</em></td>
+<td>#modified</td>
+<td>read</td>
+<td>True if modified in this cycle</td>
+</tr>
+<tr>
+<td><em>any module variable</em></td>
+<td>#initialValue</td>
+<td>read</td>
+<td>The initial value of the variable as declared</td>
+</tr>
+<tr>
+<td><em>any module variable</em></td>
+<td>#constraints</td>
+<td>read</td>
+<td>The constraints specified for this variable.</td>
+</tr>
+<tr>
+<td><em>any publish variable</em></td>
+<td>#modified</td>
+<td>read</td>
+<td>True if modified in this cycle and will be published at the conclusion of the cycle</td>
+</tr>
+<tr>
+<td>system.config</td>
+<td>#latitude</td>
+<td>read</td>
+<td>Latitude of this location</td>
+</tr>
+<tr>
+<td>system.config</td>
+<td>#longitude</td>
+<td>read</td>
+<td>Longitude of this location</td>
+</tr>
+<tr>
+<td>system.config</td>
+<td>#timezone</td>
+<td>read</td>
+<td>Timezone of this location</td>
+</tr>
+<tr>
+<td>system.config</td>
+<td>#locationName</td>
+<td>read</td>
+<td>Name of this location</td>
+</tr>
+<tr>
+<td>system.config</td>
+<td>#locationAddress</td>
+<td>read</td>
+<td>Address of this location</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#month</td>
+<td>read</td>
+<td>The month of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#day</td>
+<td>read</td>
+<td>The day of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#year</td>
+<td>read</td>
+<td>The year of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#hour</td>
+<td>read</td>
+<td>The hour of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#minute</td>
+<td>read</td>
+<td>The minute of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#second</td>
+<td>read</td>
+<td>The seconds of the current datetime</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#sunrise</td>
+<td>read</td>
+<td>Today's sunrise</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#sunset</td>
+<td>read</td>
+<td>Today's sunrise</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#season</td>
+<td>read</td>
+<td>The current season</td>
+</tr>
+<tr>
+<td>system.clock</td>
+<td>#season</td>
+<td>read</td>
+<td>Today's sunset</td>
+</tr>
+<tr>
+<td>system.log</td>
+<td># info</td>
+<td>write</td>
+<td>Write informational text to system log</td>
+</tr>
+<tr>
+<td>system.log</td>
+<td># warn</td>
+<td>write</td>
+<td>Write warning text to system log</td>
+</tr>
+<tr>
+<td>system.log</td>
+<td># alert</td>
+<td>write</td>
+<td>Send general alert message and log it</td>
+</tr>
+<tr>
+<td>system.module</td>
+<td>#name</td>
+<td>read</td>
+<td>Name of this module</td>
+</tr>
+<tr>
+<td>system.module</td>
+<td>#eventType</td>
+<td>read</td>
+<td>message or clock event</td>
+</tr>
+<tr>
+<td>system.module</td>
+<td>#source</td>
+<td>read</td>
+<td>Current source code of module</td>
+</tr>
+<tr>
+<td>system.agent</td>
+<td>#name</td>
+<td>read</td>
+<td>Name of the agent hosting this module</td>
+</tr>
+<tr>
+<td>rpi4.gpio2</td>
+<td># mode</td>
+<td>read/write</td>
+<td>Set mode for GPIO 2</td>
+</tr>
+<tr>
+<td>rpi4.gpio2</td>
+<td># pin</td>
+<td>read/write</td>
+<td>Set/get pin for GPIO 2</td>
+</tr>
+<tr>
+<td>dmx.fixture2</td>
+<td>#red</td>
+<td>write</td>
+<td>Set the red color value in (lighting) fixture2</td>
+</tr>
+</tbody>
+</table>
+
+
+
+
+
+                
+              </article>
+            </div>
+          
+          
+        </div>
+        
+      </main>
+      
+        <footer class="md-footer">
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-copyright">
+  
+  
+    Made with
+    <a href="https://squidfunk.github.io/mkdocs-material/" target="_blank" rel="noopener">
+      Material for MkDocs
+    </a>
+  
+</div>
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    <div class="md-dialog" data-md-component="dialog">
+      <div class="md-dialog__inner md-typeset"></div>
+    </div>
+    
+    <script id="__config" type="application/json">{"base": "..", "features": ["content.code.copy"], "search": "../assets/javascripts/workers/search.db81ec45.min.js", "translations": {"clipboard.copied": "Copied to clipboard", "clipboard.copy": "Copy to clipboard", "search.result.more.one": "1 more on this page", "search.result.more.other": "# more on this page", "search.result.none": "No matching documents", "search.result.one": "1 matching document", "search.result.other": "# matching documents", "search.result.placeholder": "Type to start searching", "search.result.term.missing": "Missing", "select.version": "Select version"}}</script>
+    
+    
+      <script src="../assets/javascripts/bundle.a00a7c5e.min.js"></script>
+      
+    
+  </body>
+</html>
