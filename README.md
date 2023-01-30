@@ -40,25 +40,3 @@ At a high level, modules simply send and receive messages. A few other services 
 #### Logging
 [tbd]
 
-#### More Details
-
-<a href="documentation/architecture.md">SodaCan Architecture</a><br/>
-<a href="documentation/languageGuide.md">SodaCan Module Language Guide</a><br/>
-<a href="documentation/languageReference.md">SodaCan Module Language Reference</a><br/>
-<a href="documentation/developer.md">SodaCan Module Developer's Guide</a><br/>
-
-<a href="documentation/gettingStarted.md">Getting Started with SodaCan</a><br/>
-<a href="documentation/operations.md">SodaCan Operations</a><br/>
-<a href="documentation/internals.md">For SodaCan Source code developers</a><br/>
-
-#### Project Documentation
-
-<a href="agent/README.md">SodaCan Agent</a><br/>
-<a href="api/README.md">SodaCan API</a><br/>
-<a href="compiler/README.md">SodaCan Compiler</a><br/>
-<a href="message/README.md">SodaCan Message Structure</a><br/>
-<a href="module/README.md">SodaCan Module Structure</a><br/>
-<a href="runtime/README.md">SodaCan Module Runtime</a><br/>
-<a href="sodacan/README.md">Top-level SodaCan Project</a><br/>
-<a href="utility/README.md">Utility functions</a><br/>
-<a href="webserver/README.md">SodaCan RESTful API and web server</a><br/>
