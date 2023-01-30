@@ -10,7 +10,6 @@
   	<module>agent</module>
   	<module>cli</module>
   	<module>compiler</module>
-  	<module>docs</module>
   	<module>mode</module>
   	<module>mode-api</module>
   	<module>plugin-memory</module>
