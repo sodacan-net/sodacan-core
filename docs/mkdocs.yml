@@ -1,0 +1,12 @@
+site_name: Sodacan
+theme:
+  name: material
+  features:
+    - content.code.copy
+markdown_extensions:
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+docs_dir: "."
+site_dir: "/data/sodacan/docs/"
