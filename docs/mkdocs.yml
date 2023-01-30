@@ -10,3 +10,4 @@ markdown_extensions:
           class: mermaid
 docs_dir: "."
 site_dir: "/data/sodacan/docs/"
+ 
