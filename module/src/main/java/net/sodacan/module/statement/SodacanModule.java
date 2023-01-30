@@ -30,8 +30,8 @@ import net.sodacan.module.variable.VariableDefs;
 import net.sodacan.module.variables.Variables;
 
 /**
- * Top-level SodaCan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 
- * The SodaCan runtime will walk one of three module sub-trees, depending on the circumstance: Due to the passage of time: atStatements. 
+ * Top-level Sodacan module. Essentially an AST, produced from source code, or from Java builders, or from the Sodacan API. 
+ * The Sodacan runtime will walk one of three module sub-trees, depending on the circumstance: Due to the passage of time: atStatements. 
  * Due to an incoming message: OnStatements. And, after either case is executed: execute the IfStatements.
  * @author John Churin
  *
@@ -41,7 +41,7 @@ public class SodacanModule extends ModuleComponent{
 	String instanceName;
 	String source;
 	String originalFileName;
-	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of SodaCan 
+	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of Sodacan 
 	// means the order of statements is unimportant.
 	VariableDefs variableDefs = new VariableDefs();
 	List<ErrorComponent> errors = new ArrayList<>();

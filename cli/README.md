@@ -1,9 +1,9 @@
-# SodaCan Command Line Interface
+# Sodacan Command Line Interface
 This utility provides for administrative and operational functions.
 
-This program uses the SodaCan API for many functions but also communicates directly with Kafka and the operating system for other functions. It provides the deepest level of control of SodaCan short of modifying source code.
+This program uses the Sodacan API for many functions but also communicates directly with Kafka and the operating system for other functions. It provides the deepest level of control of Sodacan short of modifying source code.
 
-In order to provide the fullest coverage of SodaCan capabilities, an option for most commands allows for direct access to the message bus, access via the SodaCan API, and via the sodaCan REST API.
+In order to provide the fullest coverage of Sodacan capabilities, an option for most commands allows for direct access to the message bus, access via the Sodacan API, and via the Sodacan REST API.
 
 ```
 soda <cmd> [args]

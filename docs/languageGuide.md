@@ -1,7 +1,7 @@
-# SodaCan Module Language Guide
+# Sodacan Module Language Guide
 
 ### Topics and Variables
-In SodaCan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variaable*carried by messages in a topic must be defined as well. 
+In Sodacan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variaable*carried by messages in a topic must be defined as well. 
 
 A topic defines a schema (or format) of messages for a specific purpose. You can think of a topic as a channel for information flow of similarly formatted messages. Once defined, a topic usually lasts forever, or until manually deleted.
 
@@ -30,7 +30,7 @@ We can make this much tidier if we create a separate module that defines all or 
 
 In the above, "livingRoom" is the topic and "lamp1" is a variable that will be exchanged via this topic. The `{off,on}` syntax means that the variable will hold an enumerated value of either "on" or "off". 
 
-> Syntactic Sugar: SodaCan blurs the lines between string literals and identifiers. For example, no quotes are needed in the list of possible values of an enumerated variable. Likewise, the identifier expression `variable.value` is a shortcut. In `ON` and `WHEN` statements, it means the same as `variable == "value"` (true if variable equals the value). In a `THEN` statement, it means the same as `variable = "value"` (assign "value" to variable). 
+> Syntactic Sugar: Sodacan blurs the lines between string literals and identifiers. For example, no quotes are needed in the list of possible values of an enumerated variable. Likewise, the identifier expression `variable.value` is a shortcut. In `ON` and `WHEN` statements, it means the same as `variable == "value"` (true if variable equals the value). In a `THEN` statement, it means the same as `variable = "value"` (assign "value" to variable). 
 
 Next, we define a module that produces a message in this topic. In this case, the message is conveying the state of lamp1 as "on" in a message to the named topic.
 
@@ -148,7 +148,7 @@ One module definition that handles all devices of a certain type.
 
 In this example, we made the following changes:
 
-1. Change the name of the module to `lamp` (this just looks cleaner, SodaCan doesn't care what you call a module as long as it is unique),
+1. Change the name of the module to `lamp` (this just looks cleaner, Sodacan doesn't care what you call a module as long as it is unique),
 2. Add the square brackets on the module line. This indicates that the module supports multiple instances. 
 3. The name of a variable in the square brackets will be used to differentiate between different instances. 
 4. It also means that messages we want to subscribe to must specify the location.  For example, another module that represents an individual button will need to publish a message that contains the location in addition to naming the variable to publish.
@@ -190,7 +190,7 @@ For that, you simply subscribe to the instance event. In this case, named "locat
 			
 ```
 
-Now, a module can also keep and publish variables and messages module-wide. Think of the module as having a special instance that represents the whole module (A 'static' variable in some languages). But there's a problem: SodaCan never allows peeking into another module which means no peeking into another instance. To solve this problem, we simply send a hidden message from one instance to another including from the top-level instance to it's instances. This is all handled transaparently.
+Now, a module can also keep and publish variables and messages module-wide. Think of the module as having a special instance that represents the whole module (A 'static' variable in some languages). But there's a problem: Sodacan never allows peeking into another module which means no peeking into another instance. To solve this problem, we simply send a hidden message from one instance to another including from the top-level instance to it's instances. This is all handled transaparently.
 
 Why so strict even in this situation? Because all instances of one module, including the top-level module, don't necessarily run in the same agent and maybe not even the same server. 
 
@@ -274,7 +274,7 @@ A timer is used when an action is to be taken in the future. And in many cases, 
 This example is simplified but it does explain the basic timer mechanism.
 
 What is actually happening? The `ON state.on` is saying: When the state variable transitions to  `on`, do the `THEN` statement that follows it.
-The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, SodaCan should wait for 30 minutes before doing so. The SodaCan agent for this module sets up a timer that will send a message to the module (itself) which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an `ON state.on` that picks it up and its `THEN` says to set the `state` to `off`.
+The `THEN` statement says to publish the `offTimer` message, but not immediately. Rather, Sodacan should wait for 30 minutes before doing so. The Sodacan agent for this module sets up a timer that will send a message to the module (itself) which will behave like any other message. It is perfectly OK to send a message you yourself. The the offTimer message is received, we have an `ON state.on` that picks it up and its `THEN` says to set the `state` to `off`.
 
 > You'll notice a subtlety in the module compiler: the keyword `ON` begins a statement but it is no longer a keyword *within* the statement so you are free to use a state name such as `on` without conflict.  
 
@@ -288,7 +288,7 @@ Because this timer publishes a real message, some other module could also subscr
 > In a procedural language, the `ON`s are like a series of `IF THEN ELSE` statements and the `WHEN`s are like a series of `IF THEN` statements following the `IF THEN ELSE` statements.
 
 ### Module Instance Topic Persistence
-How does the SodaCan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list of topics. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
+How does the Sodacan agent responsible for that module determine all of the module instances to broadcast to when this happens? A separate, parallel to the module, topic is created for each module which contains instances. This topic can be replayed to get the list of topics. There is only one entry per instance of the module that have been created. The following contains the format of messages in this topic all relevant data, the instance name, is in the key:
 
  | Key Component        | Description |
  | ----------- | ----------- |
@@ -297,7 +297,7 @@ How does the SodaCan agent responsible for that module determine all of the modu
 This approach is very efficient and does not cause any concurrency issues. 
 
 ### Message-Variable Duality
-In SodaCan, a variable defined in a module can be the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
+In Sodacan, a variable defined in a module can be the source or destination for messages. When a message arrives, it is immediately stored in the named variable thus making it available to the module. In the following example, lamp1 is interested in the state of switch 1.
 
 ```
 MODULE lamp1
@@ -306,7 +306,7 @@ MODULE lamp1
 	ON switch1.state==on
 		THEN ...
 ```
-Behind the scenes, SodaCan consumes a message and makes a note that its value has changed. In that case, it signals an event which the `ON` statements in the module will react to. 
+Behind the scenes, Sodacan consumes a message and makes a note that its value has changed. In that case, it signals an event which the `ON` statements in the module will react to. 
 
 The publishing side is similar. A `PUBLISH` variable is a message-in-waiting. Once a processing cycle is completed, `PUBLISH` variables that have been modified will be published.
 
@@ -318,7 +318,7 @@ MODULE switch1
 		THEN state==on		// Set the state to on
 ```
 
-In the background, the SodaCan agent monitors each `PUBLISH` variable and, if any changes are made to it by any of the module's `THEN` statements, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
+In the background, the Sodacan agent monitors each `PUBLISH` variable and, if any changes are made to it by any of the module's `THEN` statements, a message will be published containing that variable. In this example, `state` is the variable so the message will be published as `switch1.state` with a value of `on`.
 
 > Semantics: You cannot `SUBSCRIBE` and `PUBLISH` the same variable. 
 
@@ -352,7 +352,7 @@ Of course in this case we also need to make sure our variables are separated by 
 		PUBLISH state[location] {on,off}
 		
 ```
-which tells SodaCan that the `state` variable is separate for each location.
+which tells Sodacan that the `state` variable is separate for each location.
 
 While the state variable (and consequently messages) are per-location, we might need other variables that apply to the entire class. Consider a company that has a policy of putting all lights into auto mode at a certain time of day requiring motion detecting for the light to remain on. That time is set company-wide. In this case we would like to send a single message to the "OfficeLight" module with the time all offices should go into auto mode. 
 
@@ -375,7 +375,7 @@ Notice that the `autoModeOnTime` variable has no key associated with it. A subse
 		
 ```
 ### Adapters
-A SodaCan adapter is an end node in a SodaCan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can also be both a consumer and producer at the same time. 
+A Sodacan adapter is an end node in a Sodacan implementation. There are two primary types of adapter: message consumer and message producer. However, adapters can also be both a consumer and producer at the same time. 
 The following is a very simple interaction between a lamp and a button and a module that controls the behavior of the lamp (on or off). A real-world example would likely have additional capabilities but we keep it simple here:
 
 ```mermaid
@@ -387,7 +387,7 @@ sequenceDiagram
     
 ```
 Flow of control:
-1. `buttonAdapter` running on a microcontroller such as a Raspberry PI, monitors a *digital in* pin and when it goes positive (ignoring debounce logic), a message is published to the SodaCan `messageBus`.
+1. `buttonAdapter` running on a microcontroller such as a Raspberry PI, monitors a *digital in* pin and when it goes positive (ignoring debounce logic), a message is published to the Sodacan `messageBus`.
 2. The message is delivered to the `lampModule` which has subscribed to this type of message.
 3. The `lampModule` determines if the button press is and off or on transition (it keeps track of the state of the lamp).
 When the state of the lamp in the `lampModule` changes, another message containing the new state is published to the `messageBus`.
@@ -415,17 +415,17 @@ The function in the custom code attached to the module can then access any varia
 
 ### Message Persistence
 When a message is produced, it takes on a life of its own; Neither belonging to the producer nor to any of its potential consumers. At that point, the message is owned and stored (persisted) by the message bus. 
-There is no sure-fire way for SodaCan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
-may not exist yet. If resources were infinite, there is no reason SodaCan would need to recover space used by any messages.
+There is no sure-fire way for Sodacan to know when a message has been completely consumed. For example, a module that *might* consume a particular type of message 
+may not exist yet. If resources were infinite, there is no reason Sodacan would need to recover space used by any messages.
 The messages within a topic can come and go. Indeed, most topics define the lifetime of messages contained within that topic.
 
-Consider, for example, that we want to add a new module to an existing configuration that reports on the average number of uses of a certain button per month. In a traditional system, the data could be a challenge to create. Historical data may not even exist. But in SodaCan, the data already exists in the topic that was used to get the button press notification to the lamp that is controlled by that button press. (Just because the message was *consumed* by one module does not mean that the message will be discarded). So, the new reporting module simply subscribes to that same topic and it will get all of the messages from the past in chronological order.
+Consider, for example, that we want to add a new module to an existing configuration that reports on the average number of uses of a certain button per month. In a traditional system, the data could be a challenge to create. Historical data may not even exist. But in Sodacan, the data already exists in the topic that was used to get the button press notification to the lamp that is controlled by that button press. (Just because the message was *consumed* by one module does not mean that the message will be discarded). So, the new reporting module simply subscribes to that same topic and it will get all of the messages from the past in chronological order.
 
-Now, SodaCan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a SodaCan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
+Now, Sodacan has several ways to deal with old messages in a topic. One can set an expiration date for a particular topic: Messages older than a certain number of days, weeks, months, or years will be automatically deleted. Or, when a topic exceeds a certain size, older messages can be deleted. Finally, one can just let the messages accumulate forever. Consider that many messages in a Sodacan application are quite small. Our button activation message will be about 50 bytes long. If we press that button 50 times per day, every day for a year, that would add up to less than one megabyte of data. Therefore, it's probably not worth cleaning up this type of message if there is even a small change of using that data in the future. On the other hand, messages from a security camera are much larger and so the topic should probably be purged either based on size (a very safe option) or the age of messages.
 
 ### System Messages
 The messaging system is also used for administrative and operational purposes. Any agent running a module or an adapter routes error messages to a log topic.
-SodaCan uses an administrative topic to deploy modules to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
+Sodacan uses an administrative topic to deploy modules to the appropriate agent/server. Therefore, in a clustered setup, it is not necessary to manually keep application files on individual servers. By default, Module persistence is also kept in an administrative topic. 
 
 | Topic | Description |
 | ----- | ------------|

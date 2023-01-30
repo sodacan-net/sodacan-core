@@ -1,9 +1,9 @@
-# SodaCan Runtime
+# Sodacan Runtime
 This runtime deals with execution of compiled modules. The runtime is given a module structure and executes it. This aspect of the runtime is *not* thread safe because it doesn't need to be: messages (in and out) and time events are serialized. An agent can run more than one module, each module is in a separate thread.
 
 The runtime has no direct storage or communication capability. All IO is handled by registered plugins. 
 
-One consumed message is passed to the "cycle" method and a collection of zero or more message structures are published at the completion of a cycle, ready for publication. The SodaCan runtime also provides a clock and timer functions which use pseudo messages to communicate with the cycle execution.
+One consumed message is passed to the "cycle" method and a collection of zero or more message structures are published at the completion of a cycle, ready for publication. The Sodacan runtime also provides a clock and timer functions which use pseudo messages to communicate with the cycle execution.
 
 The runtime clock can either be the real system clock or, for testing purposes, a "manual" clock can be activated. Clocks, as with messages, are partitioned by "mode" which means an agent may be operating both kinds of clocks at the same. And maybe several different copies of the clock at the same time. For this reason, there is no single master clock in Sodacan. Each instance of a module has it's own clock.
 

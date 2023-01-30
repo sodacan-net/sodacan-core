@@ -1,4 +1,5 @@
 site_name: Sodacan
+repo_url: https://github.com/sodacan-net/sodacan-core
 theme:
   name: material
   features:

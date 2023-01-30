@@ -1,5 +1,5 @@
 # Sodacan Agent
-The SodaCan agent provides a framework around the execution of one or more  `modules`. 
+The Sodacan agent provides a framework around the execution of one or more  `modules`. 
 
 The Sodacan agent is mostly a thin wrapper around the Sodacan runtime. It manages the top-level list of modules handled by that agent and creates the thread used by each module.
 

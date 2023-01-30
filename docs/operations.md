@@ -24,8 +24,8 @@ In the command-line tool, you can manually control the clock for a given mode. I
 ```
 In this manual mode, the clock is only advanced when you set the clock to a different time.
 
-### SodaCan Configuration
-Each SodaCan agent needs a configuration file which, at a minimum determines how to connect to the message bus.
+### Sodacan Configuration
+Each Sodacan agent needs a configuration file which, at a minimum determines how to connect to the message bus.
 
 The Web Server also needs a configuration which, in addition to the above, specifies which port to listen on for the RESTful API.
 

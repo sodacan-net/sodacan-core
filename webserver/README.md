@@ -1,5 +1,5 @@
 # Sodacan Web Server
-This Web Server hosts static web pages and the RESTful API (which in turn uses the SodaCan API). The static pages provide the Sodacan control panel, dashboard, and administrative capabilities in a graphical format with similar capabilities to the Command Line Interface (CLI).
+This Web Server hosts static web pages and the RESTful API (which in turn uses the Sodacan API). The static pages provide the Sodacan control panel, dashboard, and administrative capabilities in a graphical format with similar capabilities to the Command Line Interface (CLI).
 
 The RESTful API is used by the static pages and can also be used instead of the Sodacan API for message input and output to programs that might otherwise not be able to communicate over ports other than HTTP and HTTPS.
 
@@ -34,15 +34,15 @@ In either type of page, the widgets allow the user to create messages.
 > The generic pages provide a dynamic view of *all* modules. It also acts as a palette when setting up custom pages.
 
 ### Authentication
-A user must have an account in order to log in. SodaCan uses a browser cookie to remember a user's session.
-In SodaCan, sessions usually don't time out (log out automatically). 
+A user must have an account in order to log in. Sodacan uses a browser cookie to remember a user's session.
+In Sodacan, sessions usually don't time out (log out automatically). 
 
 
 ### Authorization
 The system administrator can assign specific permissions to individual users.
 
 ### Implementation
-HTML pages are served statically. The pages, in turn, access the SodaCan RESTful API. Many aspects of the user interface are updated dynamically using Server Sent Events (SSE). No polling needed. This provides a relatively low bandwidth means of displaying the current state of modules. A page opens a single "subscription" channel to the server which in turn sends module definitions (JSON SodaCan module AST format) and variable updates. 
+HTML pages are served statically. The pages, in turn, access the Sodacan RESTful API. Many aspects of the user interface are updated dynamically using Server Sent Events (SSE). No polling needed. This provides a relatively low bandwidth means of displaying the current state of modules. A page opens a single "subscription" channel to the server which in turn sends module definitions (JSON Sodacan module AST format) and variable updates. 
 
 Bootstrap and JQuery are used extensively in the HTML pages.
 

@@ -25,7 +25,7 @@ import net.sodacan.module.value.Value;
 import net.sodacan.module.value.ValueSerializer;
 
 /**
- * A Single Variable. In SodaCan, all messages begin (publish) as variables or end (subscribe) as variables.
+ * A Single Variable. In Sodacan, all messages begin (publish) as variables or end (subscribe) as variables.
  * A variable definition is immutable once created.
  * @author John Churin
  */

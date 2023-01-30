@@ -63,7 +63,7 @@ public class ModuleCompiler {
 	 * Compile a module from raw source. If properties is non-null, do a substitution
 	 * prior to compilation.
 	 * This compiler is unaware of any other modules and so cannot check for duplicate module names.
-	 * This and other checks are made when the module is about to be deployed. See SodaCan API.
+	 * This and other checks are made when the module is about to be deployed. See Sodacan API.
 	 * @param rawSource
 	 * @param properties
 	 * @return SodacanModule which contains all of the compiled results including a copy of the

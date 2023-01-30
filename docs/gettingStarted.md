@@ -8,4 +8,4 @@ This guide will show you how to get a Sodacan installation up and running. It wi
 ### Windows installation
 
 ## Initial Configuration
-Using the command line tool, you can start up the SodaCan message bus (broker).
+Using the command line tool, you can start up the Sodacan message bus (broker).

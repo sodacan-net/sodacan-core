@@ -11,26 +11,34 @@ SCC is line oriented with one statement per line. Therefore, line endings are si
 ### Case Sensitivity
 Key words are capitalized. User-created identifiers must be lowercase in order to avoid a possible conflict with keywords.
 
-&&&&This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
+This is simply a convention to aid readability. Statements, identifiers and other reserved words match regardless of case.
+
 ``` 
 	THEN
 	then
 	Then
 ``` 
+
 All mean the same thing. Likewise, identifiers are case insensitive
-```LOCAL myIdentifer
-   ON myIdentifier
-   ON MYIDENTIFIER
-   ON myidentifier
+
 ```
+   LOCAL myIdentifer
+     ON myIdentifier
+     ON MYIDENTIFIER
+     ON myidentifier
+
+```
+
 Are equivalent.
 
 Quoted strings, of course, retain the case as specified in the string. A string literal
+
 ```
 	"Any string in a storm"
 ```
 ### Literal values and variables
 Enumerations are the most commonly used literals used to constrain a variable. For example:
+
 ```	
 	PUBLIC state {off,on}
 ```
@@ -38,6 +46,7 @@ describes a variable named 'state' and it has two possible values, `on` and `off
 The braces are what identify the declaration of a variable as having having enumerated values.
 
 An decimal variable is declared in either of these forms:
+
 ```	
 	PUBLIC count 0
 	PUBLIC price 0.00
@@ -54,16 +63,19 @@ Date and time literals are more complicated and are covered in a separate sectio
 
 A string literal contains any alphanumeric characters. A variable containing a string must 
 be initialized with a string literal, even if the string literal is empty:
+
 ```
 	PUBLIC myName "John"
 ```
 Some variables have no value whatsoever. Such a variable is still quite useful. For example, if we declare a variable named
 `bedtime`, the variable can be **activated**. In other words, "it's bedtime". This causes that variable to be published as a message so that other modules can subscribe to it. Other than triggering an action, the message does not carry any other useful information.
+
 ```
 	MODULE topics
 		TOPIC myhouse.bedtime
 ```
 A simple button can be declared the same way:
+
 ```
 	MODULE livingRoomButton
 		PUBLIC active
@@ -83,7 +95,9 @@ The following are reserved and recognized at the beginning of a line. Elsewhere,
  
 ### Comments
 Comments begin with // and continue to the end of line
-```// A Comment
+
+```
+    // A Comment
 	AT noon // Another comment
 	// AT midnight // This line of code is "commented out"
 ```
@@ -94,11 +108,13 @@ A module is, in essence, a way of specifying an intermediate name space. The nex
 Unlike most other areas of the code, module names are **case sensitive**.
 
 The controller scans the directory or directories specified in the configuration for one or more `module` files with an extension of `.scc`. The name of the module must match the file name (not including the `.scc`). For example, if the module file is named `myModule.scc` then the module should have the name.
+
 ```
 	module myModule
 ```
 ### Naming
 Every item in a module has a name. For example, the `test` module has a variable named `level`. 
+
 ```
 MODULE test
 	PUBLIC level 0.0
@@ -148,7 +164,7 @@ In the following two modules, a message *from* button1 is subscribed to by the `
 		
 ```
 ### Asynchronous
-In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response from another module. In SodaCan, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
+In a request-response architecture, one module needing some bit of data typically issues a request and waits for a response from another module. In Sodacan, this process is reversed by using a [publish-subscribe](https://en.wikipedia.org/wiki/Publish%E2%80%93subscribe_pattern) approach.
 
 In the previous example, notice that button1 makes no mention of lamp1. In other words, button1 only **published** information about the button press (the activate function call). But it doesn't put a destination on the message.  The name of the message is `ourDomain.button1.press`. The `lamp1` module then **subscribes** to  that message. The module responds to that message in the `ON` statement(s). The interesting part of this approach is that either of these modules could be written and tested before the other even exists. Furthermore, there is no technical constraint as to the mechanism used to deliver the message from the sending module to the receiving module. For example, the two modules could be on completely different computers. 
 
@@ -209,18 +225,6 @@ When a variable is published or subscribed to, SCC can validate that the name is
 ## Statements
 One statement per line. Empty lines are ignored.
 
- | Statement   | Parent Statement |
- | ----------- | ----------- |
- | [module](#Module-Statement)      |  -       | 
- | [topic](#Topic-Statement) | module |
- | [subscription](#Subscription-Statement) | module|
- | [private](#Private-Statement) | module |
- | [public](#Public-Statement) | module |
- | [at](#At-Statement) | module |
- | [on](#An-Statement) | module |
- | [with](#With-Statement) | at,on |
- | [then](#Then-Statement) | at,on |
- 
 ### Module Statement
  Module...
 
@@ -235,6 +239,7 @@ A public variable will automatically be published when it changes.
 A private variable is...
 ### At Statement
 With the passage of time, the `AT` statement determines if it is interested in the current time (now). For example,
+
 ```
 	AT Noon
 		THEN ...
@@ -242,6 +247,7 @@ With the passage of time, the `AT` statement determines if it is interested in t
 means that at noon on any particular day, something should happen. In other words, the attached `THEN` will be executed.
 ### On Statement
 The `ON` statement reacts a specific message that the module subscribed to.
+
 ```
 	ON bedtime
 	  THEN ...
