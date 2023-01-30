@@ -13,7 +13,7 @@
   </properties>
   <dependencies>
   		<dependency>
-			<groupId>net.sodacan.mode</groupId>
+			<groupId>net.sodacan</groupId>
 			<artifactId>mode-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>

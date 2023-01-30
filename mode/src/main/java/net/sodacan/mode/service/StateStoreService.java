@@ -21,14 +21,10 @@ import java.util.Set;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.sodacan.SodacanException;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
+import net.sodacan.mode.spi.VariablePayload;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variables.Variables;
 /**
@@ -36,7 +32,8 @@ import net.sodacan.module.variables.Variables;
  * comprise the totality of state for that module.</p>
  * <p>Save Variable State to all providers. Even though we're passed the entire set of variables for a module, our job is to pick
  * through the variables and save only those that have changed. We leave behind the class structure of variables and serialize to
- * json which in turn is what we pass to the interested plugin(s) for storage.</p>
+ * json which in turn is what we pass to the interested plugin(s) for storage. This approach limits the scope of the plugin to IO 
+ * rather than having to deal with a lot of Sodacan internals.</p>
  * <p>When restoring state, we'll collect all variables from all plugins interested. If a plugin just wants to lurk, that's fine. 
  * It should then return zero variables when asked to return stored variables.</p>
  * 
@@ -69,32 +66,28 @@ public class StateStoreService extends ModeService {
 	}
 	
 	/**
-	 * <p>Save Variable State to all providers. Even though we're passed the entire set of variables for a module, our job is to pick
-	 * through the variables and save only those that have changed. We leave behind the class structure of variables and serialize to
+	 * <p>Save the state of a (Module)Variable to all services. We only consider the set of variables for a module that have changed during a cycle. 
+	 * The plugin will only see individual variables.
+	 * Here we leave behind the class structure of the variable(s) and serialize each to
 	 * json which in turn is what we pass to the interested plugin(s) for storage.</p>
-	 * 
-	 * @param msg
+	 * </p>
+	 * <p>These fields are added to a small object, VariablePayload for conveyance to the plugin(s).</p>
+	 * <p>State store should only keep the most recent version of whatever it saves. It is used strictly to recover state quickly, such as 
+	 * when a module is evicted from memory due to inactivity or during a system or agent restart. 
+	 * If a module needs to restore to an earlier state, that can be done by the much slower method of replaying the input stream.</p>
+
+	 * @param variables The collection of variables, some of which may need saving.
 	 */
-	public void save(Variables variables) {
-		ObjectMapper mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
+	public void save(Module module, Variables variables) {
 		for (Variable variable : variables.getListOfChangedVariables()) {
-			try {
-				String json;
-				json = mapper
-							.writerWithDefaultPrettyPrinter()
-							.writeValueAsString(variable);
-				System.out.println("Save: " + json);
-				
+			VariablePayload p = newVariablePayload(module, variable);
+			if (p!=null) {
+				// Send to the interested plugin(s)
 				for (StateStoreProvider provider : getProviders()) {
-					provider.save(json);
+					provider.save(p);
 				}
-			} catch (JsonProcessingException e) {
-				throw new SodacanException("Error serializing a variable: " + variable, e);
 			}
 		}
-
 	}
 	
 }

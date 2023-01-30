@@ -16,7 +16,7 @@
 			<version>${project.parent.version}</version>
 		</dependency>
 		<dependency>
-			<groupId>net.sodacan.mode</groupId>
+			<groupId>net.sodacan</groupId>
 			<artifactId>mode-api</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>

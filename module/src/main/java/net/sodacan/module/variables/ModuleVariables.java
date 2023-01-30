@@ -15,17 +15,14 @@
 package net.sodacan.module.variables;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.sodacan.SodacanException;
 import net.sodacan.module.message.ModuleMessage;
-import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.ShortcutVariable;

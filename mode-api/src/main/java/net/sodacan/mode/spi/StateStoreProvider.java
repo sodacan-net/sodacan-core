@@ -15,5 +15,5 @@
 package net.sodacan.mode.spi;
 
 public interface StateStoreProvider extends ModeProvider {
-	public void save( String state);
+	public void save( VariablePayload payload);
 }

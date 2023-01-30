@@ -14,9 +14,12 @@
  */
 package net.sodacan.module.statement;
 
+import java.time.Instant;
 import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
@@ -38,7 +41,6 @@ public class SodacanModule extends ModuleComponent{
 	String instanceName;
 	String source;
 	String originalFileName;
-	
 	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of SodaCan 
 	// means the order of statements is unimportant.
 	VariableDefs variableDefs = new VariableDefs();
@@ -130,7 +132,7 @@ public class SodacanModule extends ModuleComponent{
 	public void setVariableDefs(VariableDefs variableDefs) {
 		this.variableDefs = variableDefs;
 	}
-	
+
 	/**
 	 * Add statements to the module. Statements are ordered so they are maintained in lists that maintain the order.
 	 * 

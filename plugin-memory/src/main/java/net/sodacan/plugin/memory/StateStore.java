@@ -18,6 +18,7 @@ import java.util.Set;
 
 import com.google.auto.service.AutoService;
 import net.sodacan.mode.spi.StateStoreProvider;
+import net.sodacan.mode.spi.VariablePayload;
 
 /**
 * This simple state store plugin is not fussy about mode, it accepts all as long as it's found on the classpath.
@@ -30,8 +31,8 @@ public class StateStore extends Plugin implements StateStoreProvider {
 	private int count = 0;
 	
 	@Override
-	public void save(String state) {
-		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Variable to save: " + state);
+	public void save(VariablePayload payload) {
+		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Variable to save: " + payload.getContent());
 
 	}
 
