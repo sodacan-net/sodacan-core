@@ -1,7 +1,21 @@
-### Another test doc
-We'll see if this works before moving stuff over.
+# Welcome to MkDocs
 
-#### More Details
+For full documentation visit [mkdocs.org](https://www.mkdocs.org).
+
+## Commands
+
+* `mkdocs new [dir-name]` - Create a new project.
+* `mkdocs serve` - Start the live-reloading docs server.
+* `mkdocs build` - Build the documentation site.
+* `mkdocs -h` - Print help message and exit.
+
+## Project layout
+
+    mkdocs.yml    # The configuration file.
+    docs/
+        index.md  # The documentation homepage.
+        ...       # Other markdown pages, images and other files.
+## More Details
 
 <a href="architecture.md">SodaCan Architecture</a><br/>
 <a href="languageGuide.md">SodaCan Module Language Guide</a><br/>
@@ -12,7 +26,7 @@ We'll see if this works before moving stuff over.
 <a href="operations.md">SodaCan Operations</a><br/>
 <a href="internals.md">For SodaCan Source code developers</a><br/>
 
-#### Project Documentation
+## Project Documentation
 
 <a href="../agent/README.md">SodaCan Agent</a><br/>
 <a href="../api/README.md">SodaCan API</a><br/>
@@ -23,3 +37,4 @@ We'll see if this works before moving stuff over.
 <a href="../sodacan/README.md">Top-level SodaCan Project</a><br/>
 <a href="../utility/README.md">Utility functions</a><br/>
 <a href="../webserver/README.md">SodaCan RESTful API and web server</a><br/>
+        
