@@ -1,4 +1,9 @@
 # Welcome to Sodacan
+
+>
+> This project is in development
+> 
+
 Sodacan is for home and building automation. Think of Sodacan as "post-IOT": 
 
 - A little less cloud
@@ -23,7 +28,7 @@ Real-time high-frequency (below 20 ms or so) control of industrial devices is be
 
 Typical events should make it through Sodacan in less that 10 ms. For example, latency from a light-switch to the light it controls should not have a noticeable delay. Scheduled events and timers are specified down to whole minutes. For example, Lights off at a specific time means at hh:mm and not hh:mm:ss. Timers can be scheduled down to seconds. For example: unlock the cat door for 5 seconds.
 
-Best practice: Sodacan sends instructions to a simple Sodacan agent installed inside the gate control box. The control agent is in turn hard wired to the existing gate controller. The gate controller knows how to control open/close speed, limit switch detection, obstructions, etc, which Sodacan takes no part in. The gate controller just needs to know *when* to open or close, ie from Sodacan.
+Best practice: Sodacan module(s) sends open-close instructions to a simple Sodacan agent installed inside the gate control box. The control agent is in turn hard wired to the existing gate controller. The gate controller knows how to control open/close speed, limit switch detection, obstructions, etc, which Sodacan takes no part in. The gate controller just needs to know *when* to open or close, ie from Sodacan.
 
 
 ## Project Documentation

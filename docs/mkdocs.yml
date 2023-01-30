@@ -1,5 +1,8 @@
 site_name: Sodacan
+site_url: http://sodacan.net
 repo_url: https://github.com/sodacan-net/sodacan-core
+site_description: IOT home automation message bus
+copyright: 2023 John M Churin
 theme:
   name: material
   features:

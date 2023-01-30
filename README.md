@@ -1,6 +1,9 @@
 # Sodacan
 
-*Note: The code is not complete.*
+>
+> This project is in development
+> 
+
 
 ![build workflow](https://github.com/sodacan-net/sodacan/actions/workflows/maven.yml/badge.svg?branch=master)
 
