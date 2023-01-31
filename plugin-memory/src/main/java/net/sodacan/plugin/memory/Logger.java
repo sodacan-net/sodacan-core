@@ -31,7 +31,8 @@ final public class Logger extends MemoryProvider implements LoggerProvider {
 	@Override
 	public void log(String msg) {
 //		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Msg: " + msg);
-		this.firePropertyChange​("msg", null, msg);
+//		this.firePropertyChange​("msg", null, msg);
+		this.firePropertyChange​("msg", msg, msg);
 	}
 
 

@@ -7,7 +7,7 @@ One consumed message is passed to the "cycle" method and a collection of zero or
 
 The runtime clock can either be the real system clock or, for testing purposes, a "manual" clock can be activated. Clocks, as with messages, are partitioned by "mode" which means an agent may be operating both kinds of clocks at the same. And maybe several different copies of the clock at the same time. For this reason, there is no single master clock in Sodacan. Each instance of a module has it's own clock.
 
-If your application has the ability to send or receive Kafka, MQTT, or REST calls, then it may not require any connection whatsoever to a Sodacan agent or runtime whatsoever. For example, a button tied to an ESP8266 microcontroller can easily send button events, after debounce, through the Sodacan REST API. Simple. reliable. Using the well understood HTTP protocol. Complete isolation from Sodacan.
+If your application has the ability to send or receive Kafka, MQTT, or REST calls, then it may not require any connection to a Sodacan agent or the Sodacan runtime whatsoever. For example, a button tied to an ESP8266 microcontroller can easily send button events, after debounce, through the Sodacan REST API. Simple. reliable. Using the well understood HTTP protocol. Complete isolation from Sodacan.
 
 If the state of a module was changed in any way, then the state-store method is called to store a snapshot of the module's variables to a separate Kafka topic that, should the need arise, can be quickly replayed to recover the state of the module. This special topic is aggressively compacted so that, in many cases, only the most recent one or two snapshots are available. This keeps a restart fast.
 ### Compiled Code
