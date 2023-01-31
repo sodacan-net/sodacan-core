@@ -1,4 +1,4 @@
-# Sodacan Module Language Guide
+# Module Reference
 
 ### Topics and Variables
 In Sodacan, all topics, and therefore, all messages must be formally defined before they can be used. Furthermore, all variaable*carried by messages in a topic must be defined as well. 

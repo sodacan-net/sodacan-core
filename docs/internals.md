@@ -6,5 +6,5 @@ The reader should be familiar with:
 - Apache Maven
 - Apache Kafka and publish-subscribe in general
 - <a href="architecture.md">Sodacan Architecture</a>
-- The <a href="languageGuide.md">Sodacan Module Language</a>
+- The <a href="moduleReference.md">Sodacan Module Reference</a>
 

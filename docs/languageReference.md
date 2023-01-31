@@ -1,5 +1,5 @@
 
-# Sodacan Control (SCC)
+# Sodacan Control (SCC) Language
 A declarative language for controlling things. 
 The goal of this language is to be concise and to the extent possible declarative. 
 ## General lexical rules
