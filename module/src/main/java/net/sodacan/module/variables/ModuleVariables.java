@@ -220,6 +220,7 @@ public class ModuleVariables extends BaseVariables implements Variables {
 	public void resetChanged() {
 		variables.forEach((name,variable)-> variable.resetChanged());
 	}
+	
 	/**
 	 * Return a list of variables that have changed during the current cycle
 	 * @return List of variables

@@ -14,6 +14,9 @@
  */
 package net.sodacan.mode.spi;
 
+import java.util.List;
+
 public interface StateStoreProvider extends ModeProvider {
 	public void save( VariablePayload payload);
+	public List<VariablePayload> restoreAll( String moduleName );
 }

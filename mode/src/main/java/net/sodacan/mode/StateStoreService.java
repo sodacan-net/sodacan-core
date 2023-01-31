@@ -25,7 +25,9 @@ import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
 import net.sodacan.mode.spi.VariablePayload;
 import net.sodacan.module.statement.SodacanModule;
+import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variables.ModuleVariables;
 import net.sodacan.module.variables.Variables;
 /**
  * <p>StateStore could be called Variable Store because the collection of variables for a module
@@ -87,6 +89,22 @@ public class StateStoreService extends ModeService {
 				}
 			}
 		}
+	}
+	/**
+	 * Grab the saved payloads and deserialize into a ModuleVariables structure.
+	 * @param module The name of the module to return
+	 * @return
+	 */
+	public ModuleVariables restoreAll(SodacanModule module) {
+		ModuleVariables variables = new ModuleVariables();
+		for (StateStoreProvider provider : getProviders()) {
+			List<VariablePayload> vps = provider.restoreAll(module.getName());
+			for (VariablePayload vp : vps) {
+				ModuleVariable mv = (ModuleVariable)this.jsonToVariable(vp.getContent());
+				variables.addVariable(mv);
+			}
+		}
+		return variables;
 	}
 	
 }

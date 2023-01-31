@@ -134,12 +134,48 @@ public class TestPlugins implements PropertyChangeListener{
 			SodacanModule sm = new SodacanModule();
 			sm.setName("DummyModule");
 			StateStoreService ss = Mode.getInstance().getStateStoreService();
-			// We don't have a module! Do we need one?
 			ss.save(sm,mvs);
 			PluginEvent pe1 = findPluginEventByModeAndProperty("Mode1","variable");
 			// Normally invisible to runtime but we use this for testing
 			VariablePayload vp1 = (VariablePayload) pe1.getNewValue();
 			assert(vp1.getVariableName().equals("y"));
+		} finally {
+			Mode.clearModeInThread();
+		}
+	}
+
+	@Test
+	public void testSaveAndRestoreState() {
+		try {
+			// Create a variable in a variables structure
+			ModuleVariables mvs = new ModuleVariables();
+			VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(123)).build();
+			ModuleVariable mv1 = (ModuleVariable)mvs.addVariable(vd1);
+			System.out.println(mv1);
+			mv1.setChangedInCycle(true);
+			// Create an empty module (content not important for this test
+			SodacanModule sm = new SodacanModule();
+			sm.setName("DummyModule");
+			// Create a mode
+			/* Mode mode = */ Mode.newModeBuilder().name("Mode1").stateStore("memory").listener(this).build();
+	
+			// This would normally be called when a thread is recently started or restarted. For example, 
+			// in a filter before processing a REST api call.
+			Mode.setModeInThread("Mode1");
+			// Get the stateStore service
+			StateStoreService ss = Mode.getInstance().getStateStoreService();
+			assert(ss!=null);
+			// Save the variables that have changed, as if we're at the end of a cycle and it's time
+			// save state before we go. 
+			ss.save(sm,mvs);
+			// OK, now we want to recover the variables for the module.		
+			// Note: We're still in the same mode, so mode doesn't need to be specified
+			// But module does need to be specified since variables are kept separate from modules.
+			// And there can be more than one module per mode - usually lots.
+			// In any case, we setup one plugin per mode, not one per module.
+			ModuleVariables mvs2 = ss.restoreAll(sm);
+			ModuleVariable mv2 = (ModuleVariable) mvs2.find("x");
+			System.out.println(mv2);
 		} finally {
 			Mode.clearModeInThread();
 		}

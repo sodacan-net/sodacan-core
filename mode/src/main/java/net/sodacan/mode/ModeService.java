@@ -108,6 +108,16 @@ public abstract class ModeService {
 		}
 	}
 	
+	protected ModuleVariable jsonToVariable( String json) {
+		ModuleVariable variable;
+		try {
+			variable = mapper.readValue(json, ModuleVariable.class);
+		} catch (JsonProcessingException e) {
+			throw new SodacanException("Error deserializing variable from string: " + json, e);
+		}
+	return variable;
+		
+	}
 	/**
 	 * Return a new VariablePayload for use by MessageBus and StateStore plugins
 	 * @return A new VariablePayload or null if no payload possible (we only do ModuleVariables)

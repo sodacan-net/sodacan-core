@@ -16,8 +16,6 @@ package net.sodacan.plugin.memory;
 
 import java.util.Set;
 
-import com.google.auto.service.AutoService;
-
 import net.sodacan.mode.spi.Plugin;
 
 public abstract class MemoryProvider extends Plugin {

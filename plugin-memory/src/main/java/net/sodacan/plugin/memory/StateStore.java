@@ -14,7 +14,9 @@
  */
 package net.sodacan.plugin.memory;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.google.auto.service.AutoService;
@@ -45,5 +47,18 @@ public class StateStore extends MemoryProvider implements StateStoreProvider {
 	public String toString() {
 		return "MemoryStateStorePlugin";
 	}
-
+	
+	/**
+	 * Return a list of VariablePayloads for the specified module
+	 */
+	@Override
+	public List<VariablePayload> restoreAll(String moduleName) {
+		List<VariablePayload> vps = new ArrayList<>();
+		variables.forEach((vp) ->{ 
+			if (vp.getTopic().equals(moduleName)) {
+				vps.add(vp);
+			}
+		});
+		return vps;
+	}
 }
