@@ -15,6 +15,7 @@ package net.sodacan.mode;
  */
 
 
+import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -23,10 +24,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sodacan.SodacanException;
-import net.sodacan.mode.service.ClockService;
-import net.sodacan.mode.service.LoggerService;
-import net.sodacan.mode.service.MessageBusService;
-import net.sodacan.mode.service.StateStoreService;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -68,20 +65,30 @@ public class Mode {
 	private static ThreadLocal<Mode> threadMode = new ThreadLocal<>();
 
 	/**
-	 * Setup the mode, services, and providers underneath mode.
+	 * Setup the mode, services, and providers underneath mode. Also any listeners requested.
 	 * @param mb
 	 */
 	private Mode(ModeBuilder mb) {	
 		this.name = mb.name;
+		
 		this.messageBusTypes = mb.messageBusTypes;
 		this.clockTypes = mb.clockTypes;
 		this.loggerTypes = mb.loggerTypes; 
 		this.stateStoreTypes = mb.stateStoreTypes;
+		
 		this.messageBusService.loadProviders(messageBusTypes);
 		this.clockService.loadProviders(clockTypes);
 		this.loggerService.loadProviders(loggerTypes);
 		this.stateStoreService.loadProviders(stateStoreTypes);
+		
 		instances.put(mb.name, this);
+		
+		for (PropertyChangeListener listener : mb.listeners) {
+			this.messageBusService.addPropertyChangeListener(listener);
+			this.clockService.addPropertyChangeListener(listener);
+			this.loggerService.addPropertyChangeListener(listener);
+			this.stateStoreService.addPropertyChangeListener(listener);
+		}
 	}
 	
 	public Set<String> getMessageBusTypes() {
@@ -168,10 +175,11 @@ public class Mode {
 
 	public static class ModeBuilder {
 		private String name = null;
-		private Set<String> messageBusTypes = new HashSet<String>();
-		private Set<String> clockTypes = new HashSet<String>();
-		private Set<String> loggerTypes = new HashSet<String>(); 
-		private Set<String> stateStoreTypes = new HashSet<String>();
+		private Set<String> messageBusTypes = new HashSet<>();
+		private Set<String> clockTypes = new HashSet<>();
+		private Set<String> loggerTypes = new HashSet<>(); 
+		private Set<String> stateStoreTypes = new HashSet<>();
+		private Set<PropertyChangeListener> listeners = new HashSet<>();
 
 		protected ModeBuilder() {
 		}
@@ -203,6 +211,11 @@ public class Mode {
 
 		public ModeBuilder logger( String loggerType ) {
 			this.loggerTypes.add(loggerType);
+			return this;
+		}
+
+		public ModeBuilder listener( PropertyChangeListener listener ) {
+			this.listeners.add(listener);
 			return this;
 		}
 		

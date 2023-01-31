@@ -9,7 +9,6 @@
   	<artifactId>sodacan</artifactId>
   </parent>
   <properties>
-	  <auto-service.version>1.0.1</auto-service.version>
   </properties>
   <dependencies>
   		<dependency>
@@ -17,27 +16,6 @@
 			<artifactId>mode-api</artifactId>
 			<version>0.0.1</version>
 		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.auto.service/auto-service -->
-		<dependency>
-		    <groupId>com.google.auto.service</groupId>
-		    <artifactId>auto-service</artifactId>
-		    <version>${auto-service.version}</version>
-		</dependency>
   </dependencies>
-  <build>
-  <plugins>
-  <plugin>
-    <artifactId>maven-compiler-plugin</artifactId>
-    <configuration>
-      <annotationProcessorPaths>
-        <path>
-          <groupId>com.google.auto.service</groupId>
-          <artifactId>auto-service</artifactId>
-          <version>${auto-service.version}</version>
-        </path>
-      </annotationProcessorPaths>
-    </configuration>
-  </plugin>
-</plugins>
-</build>
+
 </project>

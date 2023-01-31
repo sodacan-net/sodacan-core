@@ -86,6 +86,38 @@ public class VariablePayload {
 		return content;
 	}
 
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof VariablePayload) {
+			VariablePayload other = (VariablePayload)obj;
+			if (this.toString().equals(other.toString())) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	@Override
+	public int hashCode() {
+		return toString().hashCode();
+	}
+
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(getMode());
+		sb.append(':');
+		sb.append(getTopic());
+		if (getInstanceKey()!=null) {
+			sb.append('[');
+			sb.append(getInstanceKey());
+			sb.append(']');
+		}
+		sb.append(':');
+		sb.append(getVariableName());
+		return sb.toString();
+	}
+
 	public static VariablePayloadBuilder newVariablePayloadBuilder() {
 		return new VariablePayloadBuilder();
 	}

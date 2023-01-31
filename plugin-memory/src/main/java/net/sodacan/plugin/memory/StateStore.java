@@ -14,9 +14,11 @@
  */
 package net.sodacan.plugin.memory;
 
+import java.util.HashSet;
 import java.util.Set;
 
 import com.google.auto.service.AutoService;
+
 import net.sodacan.mode.spi.StateStoreProvider;
 import net.sodacan.mode.spi.VariablePayload;
 
@@ -24,16 +26,24 @@ import net.sodacan.mode.spi.VariablePayload;
 * This simple state store plugin is not fussy about mode, it accepts all as long as it's found on the classpath.
  * 
  */
-
 @AutoService(StateStoreProvider.class)
-public class StateStore extends Plugin implements StateStoreProvider {
-	
+public class StateStore extends MemoryProvider implements StateStoreProvider {
+	public static final String PLUGIN_TYPE = "memory";
+	// Our "database" of variables is stored here. Note: We should never see variables from 
+	// different modes in a single instance of this plugin.
+	private Set<VariablePayload> variables = new HashSet<>(); 
 	private int count = 0;
 	
 	@Override
 	public void save(VariablePayload payload) {
-		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Variable to save: " + payload.getContent());
+		this.variables.add(payload);
+		this.firePropertyChange​("variable", null, payload);
+//		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Variable to save: " + payload.getContent());
+	}
 
+	@Override
+	public String toString() {
+		return "MemoryStateStorePlugin";
 	}
 
 }

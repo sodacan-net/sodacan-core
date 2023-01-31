@@ -12,8 +12,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.mode.service;
+package net.sodacan.mode;
 
+import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ServiceLoader;
 import java.util.Set;
@@ -23,9 +24,9 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sodacan.SodacanException;
-import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.VariablePayload;
+import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
 /**
@@ -78,6 +79,18 @@ public abstract class ModeService {
 
 	protected abstract List<? extends ModeProvider> getProviders();
 
+    void addPropertyChangeListener(PropertyChangeListener listener) {
+		for (ModeProvider provider : getProviders()) {
+			provider.addPropertyChangeListener(listener);
+		}
+    }
+
+    void removePropertyChangeListener(PropertyChangeListener listener) {
+		for (ModeProvider provider : getProviders()) {
+			provider.removePropertyChangeListener(listener);
+		}
+    }
+
 	/**
 	 * Serialize a variable to Json
 	 * @param variable
@@ -99,14 +112,14 @@ public abstract class ModeService {
 	 * Return a new VariablePayload for use by MessageBus and StateStore plugins
 	 * @return A new VariablePayload or null if no payload possible (we only do ModuleVariables)
 	 */
-	public VariablePayload newVariablePayload(Module module,  Variable variable) {
+	public VariablePayload newVariablePayload(SodacanModule module,  Variable variable) {
 		if (!(variable instanceof ModuleVariable)) {
 			return null;
 		}
 		ModuleVariable mv = (ModuleVariable)variable;
 		VariablePayload p = VariablePayload.newVariablePayloadBuilder()
 				.mode(this.getMode().getName())
-				.topic(null)
+				.topic(module.getName())
 				.variableName(mv.getVariableDef().getFullName())
 				.instanceKey(mv.getVariableDef().getInstance())
 				.content(variableToJson(mv))

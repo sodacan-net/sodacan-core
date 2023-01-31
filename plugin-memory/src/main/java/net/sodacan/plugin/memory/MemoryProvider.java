@@ -16,16 +16,13 @@ package net.sodacan.plugin.memory;
 
 import java.util.Set;
 
-import net.sodacan.mode.spi.ModeProvider;
-/**
- * Service Providers in this plugin respond to "memory" plugin type
- * @author John Churin
- *
- */
-public abstract class Plugin implements ModeProvider {
-	private static final String PLUGIN_TYPE = "memory";
-	protected String mode;
-	
+import com.google.auto.service.AutoService;
+
+import net.sodacan.mode.spi.Plugin;
+
+public abstract class MemoryProvider extends Plugin {
+	public static final String PLUGIN_TYPE = "memory";
+
 	@Override
 	public boolean isMatch(Set<String> types) {
 		for (String type : types ) {
@@ -36,12 +33,4 @@ public abstract class Plugin implements ModeProvider {
 		return false;
 	}
 
-	public void setMode(String mode) {
-		this.mode = mode;
-	}
-
-	public String getMode() {
-		return mode;
-	}
-	
 }

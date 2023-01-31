@@ -24,12 +24,20 @@ import net.sodacan.mode.spi.LoggerProvider;
  *
  */
 @AutoService(LoggerProvider.class)
-final public class Logger extends Plugin implements LoggerProvider {
-	private int count = 0;
+final public class Logger extends MemoryProvider implements LoggerProvider {
+    private int count = 0;
+
 
 	@Override
 	public void log(String msg) {
-		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Msg: " + msg);
+//		System.out.println("Seq: " + count++ + ", Mode: " + getMode() + ", Msg: " + msg);
+		this.firePropertyChange​("msg", null, msg);
+	}
+
+
+	@Override
+	public String toString() {
+		return "MemoryLoggerPlugin";
 	}
 
 }

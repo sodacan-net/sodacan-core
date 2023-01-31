@@ -14,6 +14,7 @@
  */
 package net.sodacan.mode.spi;
 
+import java.beans.PropertyChangeListener;
 import java.util.Set;
 
 public interface ModeProvider {
@@ -22,5 +23,7 @@ public interface ModeProvider {
 	* Provider must implement this method which the service will use to filter only selected providers.
 	*/
 	public boolean isMatch(Set<String> types);
-	
+    public void addPropertyChangeListener(PropertyChangeListener listener);
+    public void removePropertyChangeListener(PropertyChangeListener listener);
+
 }
