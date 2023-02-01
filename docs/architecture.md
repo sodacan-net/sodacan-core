@@ -102,6 +102,7 @@ subgraph application
   ag(Module Agent)
 end
 subgraph IO
+  log(Logging)
   mod(Mode)
   ss(State<br/>Store)
   mb(Message<br/>Bus)
@@ -139,6 +140,9 @@ mod --- ss
 ss --- mem
 mb --- mem
 ss --- f
+mod --- log
+log --- f
+log --- mem
 subgraph plugin
   f(File)
   k(Kafka)
