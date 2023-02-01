@@ -4,7 +4,10 @@ lexer grammar SccLexer;
 MODULE
 	: 'MODULE'
 	;
-
+AGENT
+	: 'AGENT'
+	;
+	
 TOPIC
 	: 'TOPIC'
 	;

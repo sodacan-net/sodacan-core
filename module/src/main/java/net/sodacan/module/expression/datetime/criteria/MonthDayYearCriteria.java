@@ -33,7 +33,7 @@ public class MonthDayYearCriteria extends DateCriteria {
 		int month=date.getMonthValue();
 		int day=date.getDayOfMonth();
 		int year=date.getYear();
-		return (this.month==month && this.day==day && year==year);
+		return (this.month==month && this.day==day && this.year==year);
 	}
 
 	@Override
