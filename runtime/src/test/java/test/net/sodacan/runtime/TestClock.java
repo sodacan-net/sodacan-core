@@ -35,11 +35,13 @@ public class TestClock {
 	@Test
 	public void test() throws InterruptedException {
 		BlockingQueue<Instant> queue = new LinkedBlockingQueue<Instant>();
-		ManualClock clock = new ManualClock(2023, 1, 31, 10, 36, 0);
+		// t0 will be the clock time and when we start
+		ManualClock t0 = new ManualClock(2023, 1, 31, 10, 36, 0);
 		Instant t1 = new ManualClock(2023, 1, 31, 10, 37, 0).instant();
 		Instant t2 = new ManualClock(2023, 1, 31, 10, 38, 0).instant();
 		Instant t3 = new ManualClock(2023, 1, 31, 10, 39, 0).instant();
-		Ticker.createAndStartTicker(queue,clock);
+		ManualClock clock = t0;	// Clock and start time for this test
+		Ticker.createAndStartTicker(queue,clock,t0.instant());
 		clock.plusOneMinute();
 		clock.plusOneMinute();
 		clock.plusOneMinute();

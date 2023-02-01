@@ -19,18 +19,19 @@ import java.time.Instant;
 import java.util.Queue;
 
 /**
- * >p>Our job is to provide clock ticks, one per minute without skipping or duplicating any individual ticks. We run in our own
+ * <p>Our job is to provide clock ticks, one per minute without skipping or duplicating any individual ticks. We run in our own
  * thread and deliver clock ticks to the specified queue. The clock can be a real clock or a synthetic clock used for testing.
  * In any case, the supplied clock will not affect our job of producing one tick per minute.</p>
- * 
- * <p>This class will deliver ticks only as the raw clock prescribes. The tick is never allowed to overtake the raw clock. However,
+ * <p>Each module needs a separate Ticker because each module could be on a different mode/clock and very likely will be at a different point in 
+ * its lifecycle (or cycle).</p>
+ * <p>This class will deliver ticks only as the underlying clock allows. The tick is never allowed to overtake the clock. However,
  * ticks may occur very quickly if the tick time falls behind the clock for any reason.</p>
- * <p>A side note about the cycle function: The message stream also contains a timestamp which, along with the Tick queue is used to merge events into a module.
- * This is helpful for testing or startup when the arrival messages could get ahead of the clock thereby causing 
- * passage-of-time statements to occur out of order.</p>
  * <p>This Ticker does not advance the raw clock, which must be provided by an external time source.</p>
  * <p>Note: This Ticker is not used for Sodacan Timers - which have a much smaller time resolution than
  * Ticker (nominally one minute).</p>
+ * <p>A side note about the cycle function: The message stream also contains a timestamp which, along with the Tick queue is used to merge events into a module.
+ * This is helpful for testing or startup when the arrival messages could get ahead of the clock thereby causing 
+ * passage-of-time statements to occur out of order.</p>
  * 
  * @author John Churin
  *
@@ -48,12 +49,13 @@ public class Ticker implements Runnable {
 	 * then a tick will be sent to the queue.</p>
 	 * @param queue The queue to populate with tick events.
 	 * @param clock The clock to use to get the "current" time (now)
+	 * @param startTime when the tick time should start, typically the time when the last cycle occurred.
 	 * @return A freshly minted and started Ticker
 	 */
-	public static Ticker createAndStartTicker(Queue<Instant> queue, Clock clock) {
+	public static Ticker createAndStartTicker(Queue<Instant> queue, Clock clock, Instant startTime) {
 		Ticker ticker = new Ticker(queue);
 		ticker.clock = clock;
-		ticker.tickTime = clock.instant();
+		ticker.tickTime = startTime;
 		new Thread(ticker,"Ticker").start();
 		return ticker;
 	}
@@ -77,8 +79,8 @@ public class Ticker implements Runnable {
 				queue.add(tickTime);
 			}
 			try {
-//				Thread.sleep(TICK_SECONDS/2);
-				Thread.sleep(500);
+				Thread.sleep(TICK_SECONDS/2);
+//				Thread.sleep(500);
 			} catch (InterruptedException e) {
 				return;
 			}

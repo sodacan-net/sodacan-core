@@ -21,7 +21,18 @@ import java.util.Set;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.sodacan.module.statement.SodacanModule;
-
+/**
+ * <p>Each module gets its own runtime which contains the a Mode, The compiled Module structure, the Variabled associated with the module, and a Ticker. </p>
+ * <p>The current time is stored as a variable in the Variable list so that it is available should the module need to restart from SateStore. 
+ * The same goes for the module source code.</p>
+ * <p>If the runtime cannot restore from StateStore, then it "rewinds" the input queue and processes events from the beginning. 
+ * The first (or near first) item in the input queue will be a variable containing the (initial) source code of the module.</p>
+ * <p>During a recovery operation, the Ticker needs to be "pushed" along. Essentially, the clock is set to the timestamp of each message which 
+ * allows the ticker to add Ticks into the stream in the same order they were received the first time through. 
+ * This avoids having to fill the message queue with thousands if not millions of "tick" messages.</p>
+ * @author John Churin
+ *
+ */
 public class Runtime {
 	Set<SodacanModule> modules = new HashSet<>();
 	@JsonIgnore
