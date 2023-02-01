@@ -14,12 +14,8 @@
  */
 package net.sodacan.module.statement;
 
-import java.time.Instant;
-import java.time.ZonedDateTime;
 import java.util.ArrayList;
 import java.util.List;
-
-import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
@@ -37,17 +33,18 @@ import net.sodacan.module.variables.Variables;
  *
  */
 public class SodacanModule extends ModuleComponent{
-	String name;
-	String instanceName;
-	String source;
-	String originalFileName;
+	private String name;
+	private String instanceName;
+	private String source;
+	private String originalFileName;
+	private String agentAffinity;
 	// Note: statements within each group are processed in the order listed. in other respects, the declarative nature of Sodacan 
 	// means the order of statements is unimportant.
-	VariableDefs variableDefs = new VariableDefs();
-	List<ErrorComponent> errors = new ArrayList<>();
-	List<AtStatement> atStatements = new ArrayList<>();
-	List<OnStatement> onStatements = new ArrayList<>();
-	List<IfStatement> ifStatements = new ArrayList<>();
+	private VariableDefs variableDefs = new VariableDefs();
+	private List<ErrorComponent> errors = new ArrayList<>();
+	private List<AtStatement> atStatements = new ArrayList<>();
+	private List<OnStatement> onStatements = new ArrayList<>();
+	private List<IfStatement> ifStatements = new ArrayList<>();
 
 	/**
 	 * A Sodacan module is constructed very early in the process, however, once complete, 
@@ -173,7 +170,18 @@ public class SodacanModule extends ModuleComponent{
 		this.source = source;
 	}
 	
-	
+	/**
+	 * <p>Non-null if this Module must run on a specific agent. Specifies the "logical" name of the agent.</p>
+	 * @return
+	 */
+	public String getAgentAffinity() {
+		return agentAffinity;
+	}
+
+	public void setAgentAffinity(String agentAffinity) {
+		this.agentAffinity = agentAffinity;
+	}
+
 	public String getOriginalFileName() {
 		return originalFileName;
 	}

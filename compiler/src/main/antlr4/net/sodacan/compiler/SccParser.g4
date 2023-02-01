@@ -10,13 +10,17 @@ module
 	;
 
 moduleName
-	: name=ID moduleInstance? EOL+
+	: name=ID moduleInstance? moduleAffinity? EOL+
 	;
 	
 moduleInstance
 	: LBRACKET name=ID RBRACKET
 	;
-				
+
+moduleAffinity
+	: AGENT name=ID
+	;
+					
 statements
 	: statement* 				#statementList
 	; 
