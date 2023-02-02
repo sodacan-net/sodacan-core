@@ -6,5 +6,11 @@
   	<artifactId>sodacan</artifactId>
   	<version>0.0.1</version>
   </parent>
-
+  <dependencies>
+  	<dependency>
+		<groupId>net.sodacan</groupId>
+  		<version>0.0.1</version>
+  		<artifactId>mode</artifactId>
+    </dependency>
+  </dependencies>
 </project>

@@ -13,5 +13,10 @@
   		<artifactId>module</artifactId>
   		<version>${project.parent.version}</version>
   	</dependency>
+  	<dependency>
+		<groupId>net.sodacan</groupId>
+  		<version>0.0.1</version>
+  		<artifactId>mode</artifactId>
+    </dependency>
   </dependencies>
 </project>

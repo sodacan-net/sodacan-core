@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 import net.sodacan.SodacanException;
+import net.sodacan.mode.spi.ModePayload;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -64,6 +65,15 @@ public class Mode {
 
 	private static ThreadLocal<Mode> threadMode = new ThreadLocal<>();
 
+	protected void initialize() {
+		this.messageBusService.loadProviders(messageBusTypes);
+		this.clockService.loadProviders(clockTypes);
+		this.loggerService.loadProviders(loggerTypes);
+		this.stateStoreService.loadProviders(stateStoreTypes);
+		// Keep a list of all modes
+		instances.put(this.name, this);
+
+	}
 	/**
 	 * Setup the mode, services, and providers underneath mode. Also any listeners requested.
 	 * @param mb
@@ -75,20 +85,31 @@ public class Mode {
 		this.clockTypes = mb.clockTypes;
 		this.loggerTypes = mb.loggerTypes; 
 		this.stateStoreTypes = mb.stateStoreTypes;
-		
-		this.messageBusService.loadProviders(messageBusTypes);
-		this.clockService.loadProviders(clockTypes);
-		this.loggerService.loadProviders(loggerTypes);
-		this.stateStoreService.loadProviders(stateStoreTypes);
-		
-		instances.put(mb.name, this);
-		
+		initialize();
+
+		/**
+		 * Note: recovered modes don't need listeners, which are used for unit testing.
+		 */
 		for (PropertyChangeListener listener : mb.listeners) {
 			this.messageBusService.addPropertyChangeListener(listener);
 			this.clockService.addPropertyChangeListener(listener);
 			this.loggerService.addPropertyChangeListener(listener);
 			this.stateStoreService.addPropertyChangeListener(listener);
 		}
+	}
+	
+	/**
+	 * Create a mode starting from a mode payload
+	 * @param modePayload
+	 * @return
+	 */
+	public Mode( ModePayload modePayload ) {
+		this.name = modePayload.getName();
+		this.messageBusTypes = modePayload.getMessageBusTypes();
+		this.clockTypes = modePayload.getClockTypes();
+		this.loggerTypes = modePayload.getLoggerTypes(); 
+		this.stateStoreTypes = modePayload.getStateStoreTypes();
+		initialize();
 	}
 	
 	public Set<String> getMessageBusTypes() {
@@ -165,7 +186,6 @@ public class Mode {
 	public String toString() {
 		return "Mode: " + getName();
 	}
-
 	/**
 	 * Create a new, empty, builder for a Mode
 	 */

@@ -13,14 +13,29 @@
  * limitations under the License.
  */
 package net.sodacan.agent;
+
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+import net.sodacan.mode.spi.ModePayload;
+import net.sodacan.mode.spi.ModulePayload;
+
 /**
  * 
+ * <p>In a separate thread, ask MessageBus for the list of modes. As modes arrive add them to our collection of ModePayloads. 
+ * This list can grow over time. So the thread remains active.</p>
+ * <p>In another thread, ask message bus for the list of modules.As module names arrive, find the correct mode, and launch a new runtime thread .</p>
+ * <p>Individual runtimes will request Instant(s) from the clock plugin and module messages from the message bus plugin</>
  * @author John Churin
  *
  */
 public class Agent {
 	private String name;
-	
+	// A list of modes that we know about. Note, this list is updated during operation so we need to keep an eye on additions.
+	private Map<String,ModePayload> modes = new ConcurrentHashMap<>();
+	// A list of modules that we know about. Note, this list is updated during operation so we need to keep an eye on additions.
+	private Map<String,ModulePayload> modules = new ConcurrentHashMap<>();
+
 	/**
 	 * The name of an agent is not strictly required except when a specific agent requires one or more modules to
 	 * run on that agent such as when the underlying computer has GPIO pins. 
@@ -34,11 +49,9 @@ public class Agent {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-
+	
+	
 	public static void main(String[] args) {
-		// TODO Auto-generated method stub
-
 	}
 
 }
