@@ -118,6 +118,7 @@ public abstract class ModeService {
 	return variable;
 		
 	}
+	
 	/**
 	 * Return a new VariablePayload for use by MessageBus and StateStore plugins
 	 * @return A new VariablePayload or null if no payload possible (we only do ModuleVariables)

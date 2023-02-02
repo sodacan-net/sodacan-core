@@ -6,15 +6,18 @@ The Sodacan agent is mostly a thin wrapper around the Sodacan runtime. It manage
 As with other aspects of Sodacan, modules are organized by *mode* in an agent. So, it is possible that one agent is hosting the same module in two different modes. One being completely independent from the other, including, possibly, different versions of the module in each mode.
 
 ## Module-Topic
-A Sodacan topic is a channel for publish-subscribe messages between modules. However, module name is not sufficient to "name" a topic. In Sodacan, a topic is identified by Mode name, Namespace, and Module name, and instance name, if any. This kind of topic is referred to as a module-topic. The distinction between module-topic and module is important but in most of the documentation, we use module and topic interchangeably.
+A Sodacan topic is a channel for publish-subscribe messages between modules. However, module name is not sufficient to "name" a topic. In Sodacan, a topic is identified by Mode name, and Module name, and instance name, if any. This kind of topic is referred to as a module-topic. The distinction between module-topic and module is important but in most of the documentation, we use module and topic interchangeably.
 
 ## Module-Topic Partitioning
-Module-topics are not and cannot be partitioned because a Module is a sequential processor. Partitioning would split the stream of events to multiple parallel modules which would break the sequential processing model per module.
+Module-topics are not and cannot be partitioned because a `module` is a sequential processor. Partitioning would split the stream of events to multiple parallel modules which would break the sequential processing model per module.
 
 ## Module-Master-Topic
 With an exception described below, all agents subscribe to all module-topics. But, how does an agent learn of the list of module-topics?
 
 All agents subscribe to the Module-Master-Topic to get a list of all known modules in Sodacan. The agent then subscribes to all of the topics listed in the Module-Master-Topic. It also continues to poll the module-master-topic for changes and adjusts its subscription list accordingly. When this list changes, a shuffle occurs. No modules will be running during the shuffle. However, this shuffle usually happens quickly. Interestingly, with one exception, after the shuffle, a module may be running on a different agent. This entire process is transparent to the module.
+
+## Mode-Master-Topic
+We left a little out so far. Where does mode comes from, since it is critical to the identity of a module. There is another topic called the Mode-Master-Topic which contains a list of all known Modes. This list is also monitored by the agent in case a new mode is added. 
 
 ## Subscription vs Assignment
 Even though an agent subscribes to *all* topics, it may only receive messages for *some* of the topics. For example, if two agents are running, then each agent will receive half of the topics. If ten agents are running, they each get one tenth of the topics. This distribution of modules is dynamic.

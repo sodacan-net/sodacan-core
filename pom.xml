@@ -13,6 +13,8 @@
 		<module>mode</module>
 		<module>mode-api</module>
 		<module>plugin-memory</module>
+		<module>plugin-static-clock</module>
+		<module>plugin-real-clock</module>
 		<module>runtime</module>
 		<module>utility</module>
 		<module>webserver</module>

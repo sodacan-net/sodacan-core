@@ -14,9 +14,11 @@
  */
 package net.sodacan.mode;
 
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -51,6 +53,27 @@ public class ClockService extends ModeService {
 	@Override
 	protected List<ClockProvider> getProviders() {
 		return providers;
+	}
+
+	/**
+	 * In this case, we can't provide more than one clock supplier to a module so
+	 * the first one wins.
+	 * @return A supplier of instances
+	 */
+	public Supplier<Instant> getSupplier() {
+		if (providers.size()>0) {
+			return providers.get(0).getSupplier();
+		}
+		return null;
+	}
+	
+	/**
+	 * Set the clock (this only works for manual clocks. A real clock will ignore this request.
+	 */
+	public void setClock(int year, int month, int day, int hour, int minute, int second) {
+		if (providers.size()>0) {
+			providers.get(0).setClock(year, month, day, hour, minute, second);
+		}
 	}
 
 }

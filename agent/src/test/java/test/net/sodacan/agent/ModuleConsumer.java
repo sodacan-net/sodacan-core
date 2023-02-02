@@ -12,14 +12,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.mode.spi;
-/**
- * The message bus uses plugins to get and set the various messages of the message bus.
- * @author John Churin
- *
- */
-public interface MessageBusProvider extends ModeProvider {
-//	public ModeSupplier getModeSupplier();
-//	public void putModePayload(ModePayload payload);
-//	public TopicModeSupplier get
+package test.net.sodacan.agent;
+
+import java.util.function.Consumer;
+
+public class ModuleConsumer implements Consumer<String> {
+	public ModuleConsumer() {
+	}
+	@Override
+	public void accept(String val) {
+		System.out.println(val);
+	}
+
 }

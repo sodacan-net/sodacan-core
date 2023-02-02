@@ -30,7 +30,6 @@ import net.sodacan.mode.spi.VariablePayload;
  */
 @AutoService(StateStoreProvider.class)
 public class StateStore extends MemoryProvider implements StateStoreProvider {
-	public static final String PLUGIN_TYPE = "memory";
 	// Our "database" of variables is stored here. Note: We should never see variables from 
 	// different modes in a single instance of this plugin.
 	private Set<VariablePayload> variables = new HashSet<>(); 
