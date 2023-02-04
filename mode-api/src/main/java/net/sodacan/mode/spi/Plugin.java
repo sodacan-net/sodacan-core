@@ -16,7 +16,6 @@ package net.sodacan.mode.spi;
 
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
-import java.util.Set;
 /**
  * Service Providers in this plugin respond to "memory" plugin type
  * @author John Churin

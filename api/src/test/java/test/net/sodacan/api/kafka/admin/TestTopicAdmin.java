@@ -3,7 +3,6 @@ package test.net.sodacan.api.kafka.admin;
 
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -16,24 +15,38 @@ import java.util.concurrent.TimeoutException;
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
-import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.apache.kafka.clients.admin.DescribeConfigsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
-import org.apache.kafka.common.Node;
 import org.apache.kafka.common.config.ConfigResource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.junit.Test;
 
-import net.sodacan.api.kafka.admin.TopicAdmin;
-
+import net.sodacan.api.kafka.TopicAdmin;
 
 public class TestTopicAdmin {
-	private final static Logger logger = LogManager.getLogger();
 	List<String> brokers = new ArrayList<>();
+
+//	@Test
+//	public void testInitializeAll() {
+//		Initialize initialize = new Initialize();
+//		initialize.setupTopics();
+//		initialize.setupDefaultMode();
+//	}
+	
+//	@Test
+	public void testListTopics() {
+		TopicAdmin topicAdmin = new TopicAdmin();
+		System.out.println(topicAdmin.listTopics());
+	}
+
+//	@Test
+	public void testListBrokers() {
+		TopicAdmin topicAdmin = new TopicAdmin();
+		topicAdmin.getBrokers();
+//		System.out.println();
+	}
 
 	
 //	@Test
@@ -45,15 +58,6 @@ public class TestTopicAdmin {
 		props.put("java.net.preferIPv4Stack", "true");
 		props.put("bootstrap.servers", "soda6.eden:9092");
 		 AdminClient adminClient = AdminClient.create(props);
-		 
-		 // Get information about the brokers that are running
-		 DescribeClusterResult dcr = adminClient.describeCluster();
-		 KafkaFuture<Collection<Node>> nodes = dcr.nodes();
-		 List<Integer> brokers = new LinkedList<Integer>();
-		 for (Node node : nodes.get()) {
-			 System.out.println("Node: " + node);
-			 brokers.add(node.id());
-		 }
 		 
 		 // List the topics available
 		 List<String> topicNames = new LinkedList<String>();

@@ -9,8 +9,8 @@
   <dependencies>
   	<dependency>
 		<groupId>net.sodacan</groupId>
-  		<version>0.0.1</version>
   		<artifactId>mode</artifactId>
+  		<version>${project.parent.version}</version>
     </dependency>
   </dependencies>
 </project>

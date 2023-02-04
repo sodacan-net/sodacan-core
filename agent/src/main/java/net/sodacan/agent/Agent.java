@@ -25,7 +25,12 @@ import net.sodacan.mode.spi.ModulePayload;
  * <p>In a separate thread, ask MessageBus for the list of modes. As modes arrive add them to our collection of ModePayloads. 
  * This list can grow over time. So the thread remains active.</p>
  * <p>In another thread, ask message bus for the list of modules.As module names arrive, find the correct mode, and launch a new runtime thread .</p>
- * <p>Individual runtimes will request Instant(s) from the clock plugin and module messages from the message bus plugin</>
+ * <p>Individual runtimes will request Instant(s) from the clock plugin and module messages from the message bus plugin. So, the agent is responsible for starting
+ * runtimes. </p>
+ * <p>The agent also reacts to runtime shutdowns. This happens when the underlying message bus shuffles and decides that a module's 
+ * messages should be delivered to a different agent. At that point we gracefully shut down the runtime. This is an optional step since the message 
+ * bus will no longer deliver messages to those modules. However, if the message bus should again send messages for a module to this agent, then we
+ * need to get the current state since we didn't receive the intervening messages.</p>
  * @author John Churin
  *
  */

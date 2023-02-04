@@ -47,8 +47,9 @@ public class Cycle implements Runnable {
 	public Cycle(ModePayload modePayload, ModulePayload modulePayload ) {
 		this.modePayload = modePayload;
 		this.modulePayload = modulePayload;
-		// Build a mode from the save mode we found.
+		// Build a mode from the saved mode we found.
 		mode = new Mode( modePayload );
+		mode.initialize();
 	}
 
 	@Override

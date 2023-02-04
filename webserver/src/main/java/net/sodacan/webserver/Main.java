@@ -16,22 +16,23 @@ package net.sodacan.webserver;
 
 import java.net.URI;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.StaticHttpHandler;
 import org.glassfish.jersey.grizzly2.httpserver.GrizzlyHttpServerFactory;
 import org.glassfish.jersey.server.ResourceConfig;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import jakarta.ws.rs.core.UriBuilder;
 import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
 
 public class Main {
-	private final static Logger logger = LogManager.getLogger();
+	private final static Logger logger = LoggerFactory.getLogger(Main.class);
 
 	public static void main(String[] args) {
 		{	// Setup logger
+//			BasicConfigurator.configure();
 //			logger = LogManager.getRootLogger();
 		}
 		// Setup the REST Api server

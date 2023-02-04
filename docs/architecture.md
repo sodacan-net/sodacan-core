@@ -152,6 +152,51 @@ subgraph plugin
 end
 
 ```
+#### Message Flow
+When the system is initializes, two topic are created: The `module topic`, contains one entry per topic. And, the `mode topic`, one entry per mode. The module topic only has metadata about the module, not the module itself. The mode topic contains the definition of the mode and which plugins it uses.
+
+Either the command line tool or the Web Server will begin the lifecycle of a module using the Sodacan API. No agents need to be running at this time.
+The source code for a module begins on the file system or from the web server. In any case:
+
+- Compile the module, this yields the module and a newly minted collection of variables known to that module.
+- Two topics are created for each new module: Subscription topic and state topic.
+- The subscription topic may already exist if a publisher has already caused it to be created.
+- Conversely, this module will create any topics needed by its `publish` variables.
+- The new state topic is only used by the new module and it immediately receives the collection of variables extracted form the module.
+- Importantly, one of the variables contains the source code of the module.
+- At this point, the module is not yet ready to run on any particular agent
+- However, certain modules have specified which agent they must run on
+
+At this point, we have setup for a module to run, but have not actually run it. It will run on an agent. An agent can run zero or more modules.
+Ideally, if there were three agents running, one third of the modules will run on each agent. 
+
+Once all of the modules have a place to run, messages flow from a publishing module to zero or more subscribing modules. Each module has its own inbound topic. Since modules have state (variables), as the module completes each cycle, it publishes to a second topic maintained per module any changed variables. This state-saving topic is then replayed to recover state when the module starts up. After the state-recovery is done, the module can start processing inbound messages. 
+
+Determining where a module executes is the job of agents. Each agent is going to end up running some fraction of the known modules. 
+
+Any agent that runs as a named agent is not counted as an available agent. That type of agent simply starts up and begins processing for the modules that have been tied to that named agent.
+
+When an unnamed agent starts up (it can be on any server in the network), it also names itself by creating a local file with the name or reading that file if it already exists. The name is arbitrary but must be unique. Usually a GUID and should be stable over time. It knows of no modules. The agent reads the list of known agents which contains the current status of all agents. This includes which modules that that agent is currently running. But the agent still has not been assigned any work.
+
+Each agent subscribes to the Master-Agent topic, but only one (doesn't matter which) is going to receive records and handle the shuffle. So, if an agent goes down, another will pick up the ball. This control agent (a normal agent with control responsibilities) keeps the list of all modules and the list of agents and status by reading the module and master queues. When an agent starts up and sends its status to the Master-Agent topic, the control agent receives the message and calculates a distribution of modules to agents. Some agents may get fewer modules and others may get more.
+
+The control agent then affects this new distribution using a two-phase process. The first phase is to shut down modules that are destined to move from their current agent. During this phase, the modules that are moving are not processing any messages but their state is available in the module state and inbound message topic. The control agent waits until all agents has responded with their new current status. Now, the modules that have been shuffled are added to the list belonging to the new agent. Now the Master-Agent topic contains the new configuration and each of the agents sees their own configuration with their
+new modules that need to be added, if any.
+
+So much for the happy path. What happens for edge cases:
+
+1. An agent goes down unexpectedly: Eventually, the control agent will notice this because no "heartbeat" status messages and will unilaterally shuffle modules among the remaining agents.
+
+2. The Agent with Control Goes down: All agents are listening to the Master-Agent-Status queue. The underlying infrastructure will cause the subscription in another agent to start up, it becomes control.
+
+3. An non-control agent goes down during the shuffle: The two-phase shuffle proceeds as usual, however, the down agent fails to provide status so it
+causes control to reshuffle again using the reduced list of agents.
+
+4. Control agent goes down: Control is automatically assign to one of the other agents. Otherwise, the same as above.
+
+ 
+Upon receipt of this *new* distribution of modules to agents, an agent causes its current modules that are not on the list to shut down. It again publishes its status at the conclusion of the shutdown process confirming to control that the requested modules have been shut down.
+
 
 #### Sodacan API
 The Sodacan API provides a way to perform administrative, operational, and application functions. Many of its functions are passed through messages to other components including the Sodacan web server, the underlying Kafka system, and mostly to Sodacan agents.

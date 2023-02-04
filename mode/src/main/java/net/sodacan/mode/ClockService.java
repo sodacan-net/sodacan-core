@@ -20,8 +20,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sodacan.mode.spi.ClockProvider;
 import net.sodacan.mode.spi.ModeProvider;
@@ -31,7 +31,7 @@ import net.sodacan.mode.spi.ModeProvider;
  *
  */
 public class ClockService extends ModeService {
-	private final static Logger logger = LogManager.getLogger();
+	private final static Logger logger = LoggerFactory.getLogger(ClockService.class);
 
 	public ClockService(Mode mode) {
 		super(mode, ClockProvider.class);
@@ -45,7 +45,7 @@ public class ClockService extends ModeService {
 			if (provider.isMatch(types)) {
 				providers.add((ClockProvider) provider);
 				provider.setMode(getMode().getName());
-				logger.info("Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
+				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}

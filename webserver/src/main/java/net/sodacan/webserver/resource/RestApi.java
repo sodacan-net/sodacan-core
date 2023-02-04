@@ -14,8 +14,8 @@
  */
 package net.sodacan.webserver.resource;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -24,8 +24,8 @@ import jakarta.ws.rs.Path;
 
 @Path("")
 public class RestApi {
-	private final static Logger logger = LogManager.getLogger();
-	private static ObjectMapper objectMapper = new ObjectMapper();;
+	private final static Logger logger = LoggerFactory.getLogger(RestApi.class);
+	private static ObjectMapper objectMapper = new ObjectMapper();
 	
 	public RestApi() {
 	}

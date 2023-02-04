@@ -14,6 +14,8 @@
  */
 package test.net.sodacan.mode;
 
+import static org.junit.Assert.assertNotNull;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.util.HashMap;
@@ -55,8 +57,8 @@ public class TestPlugins implements PropertyChangeListener{
 		// setup at this time.VariablePayload
 		// We want to ensure that the message makes it to the plugin so we'll ask the plugin(s) to
 		// send us a property change event.
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("memory").listener(this).build();
-		
+		Mode mode = Mode.newModeBuilder().name("Mode1").logger("memory").listener(this).build();
+		mode.initialize();
 		// This would normally be called when a thread is recently started or restarted. For example, 
 		// in a filter before processing a REST api call.
 		Mode.setModeInThread("Mode1");
@@ -82,8 +84,10 @@ public class TestPlugins implements PropertyChangeListener{
 		// setup at this time.
 		// We also register ourself so we hear back from plugins on property changes
 		// Mostly for testing
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode1").logger("memory").listener(this).build();
-		/* Mode mode = */ Mode.newModeBuilder().name("Mode2").logger("memory").listener(this).build();
+		Mode mode = Mode.newModeBuilder().name("Mode1").logger("memory").listener(this).build();
+		mode.initialize();
+		Mode mode2 = Mode.newModeBuilder().name("Mode2").logger("memory").listener(this).build();
+		mode2.initialize();
 		
 		// This would normally be called when a thread is recently started or restarted. For example, 
 		// in a filter before processing a REST api call.
@@ -126,16 +130,20 @@ public class TestPlugins implements PropertyChangeListener{
 			VariableDef vd2 = VariableDef.newVariableDefBuilder().name("y").alias("z").initialValue(new Value(456)).build();
 			ModuleVariable v2 = (ModuleVariable)mvs.addVariable(vd2);
 			v2.setChangedInCycle(true);
-			/* Mode mode = */ Mode.newModeBuilder().name("Mode1").stateStore("memory").listener(this).build();
+			Mode mode = Mode.newModeBuilder().name("Mode1").stateStore("memory").listener(this).build();
+			mode.initialize();
 	
 			// This would normally be called when a thread is recently started or restarted. For example, 
 			// in a filter before processing a REST api call.
 			Mode.setModeInThread("Mode1");
 			SodacanModule sm = new SodacanModule();
+			assertNotNull(sm);
 			sm.setName("DummyModule");
 			StateStoreService ss = Mode.getInstance().getStateStoreService();
+			assertNotNull(ss);
 			ss.save(sm,mvs);
 			PluginEvent pe1 = findPluginEventByModeAndProperty("Mode1","variable");
+			assertNotNull(pe1);
 			// Normally invisible to runtime but we use this for testing
 			VariablePayload vp1 = (VariablePayload) pe1.getNewValue();
 			assert(vp1.getVariableName().equals("y"));
@@ -157,7 +165,8 @@ public class TestPlugins implements PropertyChangeListener{
 			SodacanModule sm = new SodacanModule();
 			sm.setName("DummyModule");
 			// Create a mode
-			/* Mode mode = */ Mode.newModeBuilder().name("Mode1").stateStore("memory").listener(this).build();
+			Mode mode = Mode.newModeBuilder().name("Mode1").stateStore("memory").listener(this).build();
+			mode.initialize();
 	
 			// This would normally be called when a thread is recently started or restarted. For example, 
 			// in a filter before processing a REST api call.

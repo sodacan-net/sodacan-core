@@ -14,19 +14,18 @@
  */
 package net.sodacan.mode;
 
-import java.beans.PropertyChangeListener;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 
 public class LoggerService extends ModeService {
-	private final static Logger logger = LogManager.getLogger();
+	private final static Logger logger = LoggerFactory.getLogger(LoggerService.class);
 
 	protected List<LoggerProvider> providers = new ArrayList<>();
 
@@ -40,7 +39,7 @@ public class LoggerService extends ModeService {
 			if (provider.isMatch(types)) {
 				providers.add((LoggerProvider) provider);
 				provider.setMode(getMode().getName());
-				logger.info("Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
+				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}

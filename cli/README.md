@@ -9,35 +9,39 @@ In order to provide the fullest coverage of Sodacan capabilities, an option for 
 soda <cmd> [args]
 
 Commands:
-  soda broker startup --config
-  soda broker shutdown --config
-  soda broker status
-  soda module compile <mode> <moduleFile>   	Compile one or more modules
-  soda module deploy	<mode> <module>          Compile and deploy
-  soda module create instance <mode> <module> <key>
-  soda module list <mode> <pattern>
-  soda module instance list <mode> <module> <pattern>
-  soda mode create <mode>
-  soda mode copy from <mode> to <mode>	The destination mode cannot exist
-  soda mode clock <mode> live | <date> <time>
-  soda mode delete <mode>            The named mode is completely removed from the system	
-  soda topic publish <mode> <topic> <key> <payload>
-  soda topic subscribe <mode> <topicPattern>		Wait for messages to arrive, ctrl-c to stop
-  soda topic rewind <mode> <topic> <time>        Replay messages from a specific time
-  soda topic create <mode> <params>     	Create a new topic
-  soda topic list <mode> <pattern>		
-  soda topic delete <mode> <topic>
-  soda topic message delete <mode> <topic> before/after <timestamp> Delete messages either before or after the specified time
-  soda 
+  broker list
+  broker status
+
+  initialize         Setup initial topics
+  
+  module create <module>    Create a module without any behavior
+  module compile <module>   Compile a module but do not deploy
+  module deploy <module>    Compile and deploy
+  module export <module>    Export a module source
+  module list [<pattern>]   List modules, optionally filtered by pattern
+  instance add <module> <key> Add a new instance to a module
+  instance list <module>    List instances of a module
+
+  mode list                 List known modes -v for plugin types needed
+  mode create <mode> -k <clock> -l <logger> -m <messageBus>
+  mode copy from <mode> to <mode>	The destination mode cannot exist
+  mode clock <mode> set <date> <time>
+  mode clock <mode> {plus|minus} <number> {year|month|day|hour|minute|second}
+  mode delete <mode>            The named mode and related modules are completely removed from the system
+
+  agent list [<pattern>]        List known agents -a for only active agents
+  agent status <pattern>        Print status of matching agents -v for modules, too
+
 
 Options:
-  -- use kafka
-  -- use rest
-  -- use api
-  --mode <mode>  Specify which mode this action affects                 [string]
-  --version      Show version number                                   [boolean]
-  --verbose, -v                                                 [default: false]
-  --help         Show help                                             [boolean]
+  -f         Force, no are-you-sure prompt
+  -c <file> config file name
+  -m <mode>  Specify which mode this action affects
+  -v         Show version number
+  -V         Verbose
+  -d         Show debug output
+  -h         Show help
+  
 ```
 
 ### Mode

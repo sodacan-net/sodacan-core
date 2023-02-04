@@ -54,8 +54,8 @@ public class SodacanModule extends ModuleComponent{
 	 */
 	public SodacanModule() {
 		
-	}	
-
+	}
+	
 	/**
 	 * One time, for each instance of a module, at runtime, visit each variable definition and create a set of variables 
 	 * that are persisted and lives forever independent of the module definition.

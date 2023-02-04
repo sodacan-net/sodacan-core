@@ -72,10 +72,10 @@ public class ModePayload {
 	
 	public static class ModePayloadBuilder {
 		private String name;
-		private Set<String> messageBusTypes;
-		private Set<String> clockTypes;
-		private Set<String> loggerTypes; 
-		private Set<String> stateStoreTypes;
+		private Set<String> messageBusTypes = new HashSet<String>();
+		private Set<String> clockTypes = new HashSet<String>();
+		private Set<String> loggerTypes = new HashSet<String>(); 
+		private Set<String> stateStoreTypes = new HashSet<String>();
 		private Set<PropertyChangeListener> listeners = new HashSet<>();
 
 		protected ModePayloadBuilder() {

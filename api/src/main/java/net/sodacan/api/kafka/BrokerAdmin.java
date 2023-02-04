@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.api.kafka.admin;
+package net.sodacan.api.kafka;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -27,6 +27,8 @@ import org.apache.kafka.clients.admin.DescribeLogDirsResult;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.requests.DescribeLogDirsResponse.LogDirInfo;
+
+import net.sodacan.SodacanException;
 
 public class BrokerAdmin extends Admin {
 
@@ -45,13 +47,18 @@ public class BrokerAdmin extends Admin {
 		return brokerIds;
 	}
 
-	public List<String> listBrokers() throws InterruptedException, ExecutionException {
-		List<String> brokers = new LinkedList<String>();
-		// Get information about the brokers that are running
-		DescribeClusterResult dcr = getAdminClient().describeCluster();
-		KafkaFuture<Collection<Node>> nodes = dcr.nodes();
-		for (Node node : nodes.get()) {
-			brokers.add("Broker: " + node.id() + " on host: " + node);
+	public List<String> listBrokers() {
+		List<String> brokers;
+		try {
+			brokers = new LinkedList<String>();
+			// Get information about the brokers that are running
+			DescribeClusterResult dcr = getAdminClient().describeCluster();
+			KafkaFuture<Collection<Node>> nodes = dcr.nodes();
+			for (Node node : nodes.get()) {
+				brokers.add(node.host() + ":" + node.port());
+			}
+		} catch (InterruptedException | ExecutionException e) {
+			throw new SodacanException("Error getting broker list from Kafka", e);
 		}
 		return brokers;
 	}

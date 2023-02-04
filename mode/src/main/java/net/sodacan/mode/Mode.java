@@ -25,6 +25,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import net.sodacan.SodacanException;
 import net.sodacan.mode.spi.ModePayload;
+import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -58,6 +59,7 @@ public class Mode {
 	private ClockService clockService = new ClockService(this);
 	private LoggerService loggerService = new LoggerService(this);
 	private StateStoreService stateStoreService = new StateStoreService(this);
+	private Set<PropertyChangeListener> listeners;
 	
 //	private functionService funtionService;	// Include namespace and fn name
 
@@ -65,7 +67,7 @@ public class Mode {
 
 	private static ThreadLocal<Mode> threadMode = new ThreadLocal<>();
 
-	protected void initialize() {
+	public void initialize() {
 		this.messageBusService.loadProviders(messageBusTypes);
 		this.clockService.loadProviders(clockTypes);
 		this.loggerService.loadProviders(loggerTypes);
@@ -73,6 +75,24 @@ public class Mode {
 		// Keep a list of all modes
 		instances.put(this.name, this);
 
+		/**
+		 * Note: recovered modes don't need listeners, which are used for unit testing.
+		 */
+		for (PropertyChangeListener listener : listeners) {
+			this.messageBusService.addPropertyChangeListener(listener);
+			this.clockService.addPropertyChangeListener(listener);
+			this.loggerService.addPropertyChangeListener(listener);
+			this.stateStoreService.addPropertyChangeListener(listener);
+		}
+	}
+	
+	public ModePayload createModePlayload() {
+		ModePayloadBuilder mpb = ModePayload.newModePayloadBuilder().name(name);
+		for (String mbt : this.messageBusTypes) mpb.messageBus(mbt);
+		for (String ct : this.clockTypes) mpb.clock(ct);
+		for (String lt : this.loggerTypes) mpb.logger(lt);
+		for (String sst : this.stateStoreTypes) mpb.stateStore(sst);
+		return mpb.build();
 	}
 	/**
 	 * Setup the mode, services, and providers underneath mode. Also any listeners requested.
@@ -85,17 +105,9 @@ public class Mode {
 		this.clockTypes = mb.clockTypes;
 		this.loggerTypes = mb.loggerTypes; 
 		this.stateStoreTypes = mb.stateStoreTypes;
-		initialize();
+		this.listeners = mb.listeners;
+//		initialize();	// Do this explicitly
 
-		/**
-		 * Note: recovered modes don't need listeners, which are used for unit testing.
-		 */
-		for (PropertyChangeListener listener : mb.listeners) {
-			this.messageBusService.addPropertyChangeListener(listener);
-			this.clockService.addPropertyChangeListener(listener);
-			this.loggerService.addPropertyChangeListener(listener);
-			this.stateStoreService.addPropertyChangeListener(listener);
-		}
 	}
 	
 	/**
@@ -109,7 +121,7 @@ public class Mode {
 		this.clockTypes = modePayload.getClockTypes();
 		this.loggerTypes = modePayload.getLoggerTypes(); 
 		this.stateStoreTypes = modePayload.getStateStoreTypes();
-		initialize();
+//		initialize();
 	}
 	
 	public Set<String> getMessageBusTypes() {

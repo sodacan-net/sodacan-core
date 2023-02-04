@@ -18,8 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
@@ -43,7 +43,7 @@ import net.sodacan.module.variables.Variables;
  *
  */
 public class StateStoreService extends ModeService {
-	private final static Logger logger = LogManager.getLogger();
+	private final static Logger logger = LoggerFactory.getLogger(StateStoreService.class);
 	protected List<StateStoreProvider> providers = new ArrayList<>();
 
 	public StateStoreService(Mode mode) {
@@ -56,7 +56,7 @@ public class StateStoreService extends ModeService {
 			if (provider.isMatch(types)) {
 				providers.add((StateStoreProvider) provider);
 				provider.setMode(getMode().getName());
-				logger.info("Service provider loaded: Mode: {}, Types: {}, Provider: {}",getMode().getName(),types, provider.getClass().getName());
+				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}
