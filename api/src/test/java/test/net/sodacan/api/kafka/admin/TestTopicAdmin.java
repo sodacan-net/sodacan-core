@@ -40,14 +40,6 @@ public class TestTopicAdmin {
 		TopicAdmin topicAdmin = new TopicAdmin();
 		System.out.println(topicAdmin.listTopics());
 	}
-
-//	@Test
-	public void testListBrokers() {
-		TopicAdmin topicAdmin = new TopicAdmin();
-		topicAdmin.getBrokers();
-//		System.out.println();
-	}
-
 	
 //	@Test
 	public void noLongerATest() throws InterruptedException, ExecutionException, TimeoutException {

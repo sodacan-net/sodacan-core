@@ -17,6 +17,7 @@ package net.sodacan.api.kafka;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -38,6 +39,7 @@ import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
 import org.apache.kafka.common.Node;
 import org.apache.kafka.common.config.ConfigResource;
+import org.apache.kafka.common.config.TopicConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,21 +54,6 @@ public class TopicAdmin extends Admin {
 
 	public TopicAdmin() {
 		super();
-	}
-
-	public void getBrokers() {
-		// Get information about the brokers that are running
-		DescribeClusterResult dcr = getAdminClient().describeCluster();
-		KafkaFuture<Collection<Node>> nodes = dcr.nodes();
-		List<Integer> brokers = new LinkedList<Integer>();
-		try {
-			for (Node node : nodes.get()) {
-				System.out.println("Node: " + node);
-				brokers.add(node.id());
-			}
-		} catch (Exception e) {
-			throw new SodacanException("Error getting response from Kafka", e);
-		}
 	}
 
 	public List<String> listTopics() {
@@ -109,6 +96,15 @@ public class TopicAdmin extends Admin {
 					sb.append('\n');
 				}
 			}
+			for (ConfigEntry ce : entry.getValue().entries()) {
+				if (ce.isDefault()) {
+					sb.append(" D ");
+					sb.append(ce.name());
+					sb.append(": ");
+					sb.append(ce.value());
+					sb.append('\n');
+				}
+			}
 		}
 		return sb.toString();
 	}
@@ -145,19 +141,30 @@ public class TopicAdmin extends Admin {
 	}
 
 	/**
-	 * Create one or more topics. This method will request that the topics be
+	 * <p>Create one or more topics. This method will request that the topics be
 	 * created and will wait for the completion up to WAIT_SECONDS at with point it
 	 * will throw an exception if unsuccessful. The number of partitions (1) and
 	 * number of replicas (3) are FIXED for the moment. In the case of events, the
 	 * number of partitions should always be 1 (per suffix) since our rule engine
-	 * must be able to reason over all states and events (for a given suffix).
+	 * must be able to reason over all states and events (for a given suffix).</p>
+	 * <p>A compacted topic means that only the most recent version of each key is needed.
+	 * An uncompacted topic will retain records forever.</p>
 	 * 
 	 * @param topics list of topic names to be created
+	 * @param compacted If true, a compacted topic is created (old records deleted)
 	 */
-	public void createTopics(List<String> topics) {
+	public void createTopics(List<String> topics, boolean compacted) {
+		Map<String,String> configs = new HashMap<>();
+		if (compacted) {
+			configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT);
+		} else {
+			configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_DELETE);
+			configs.put(TopicConfig.RETENTION_BYTES_CONFIG, "-1");
+			configs.put(TopicConfig.RETENTION_MS_CONFIG, "-1");
+		}
 		List<NewTopic> newTopics = new ArrayList<NewTopic>();
 		for (String topic : topics) {
-			newTopics.add(new NewTopic(topic, PARTITIONS, REPLICAS));
+			newTopics.add(new NewTopic(topic, PARTITIONS, REPLICAS).configs(configs));
 		}
 		CreateTopicsResult ctr = getAdminClient().createTopics(newTopics);
 		try {
@@ -178,10 +185,10 @@ public class TopicAdmin extends Admin {
 	 * 
 	 * @param suffix
 	 */
-	public void createTopic(String topic) {
+	public void createTopic(String topic, boolean compacted) {
 		List<String> topics = new ArrayList<String>();
 		topics.add(topic);
-		createTopics(topics);
+		createTopics(topics, compacted);
 	}
 
 	public boolean deleteTopics(List<String> topics) {

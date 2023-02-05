@@ -36,6 +36,9 @@ import net.sodacan.cli.cmd.ModeCreateCmd;
 import net.sodacan.cli.cmd.ModeListCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
+import net.sodacan.cli.cmd.TopicPrintCmd;
+import net.sodacan.cli.cmd.TopicStatusCmd;
+import net.sodacan.cli.cmd.TopicWatchCmd;
 
 public class Main {
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -56,6 +59,9 @@ public class Main {
 				.action("mode", "create", new ModeCreateCmd(),"<mode> Create a new mode")
 				.action("topic", "list", new TopicListCmd(), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(), "<topic> Delete a topic")
+				.action("topic", "print", new TopicPrintCmd(), "<topic> print contents of a topic")
+				.action("topic", "status", new TopicStatusCmd(), "<topic> status of a topic")
+				.action("topic", "watch", new TopicWatchCmd(), "<topic> watch contents of a topic")
 				.action("help",  null, "Show help in interactive mode")
 				;
 
@@ -63,12 +69,14 @@ public class Main {
 		logger.trace("Setup Options");
 		options = new Options();
 		// add t option
+		options.addOption("d", "debug", false, "show debug output");
+		options.addOption("f", "force", false, "Don't ask for confirmation before critical action");
 		options.addOption("h", "help", false, "This help");
 		options.addOption("i", "interactive", false, "Interactive mode");
+		options.addOption("l", "limit", true, "Limit output to <lines>, detault 1000");
 		options.addOption("m", true, "Specify sticky mode, default is default");
-		options.addOption("f", "force", false, "Don't ask for confirmation before critical action");
 		options.addOption("v", "verbose", false, "Be verbose");
-		options.addOption("d", "debug", false, "show debug output");
+		options.addOption("s", "start", true, "Start output at <line>, detault 1");
 		parser = new DefaultParser(true);
 	}
 	public void interactiveMode() {
@@ -79,6 +87,9 @@ public class Main {
 				String response = bufferedReader.readLine();
 				String args[] = response.split(" ");
 				if (args.length==0 || args[0].isEmpty()) continue;
+				if ("quit".equals(args[0])) {
+					break;
+				}
 				if ("help".equals(args[0])) {
 					showHelp();
 				} else {

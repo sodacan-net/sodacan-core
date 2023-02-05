@@ -83,27 +83,27 @@ public class Initialize {
 		// Get the set of topics we know about
 		boolean r = false;
 		if (!topicSet.contains(AGENT_STATUS)) {
-			topicAdmin.createTopic(AGENT_STATUS);
+			topicAdmin.createTopic(AGENT_STATUS,true);
 			if (verbose) System.out.println(AGENT_STATUS + " created");
 			r = true;
 		}
 		if (!topicSet.contains(AGENT_CONFIG)) {
-			topicAdmin.createTopic(AGENT_CONFIG);
+			topicAdmin.createTopic(AGENT_CONFIG,true);
 			if (verbose) System.out.println(AGENT_CONFIG + " created");
 			r = true;
 		}
 		if (!topicSet.contains(LOGGER)) {
-			topicAdmin.createTopic(LOGGER);
+			topicAdmin.createTopic(LOGGER,true);
 			if (verbose) System.out.println(LOGGER + " created");
 			r = true;
 		}
 		if (!topicSet.contains(MODES)) {
-			topicAdmin.createTopic(MODES);
+			topicAdmin.createTopic(MODES,true);
 			if (verbose) System.out.println(MODES + " created");
 			r = true;
 		}
 		if (!topicSet.contains(MODULES)) {
-			topicAdmin.createTopic(MODULES);
+			topicAdmin.createTopic(MODULES,true);
 			if (verbose) System.out.println(MODULES + " created");
 			r = true;
 		}
@@ -157,7 +157,8 @@ public class Initialize {
 				.build();
 		String json = modePayloadToJson( mode.createModePlayload());
 		if (verbose) System.out.println("Mode created:\n" + json);
-		producer.send(new ProducerRecord<String, String>(DEFAULT_MODE, json));
+		ProducerRecord<String, String> pr = new ProducerRecord<>(MODES, DEFAULT_MODE, json);
+		producer.send(pr);
 		return true;
 	}
 	
@@ -173,11 +174,11 @@ public class Initialize {
 		String stateTopicName = topicName + STATE_SUFFIX;
 		boolean r = false;
 		if (!topicSet.contains(eventTopicName)) {
-			topicAdmin.createTopic(eventTopicName);
+			topicAdmin.createTopic(eventTopicName,false);
 			r = true;
 		}
 		if (!topicSet.contains(stateTopicName)) {
-			topicAdmin.createTopic(stateTopicName);
+			topicAdmin.createTopic(stateTopicName,false);
 			r = true;
 		}
 		return r;

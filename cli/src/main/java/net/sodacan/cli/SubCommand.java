@@ -70,7 +70,7 @@ public class SubCommand extends Command {
 			}
 		}
 		if (command==null) {
-			throw new SodacanException("No command " + cmdString);
+			throw new SodacanException("Not a valid command '" + cmdString + "'");
 		}
 		command.dispatch(commandLine, index+1);
 	}
