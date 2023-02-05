@@ -30,7 +30,7 @@ import org.apache.kafka.common.TopicPartition;
 import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
 /**
- * A typically short-lived object that consumes records of a topic.
+ * A sometimes short-lived object that consumes records of a topic.
  * @author John Churin
  *
  */
@@ -40,13 +40,19 @@ public class TopicConsumer {
 	public TopicConsumer( String topicName ) {
 		this.topicName = topicName;
 	}
-
+	
+	/**
+	 * Consume records from the topic using "assign semantics", we're not subject to rebalance.
+	 * The output is just sent to the specified PrintStream, usually System.out.
+	 * @param out PrintStream to receive output
+	 * @param follow If true, stay open and show as records arrive. If false, print 'til kast known offset, then return.
+	 */
 	public void consume(PrintStream out, boolean follow) {
 		try {
 			String url = Config.getInstance().getKafka().getUrl();
 			Properties properties = new Properties();
 			properties.setProperty("bootstrap.servers", url);
-			properties.setProperty("group.id", "test");
+//			properties.setProperty("group.id", "test");
 			properties.setProperty("enable.auto.commit", "false");
 			properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
 			properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");

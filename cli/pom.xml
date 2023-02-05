@@ -28,30 +28,39 @@
 				<artifactId>appassembler-maven-plugin</artifactId>
 				<version>2.1.0</version>
 				<configuration>
-              		<assembleDirectory>${project.basedir}</assembleDirectory>
+					<assembleDirectory>${project.basedir}</assembleDirectory>
 					<configurationDirectory>target/*</configurationDirectory>
-              		<repositoryName>lib</repositoryName>
-              		<binFolder>bin</binFolder>
+					<repositoryName>lib</repositoryName>
+					<binFolder>bin</binFolder>
 					<platforms>
 						<platform>windows</platform>
 						<platform>unix</platform>
 					</platforms>
 					<repositoryLayout>flat</repositoryLayout>
 					<useWildcardClassPath>true</useWildcardClassPath>
- 					<programs>
+					<programs>
 						<program>
 							<mainClass>net.sodacan.cli.Main</mainClass>
 							<id>soda</id>
 							<jvmSettings>
-                                <extraArguments>
-                                    <extraArgument>-Xms256M</extraArgument>
-                                    <extraArgument>-Xmx256M</extraArgument>
-                                    <extraArgument>-Xss512k</extraArgument>
-                                </extraArguments>
-                            </jvmSettings>
-   						</program>
+								<extraArguments>
+									<extraArgument>-Xms256M</extraArgument>
+									<extraArgument>-Xmx256M</extraArgument>
+									<extraArgument>-Xss512k</extraArgument>
+								</extraArguments>
+							</jvmSettings>
+						</program>
 					</programs>
 				</configuration>
+				<executions>
+					<execution>
+						<id>make-assembly</id>
+						<phase>package</phase>
+						<goals>
+							<goal>assemble</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
