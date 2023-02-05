@@ -39,6 +39,7 @@ import net.sodacan.cli.cmd.TopicListCmd;
 import net.sodacan.cli.cmd.TopicPrintCmd;
 import net.sodacan.cli.cmd.TopicStatusCmd;
 import net.sodacan.cli.cmd.TopicWatchCmd;
+import net.sodacan.config.Config;
 
 public class Main {
 	private final static Logger logger = LoggerFactory.getLogger(Main.class);
@@ -69,6 +70,7 @@ public class Main {
 		logger.trace("Setup Options");
 		options = new Options();
 		// add t option
+		options.addOption("c", "config", true, "Config file, default config/config.yaml");
 		options.addOption("d", "debug", false, "show debug output");
 		options.addOption("f", "force", false, "Don't ask for confirmation before critical action");
 		options.addOption("h", "help", false, "This help");
@@ -106,6 +108,15 @@ public class Main {
 		}
 	}
 	
+	/**
+	 * Setup configuration file
+	 * @param fileName
+	 */
+	public void setupConfig(String fileName) {
+		logger.debug("Working Directory = " + System.getProperty("user.dir"));
+    	Config.init(fileName);
+	}
+
 	public void parse(String[] args) {
 		try {
 			logger.trace("Parse Options");
@@ -117,6 +128,12 @@ public class Main {
 			      System.out.println("\nCommands:");
 			      command.printHelp("");
 			      return;
+			}
+			// Config file setup
+			if (cmd.hasOption('c')) {
+				setupConfig(cmd.getOptionValue("c"));
+			} else {
+				setupConfig( "config/config.yaml");
 			}
 			if (cmd.hasOption('i')) {
 				interactiveMode();

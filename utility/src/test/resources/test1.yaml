@@ -7,11 +7,10 @@ location:
 webServer:
     listen: http://0.0.0.0:4011/api
 
-agent:
+kafka:
+    url: soda6:9092
     consumer:
         sessionTimeoutSec: 30
-        url: soda6:9092
     producer:
-        url: soda6:9092
-
+        lingerMs: 0
         

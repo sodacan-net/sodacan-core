@@ -30,6 +30,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import net.sodacan.SodacanException;
 import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.api.utility.ModuleMethods;
+import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ModePayload;
 import net.sodacan.module.statement.SodacanModule;
@@ -115,8 +116,10 @@ public class Initialize {
 	 */
 	public Producer<String, String> openProducer() {
 		Properties props = new Properties();
-		props.put("bootstrap.servers", "soda6.eden:9092");
-		props.put("linger.ms", 1);
+		String url = Config.getInstance().getKafka().getUrl();
+		Long lingerMs = Config.getInstance().getKafka().getProducer().getLingerMs();
+		props.put("bootstrap.servers", url);
+		props.put("linger.ms", lingerMs);
 		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
 

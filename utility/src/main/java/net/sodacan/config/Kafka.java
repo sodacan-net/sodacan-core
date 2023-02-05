@@ -14,12 +14,24 @@
  */
 package net.sodacan.config;
 
-public class Agent {
+public class Kafka {
+	private String url;
 	private Producer producer;
 	private Consumer consumer;
+	
 	public Producer getProducer() {
 		return producer;
 	}
+	
+	public String getUrl() {
+		return url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
+	}
+
+
 	public void setProducer(Producer producer) {
 		this.producer = producer;
 	}

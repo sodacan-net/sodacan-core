@@ -32,7 +32,7 @@ public class Config {
 	private WebServer webServer;
 	private Rules rules;
 	private Location location;
-	private Agent agent;
+	private Kafka kafka;
 	
 	private Config() {
 		
@@ -57,7 +57,6 @@ public class Config {
 		} catch (Exception e) {
 			throw new SodacanException("Error initializing configuration", e);
 		}
-		
 	}
 
 	public WebServer getWebServer() {
@@ -84,12 +83,12 @@ public class Config {
 		this.location = location;
 	}
 
-	public Agent getAgent() {
-		return agent;
+	public Kafka getKafka() {
+		return kafka;
 	}
 
-	public void setAgent(Agent agent) {
-		this.agent = agent;
+	public void setKafka(Kafka kafka) {
+		this.kafka = kafka;
 	}
 	
 }

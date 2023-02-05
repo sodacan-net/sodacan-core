@@ -20,13 +20,17 @@ import org.apache.kafka.clients.admin.AdminClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.config.Config;
+
 public class Admin {
 
 	private AdminClient adminClient;
 	private final static Logger logger = LoggerFactory.getLogger(Admin.class);
 	public Admin() {
+		String url = Config.getInstance().getKafka().getUrl();
 		Properties props = new Properties();
-		props.put("bootstrap.servers", "soda6.eden:9092");
+		props.put("bootstrap.servers", url);
+		logger.debug("Connect Admin Client to broker(s) " + url);
 		adminClient= AdminClient.create(props);
 	}
 	public AdminClient getAdminClient() {

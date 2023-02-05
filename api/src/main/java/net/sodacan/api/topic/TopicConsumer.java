@@ -20,6 +20,7 @@ import java.io.PrintStream;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import org.apache.kafka.clients.consumer.Consumer;
@@ -29,6 +30,7 @@ import org.apache.kafka.clients.consumer.KafkaConsumer;
 import org.apache.kafka.common.TopicPartition;
 
 import net.sodacan.SodacanException;
+import net.sodacan.config.Config;
 /**
  * A typically short-lived object that consumes records of a topic.
  * @author John Churin
@@ -43,8 +45,9 @@ public class TopicConsumer {
 
 	public void consume(PrintStream out, boolean follow) {
 		try {
+			String url = Config.getInstance().getKafka().getUrl();
 			Properties properties = new Properties();
-			properties.setProperty("bootstrap.servers", "soda6.eden:9092");
+			properties.setProperty("bootstrap.servers", url);
 			properties.setProperty("group.id", "test");
 			properties.setProperty("enable.auto.commit", "false");
 			properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
@@ -54,11 +57,14 @@ public class TopicConsumer {
 			List<TopicPartition> partitions = Arrays.asList(partition);
 			consumer.assign(partitions);
 			consumer.seekToBeginning(partitions);
+			Map<TopicPartition,Long> endOffsets = consumer.endOffsets(partitions);
 		    while (true) {
 		         ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(500));
 		         if (!follow && records.count()==0) break;
 		         for (ConsumerRecord<String, String> record : records) {
+		        	 TopicPartition tp = new TopicPartition(record.topic(),record.partition());
 		        	 out.println(record.key() + ": " + record.value());
+		        	 if (!follow && endOffsets.get(tp)==record.offset()) break;
 		         }
 		    }
 		    consumer.close();

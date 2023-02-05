@@ -1,7 +1,5 @@
 package net.sodacan.config;
 
-import static org.junit.Assert.*;
-
 import org.junit.Test;
 
 public class TestConfig {
@@ -10,7 +8,7 @@ public class TestConfig {
 	@Test
 	public void testConfigFilePresent() {
 		System.out.println("Working Directory = " + System.getProperty("user.dir"));
-    	Config config = Config.init(configFileName1);
+    	Config.init(configFileName1);
 	}
 
 	@Test
@@ -29,8 +27,8 @@ public class TestConfig {
 	}
 
 	@Test
-	public void testAgent() {
+	public void testKafka() {
     	Config config = Config.init(configFileName1);
-    	assert(config.getAgent()!=null);
+    	assert(config.getKafka()!=null);
 	}
 }
