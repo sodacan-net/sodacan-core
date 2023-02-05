@@ -14,8 +14,6 @@
  */
 package net.sodacan.api.topic;
 
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.PrintStream;
 import java.time.Duration;
 import java.util.Arrays;

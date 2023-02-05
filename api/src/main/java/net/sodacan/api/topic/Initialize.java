@@ -34,7 +34,6 @@ import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ModePayload;
 import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.variable.Variable;
 
 /**
  * Create the Sodacan top-level topics. All topics involved in this are preserved if they already exist. Therefore, this procedure can be run safely at any time.
