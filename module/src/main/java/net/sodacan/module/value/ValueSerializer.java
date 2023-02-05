@@ -25,7 +25,6 @@ public class ValueSerializer extends JsonSerializer<Value>{
 
    @Override
     public void serialize(Value value, JsonGenerator jgen, SerializerProvider provider) throws IOException, JsonProcessingException {
-        // put your desired money style here
         jgen.writeString(value.serialize());
     }
 }

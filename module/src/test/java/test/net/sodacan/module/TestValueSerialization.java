@@ -18,6 +18,9 @@ import static org.junit.Assert.*;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 import org.junit.Test;
 
@@ -70,4 +73,13 @@ public class TestValueSerialization {
 		assert(v2.getIdentifier().equals(v1.getIdentifier()));
 	}
 
+	@Test
+	public void testArrayValue() {
+		List<Value> list = Arrays.asList(new Value("a"), new Value("b"), new Value("c"));
+		Value v1 = new Value(list);
+		String v1str = v1.serialize();
+		Value v2 = Value.deserialize(v1str);
+		assert(v2.getArray().equals(v1.getArray()));
+		
+	}
 }

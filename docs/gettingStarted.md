@@ -13,6 +13,8 @@ For demonstration purposes, a single replica of Kafka, Zookeeper (part of Kafka)
 Another approach for demonstration purposes is to use a Docker approach which eliminates a lot of the work involved in getting Sodacan working.
 
 ### Docker Containers
+
+This is a single-node setup, sufficient for demonstration.
 Uses:
 
 - Docker

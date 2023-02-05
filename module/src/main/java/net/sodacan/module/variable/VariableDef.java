@@ -30,7 +30,7 @@ import net.sodacan.module.value.ValueSerializer;
  * @author John Churin
  */
 public class VariableDef {
-	public enum VariableType {topicVariable, publishVariable,subscribeVariable,privateVariable};
+	public enum VariableType {topicVariable, publishVariable,subscribeVariable,privateVariable,SourceVariable};
 	public final String version = "1.1";
 	private String name;
 	private String alias;

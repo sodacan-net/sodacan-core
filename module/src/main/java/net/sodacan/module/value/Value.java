@@ -16,6 +16,7 @@ package net.sodacan.module.value;
 
 import java.math.BigDecimal;
 import java.time.ZonedDateTime;
+import java.util.ArrayList;
 import java.util.List;
 
 import net.sodacan.SodacanException;
@@ -209,7 +210,12 @@ public class Value {
 			sb.append(BOOLEAN);
 			sb.append(Boolean.toString(bool));
 		} else if (array!=null) { 
-			return array.toString();
+			sb.append(ARRAY);
+//			sb.append(array.size());
+			for (Value value : array) {
+				sb.append(value.serialize());
+				sb.append("@@");
+			}
 		} else {
 			sb.append(NULL);
 		}
@@ -234,6 +240,14 @@ public class Value {
 		}
 		if (value.equals("boolean-false") ) {
 			return new Value(false);
+		}
+		if (value.startsWith(ARRAY)) {
+			String[] arrayString = value.substring(ARRAY.length()).split("@@");
+			List<Value> values = new ArrayList<>();
+			for (String val : arrayString) {
+				values.add(deserialize(val));
+			}
+			return new Value(values);
 		}
 		// Must be null
 		return new Value();

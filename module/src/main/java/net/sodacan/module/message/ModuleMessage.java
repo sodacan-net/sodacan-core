@@ -14,15 +14,7 @@
  */
 package net.sodacan.module.message;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.Constraint;
-import net.sodacan.module.variable.Variable;
-import net.sodacan.module.variable.VariableDef;
-import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
-import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
  * Most Sodacan messages are in this format. This structure may be serialized into Json format for transmission. In any case, it's a flat 

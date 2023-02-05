@@ -50,7 +50,7 @@ public class TestVariableSerialization {
 
 	static final BigDecimal NUMBER1 = new BigDecimal("123.4");
 	static final String STRING1 = "A String";
-	
+
 	@Test
 	public void testCounts() {
 		ModuleVariables mvs = new ModuleVariables();
@@ -122,17 +122,38 @@ public class TestVariableSerialization {
 	public void testSerializeOneVariable() throws IOException {
 		ModuleVariables mvs = new ModuleVariables();
 		VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(NUMBER1)).build();
-		mvs.addVariable(vd1);
-		VariableDef vd2 = VariableDef.newVariableDefBuilder().name("y").alias("z").initialValue(new Value(STRING1)).build();
-		Variable v2 = mvs.addVariable(vd2);
+		Variable v1 = mvs.addVariable(vd1);
 		// What does it look like as json?
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
 		String json = mapper
 				.writerWithDefaultPrettyPrinter()
-				.writeValueAsString(v2);
+				.writeValueAsString(v1);
+		Variable v2 = mapper.readValue(json,ModuleVariable.class);
 		System.out.println(json);
+		assert(v1.equals(v2));
+		assert(v1.getValue().equals(v2.getValue()));
+	}
+
+	@Test
+	public void testSerializeOneArrayVariable() throws IOException {
+		List<Value> valueList = Arrays.asList(new Value("a"), new Value("b"), new Value("c"));
+
+		ModuleVariables mvs = new ModuleVariables();
+		VariableDef vd1 = VariableDef.newVariableDefBuilder().name("x").initialValue(new Value(valueList)).build();
+		Variable v1 = mvs.addVariable(vd1);
+		// What does it look like as json?
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		String json = mapper
+				.writerWithDefaultPrettyPrinter()
+				.writeValueAsString(v1);
+//		System.out.println(json);
+		Variable v2 = mapper.readValue(json,ModuleVariable.class);
+		assert(v1.equals(v2));
+		assert(v1.getValue().equals(v2.getValue()));
 	}
 
 	@Test

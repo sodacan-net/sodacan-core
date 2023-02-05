@@ -85,12 +85,19 @@ public class VariablePayload {
 	public String getContent() {
 		return content;
 	}
-
+	
+	public String getKey() {
+		if (instanceKey!=null) {
+			return variableName + "." + instanceKey;
+		} else {
+			return variableName;
+		}
+	}
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof VariablePayload) {
 			VariablePayload other = (VariablePayload)obj;
-			if (this.toString().equals(other.toString())) {
+			if (this.getKey().equals(other.getKey())) {
 				return true;
 			}
 		}
@@ -99,7 +106,7 @@ public class VariablePayload {
 
 	@Override
 	public int hashCode() {
-		return toString().hashCode();
+		return getKey().hashCode();
 	}
 
 	@Override
