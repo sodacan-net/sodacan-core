@@ -45,7 +45,7 @@ public class TopicConsumer {
 	 * Consume records from the topic using "assign semantics", we're not subject to rebalance.
 	 * The output is just sent to the specified PrintStream, usually System.out.
 	 * @param out PrintStream to receive output
-	 * @param follow If true, stay open and show as records arrive. If false, print 'til kast known offset, then return.
+	 * @param follow If true, stay open and show as records arrive. If false, print 'til last known offset, then return.
 	 */
 	public void consume(PrintStream out, boolean follow) {
 		try {

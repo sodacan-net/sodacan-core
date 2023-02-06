@@ -20,20 +20,39 @@ import net.sodacan.mode.spi.ModulePayload;
 import net.sodacan.module.statement.SodacanModule;
 
 /**
- * <p>We provide the main cycle for one module. The main flow is to start the ticker clock and start asking for messages destined for this module.
- * NOTE: We may not have a module yet, ie nothing to "run". However, an early if not the first message should contain a variable with the source code which we compile 
- * and set. We can ask the module to make a "variables" collection if it doesn't yet exist. We then receive messages (each has one variable). Here's what we 
- * do for a happy path. 
- * All of the following is synchronous, sequential, single threaded, but in a separate thread from all other module runtimes.</p>
+ * <p>The runtime provides the main cycle for one module. it begins be subscribing to a number of topics</p>
  * <ul>
- * <li>Populate the variables collection with new value. </li>
- * <li>If the new value is module source code, compile it and set the resulting SodacanModule in this object.</li>
- * <li>Pause until the timestamp of the message is behind the "timestamp" of the clock. </li>
- * >li>When a timestamp is ready, process one cycle.</li>
- * <li>When a message is ready, process one cycle.</li>
- * <li>At the end of each cycle, run through variables and send the ones that have changed that are publish type variables to the message bus plugin(s).</li>
- * <li>Also, send any variables (of any kind) that have changed this cycle to the state store.</li>
+ * <li>Mode ticker. All modules for a mode listen to the same topic. If the clock is "real", there will be one tick per minute, with no skips. If a static clock, same one-per minute, 
+ * but the advancement is controlled by the user, not the wall clock. </li>
+ * <li>Each of the topics subscribed to by the module.</li>
+ * <li>This module's admin topic containing source code updates and other admin functions. This is an implied subscription. The module does not have to declare it.</li>
  * </ul>
+ * <p>The event merge process controls the flow of events listed above into a cycle (one event at a time).
+ * In short, the merge considers the oldest message first among the subscribed topics.</p>
+ * <p>When a cycle completes, the affected variables are published to the module's publish topic. Also, all changed variables (including private ones, 
+ * are published to the module's state topic. If, during processing, the source code changed, it 
+ * too will be stored in the state topic. (this is done in a separate "admin" cycle). 
+ * The offset(s) from each subscribed topic is stored with the topics in the state store.</p>
+ * 
+ * <p>We then receive messages (each has one variable). Here's what we 
+ * do for steady-state happy path through the cycle. All of the following is synchronous, sequential, 
+ * single threaded, but in a separate thread from all other module runtimes.
+ * An in-memory collection of variables exists (extracted from state store on startup. The current source code has been compiled into a runtime structure. </p>
+ * <ul>
+ * <li>Select the oldest message among the topics we subscribe to. Process it; Constituting the start of one "cycle". </li>
+ * <li>If the incoming message is module source code, compile it and set the resulting SodacanModule in this runtime object. Start a cycle.</li>
+ * Ask the SodacanModule structure for the list of variables that it knows about.
+ * For each variable from the (new) module, if it is not already in the reduced list, add the variable
+ * and mark the variable changed so that it will be saved in module state topic. This allows a previously unknown variable to be added to the state
+ * of the module without losing other variables.</li>
+ * <li>If the incoming message is a variable (from another module), the variable in our in-memory variables is update. Start a cycle.</li>
+ * <li>If the incoming message is a clock tick, then start a cycle.</li>
+ * <li>At the end of each cycle, run through variables and send the ones that have changed that are publish type variables to the publish topic for this module. 
+ * Reminder: Sodacan does not send messages to other modules. Rather, it publishes to a topic that other modules can subscribe to.</li>
+ * <li>Also, send any variables (of any kind) that have changed this cycle to the state store o facilitate recovery. Message offsets are also stored in the state topic.</li>
+ * </ul>
+ * <p>During startup, the state store is used to recover the various memory structures for the module: variables and the source code, compile anew from the module's state.
+ * At that point, the module's state topic consumer can be closed. (We continue to publish to it of course.</p>
  * <p>Each runtime cycle runner gets its own thread, and we get our own instance of plugins. This satisfies the requirement for isolation between mode-modules.</p>
  * @author John Churin
  *

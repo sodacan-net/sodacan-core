@@ -34,6 +34,8 @@ import net.sodacan.cli.cmd.BrokerStatusCmd;
 import net.sodacan.cli.cmd.InitializeCmd;
 import net.sodacan.cli.cmd.ModeCreateCmd;
 import net.sodacan.cli.cmd.ModeListCmd;
+import net.sodacan.cli.cmd.ModuleListCmd;
+import net.sodacan.cli.cmd.ModuleLoadCmd;
 import net.sodacan.cli.cmd.TopicDeleteCmd;
 import net.sodacan.cli.cmd.TopicListCmd;
 import net.sodacan.cli.cmd.TopicPrintCmd;
@@ -58,6 +60,8 @@ public class Main {
 				.action("initialize", new InitializeCmd(), "Initialize topics")
 				.action("mode", "list", new ModeListCmd(), "List known modes")
 				.action("mode", "create", new ModeCreateCmd(),"<mode> Create a new mode")
+				.action("module", "list", new ModuleListCmd(),"list of module names")
+				.action("module", "load", new ModuleLoadCmd(),"<file> Load a module from file")
 				.action("topic", "list", new TopicListCmd(), "List known topics")
 				.action("topic", "delete", new TopicDeleteCmd(), "<topic> Delete a topic")
 				.action("topic", "print", new TopicPrintCmd(), "<topic> print contents of a topic")

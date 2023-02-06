@@ -14,6 +14,7 @@
  */
 package net.sodacan.api.topic;
 
+import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Properties;
@@ -28,6 +29,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sodacan.SodacanException;
+import net.sodacan.api.kafka.SodacanProducer;
 import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.api.utility.ModuleMethods;
 import net.sodacan.config.Config;
@@ -41,18 +43,18 @@ import net.sodacan.module.statement.SodacanModule;
  *
  */
 public class Initialize {
-	private static final String AGENT_STATUS = "Agent-Status";
-	private static final String AGENT_CONFIG = "Agent-Config";
-	private static final String LOGGER = "Logger";
-	private static final String MODES = "Modes";
-	private static final String MODULES = "Modules";
-	private static final String DEFAULT_MODE = "default";
-	private static final String DEFAULT_CLOCK = "real";
-	private static final String DEFAULT_LOGGER = "memory";
-	private static final String DEFAULT_MESSAGE_BUS = "memory";
-	private static final String DEFAULT_STATE_STORE = "memory";
-	private static final String EVENT_SUFFIX = "-event";
-	private static final String STATE_SUFFIX = "-state";
+	public static final String AGENT_STATUS = "Agent-Status";
+	public static final String AGENT_CONFIG = "Agent-Config";
+	public static final String LOGGER = "Logger";
+	public static final String MODES = "Modes";
+	public static final String MODULES = "Modules";
+	public static final String DEFAULT_MODE = "default";
+	public static final String DEFAULT_CLOCK = "real";
+	public static final String DEFAULT_LOGGER = "memory";
+	public static final String DEFAULT_MESSAGE_BUS = "memory";
+	public static final String DEFAULT_STATE_STORE = "memory";
+	public static final String EVENT_SUFFIX = "-event";
+	public static final String STATE_SUFFIX = "-state";
 
 	private TopicAdmin topicAdmin;
 	ObjectMapper mapper;
@@ -110,22 +112,6 @@ public class Initialize {
 		return r;
 	}
 	/**
-	 * Setup a producer to use in the API
-	 * @return An open producer
-	 */
-	public Producer<String, String> openProducer() {
-		Properties props = new Properties();
-		String url = Config.getInstance().getKafka().getUrl();
-		Long lingerMs = Config.getInstance().getKafka().getProducer().getLingerMs();
-		props.put("bootstrap.servers", url);
-		props.put("linger.ms", lingerMs);
-		props.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-		props.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
-
-		Producer<String, String> producer = new KafkaProducer<>(props);
-		return producer;
-	}
-	/**
 	 * Serialize a mode to Json
 	 * @param mode
 	 * @return Json string representing the Mode
@@ -149,40 +135,22 @@ public class Initialize {
 	 * @return True if we created a mode
 	 */
 	public boolean setupDefaultMode(boolean verbose) {
-		Producer<String,String> producer = openProducer();
-		Mode mode = Mode.newModeBuilder()
-				.name(DEFAULT_MODE)
-				.clock(DEFAULT_CLOCK)
-				.messageBus(DEFAULT_MESSAGE_BUS)
-				.stateStore(DEFAULT_STATE_STORE)
-				.logger(DEFAULT_LOGGER)
-				.build();
-		String json = modePayloadToJson( mode.createModePlayload());
-		if (verbose) System.out.println("Mode created:\n" + json);
-		ProducerRecord<String, String> pr = new ProducerRecord<>(MODES, DEFAULT_MODE, json);
-		producer.send(pr);
-		return true;
+		SodacanProducer producer = new SodacanProducer();
+		try {
+			Mode mode = Mode.newModeBuilder()
+					.name(DEFAULT_MODE)
+					.clock(DEFAULT_CLOCK)
+					.messageBus(DEFAULT_MESSAGE_BUS)
+					.stateStore(DEFAULT_STATE_STORE)
+					.logger(DEFAULT_LOGGER)
+					.build();
+			String json = modePayloadToJson( mode.createModePlayload());
+			if (verbose) System.out.println("Mode created:\n" + json);
+			producer.put(MODES, DEFAULT_MODE, json);
+			return true;
+		} finally {
+			producer.close();
+		}
 	}
 	
-	/**
-	 * <p>Setup the topics for a single module.</p>
-	 * <p>Each module needs two topics, one for messages published from that topic, the other is
-	 * for storing the state of the module, which is needed for recovery of a module's state.</p>
-	 */
-	public boolean setupModule( Mode mode, SodacanModule module) {
-		Set<String> topicSet = getTopicSet();
-		String topicName = ModuleMethods.getTopicName( mode, module );
-		String eventTopicName = topicName + EVENT_SUFFIX;
-		String stateTopicName = topicName + STATE_SUFFIX;
-		boolean r = false;
-		if (!topicSet.contains(eventTopicName)) {
-			topicAdmin.createTopic(eventTopicName,false);
-			r = true;
-		}
-		if (!topicSet.contains(stateTopicName)) {
-			topicAdmin.createTopic(stateTopicName,false);
-			r = true;
-		}
-		return r;
-	}
 }

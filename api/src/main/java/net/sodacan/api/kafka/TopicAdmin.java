@@ -153,7 +153,7 @@ public class TopicAdmin extends Admin {
 	 * @param topics list of topic names to be created
 	 * @param compacted If true, a compacted topic is created (old records deleted)
 	 */
-	public void createTopics(List<String> topics, boolean compacted) {
+	public boolean createTopics(List<String> topics, boolean compacted) {
 		Map<String,String> configs = new HashMap<>();
 		if (compacted) {
 			configs.put(TopicConfig.CLEANUP_POLICY_CONFIG, TopicConfig.CLEANUP_POLICY_COMPACT);
@@ -171,7 +171,7 @@ public class TopicAdmin extends Admin {
 			KafkaFuture<Void> f = ctr.all();
 			f.get(WAIT_SECONDS, TimeUnit.SECONDS);
 			if (f.isDone()) {
-				return;
+				return !f.isCompletedExceptionally();
 			}
 			throw new RuntimeException("Create topic(s) timed out");
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
@@ -185,10 +185,10 @@ public class TopicAdmin extends Admin {
 	 * 
 	 * @param suffix
 	 */
-	public void createTopic(String topic, boolean compacted) {
+	public boolean  createTopic(String topic, boolean compacted) {
 		List<String> topics = new ArrayList<String>();
 		topics.add(topic);
-		createTopics(topics, compacted);
+		return createTopics(topics, compacted);
 	}
 
 	public boolean deleteTopics(List<String> topics) {

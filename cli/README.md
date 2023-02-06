@@ -19,6 +19,7 @@ Commands:
   module deploy <module>    Compile and deploy
   module export <module>    Export a module source
   module list [<pattern>]   List modules, optionally filtered by pattern
+  module load <file>        Load a module, create topics, etc.
   instance add <module> <key> Add a new instance to a module
   instance list <module>    List instances of a module
 

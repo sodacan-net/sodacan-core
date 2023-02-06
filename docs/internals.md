@@ -44,6 +44,14 @@ It is located in the config/ folder of the cli project.
     cli\bin\soda.bat
 ```
 
+The builtin `config.yaml` file is located in `cli/config/config.yaml`. So the command should look like this:
+
+```
+    cli/bin/soda -c cli/config/config.yaml
+```
+
+However, that file is unlikely to reflect your configuration.
+
 ### Initializing Kafka
 Sodacan needs to create several topics to get started. This is done using the initialize command. This is not a harmful command: It can be repeated should things change. If it has already created a particular topic, then it just sjips that step.
 
