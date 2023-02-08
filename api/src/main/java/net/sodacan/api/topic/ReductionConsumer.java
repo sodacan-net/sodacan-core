@@ -205,6 +205,8 @@ public class ReductionConsumer<K,V> implements Runnable, Followable {
 		         for (ConsumerRecord<K, V> record : records) {
 		        	 TopicPartition tp = new TopicPartition(record.topic(),record.partition());
 		        	 logger.debug("Record from topic: " + topicName + " Offset: " + record.offset() + " key: " + record.key());
+//		        	 Instant timestamp = Instant.ofEpochMilli(record.timestamp());
+//		        	 System.out.println(timestamp);
 		        	 // Are we done with preload phase
 		        	 if (record.offset() >=(endOffsets.get(tp)-1)) {
 			        	 processRecord( record.key(), record.value());

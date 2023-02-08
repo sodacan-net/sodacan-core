@@ -80,7 +80,7 @@ public class TopicAdmin extends Admin {
 	public String describeTopic(String topic) throws Exception {
 		// Describe each of those topics
 		DescribeTopicsResult dtr = getAdminClient().describeTopics(Arrays.asList(topic));
-		KafkaFuture<Map<String, TopicDescription>> rslt = dtr.all();
+		KafkaFuture<Map<String, TopicDescription>> rslt = dtr.allTopicNames();
 		StringBuffer sb = new StringBuffer();
 		for (Entry<String, TopicDescription> entry : rslt.get(5, TimeUnit.SECONDS).entrySet()) {
 			sb.append(entry.getKey());
@@ -169,6 +169,7 @@ public class TopicAdmin extends Admin {
 			configs.put(TopicConfig.RETENTION_BYTES_CONFIG, "-1");
 			configs.put(TopicConfig.RETENTION_MS_CONFIG, "-1");
 		}
+		configs.put(TopicConfig.MESSAGE_TIMESTAMP_TYPE_CONFIG, "LogAppendTime");
 		List<NewTopic> newTopics = new ArrayList<NewTopic>();
 		for (String topic : topics) {
 			newTopics.add(new NewTopic(topic, PARTITIONS, REPLICAS).configs(configs));

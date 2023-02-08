@@ -14,28 +14,13 @@
  */
 package net.sodacan.api.topic;
 
-import java.io.IOException;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Properties;
 import java.util.Set;
 
-import org.apache.kafka.clients.producer.KafkaProducer;
-import org.apache.kafka.clients.producer.Producer;
-import org.apache.kafka.clients.producer.ProducerRecord;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.sodacan.SodacanException;
 import net.sodacan.api.kafka.SodacanProducer;
 import net.sodacan.api.kafka.TopicAdmin;
-import net.sodacan.api.utility.ModuleMethods;
-import net.sodacan.config.Config;
 import net.sodacan.mode.Mode;
-import net.sodacan.mode.spi.ModePayload;
-import net.sodacan.module.statement.SodacanModule;
 
 /**
  * <p>Create the Sodacan top-level topics. All topics involved are preserved if they already exist. 

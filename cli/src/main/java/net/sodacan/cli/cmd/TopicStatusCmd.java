@@ -30,14 +30,16 @@ public class TopicStatusCmd extends CmdBase implements Action {
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
+		init(commandLine, index);
 		String topicName = null;
 		try {
-			if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
-			topicName = commandLine.getArgs()[index];
+//			if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
+//			topicName = commandLine.getArgs()[index];
+			topicName = this.needArg(0, "topic name");
 			TopicAdmin topicAdmin = TopicAdmin.getInstance();
 			System.out.println(topicAdmin.describeTopic(topicName));
 		} catch (Exception e) {
-			throw new SodacanException("Problem getting for topic: " + topicName, e);
+			throw new SodacanException("Problem getting topic description: " + topicName, e);
 		}
 	}
 }

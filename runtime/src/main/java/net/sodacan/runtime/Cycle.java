@@ -30,30 +30,40 @@ import net.sodacan.module.statement.SodacanModule;
  * <p>The event merge process controls the flow of events listed above into a cycle (one event at a time).
  * In short, the merge considers the oldest message first among the subscribed topics.</p>
  * <p>When a cycle completes, the affected variables are published to the module's publish topic. Also, all changed variables (including private ones, 
- * are published to the module's state topic. If, during processing, the source code changed, it 
- * too will be stored in the state topic. (this is done in a separate "admin" cycle). 
+ * are published to the module's state topic.
  * The offset(s) from each subscribed topic is stored with the topics in the state store.</p>
  * 
- * <p>We then receive messages (each has one variable). Here's what we 
- * do for steady-state happy path through the cycle. All of the following is synchronous, sequential, 
- * single threaded, but in a separate thread from all other module runtimes.
- * An in-memory collection of variables exists (extracted from state store on startup. The current source code has been compiled into a runtime structure. </p>
+ * <p>We then receive messages (each has one variable). Here's the steady-state happy path through the cycle. 
+ * All of the following is synchronous, sequential, single threaded, but in a separate thread from all other module runtimes.
+ * An in-memory collection of variables exists (extracted from state store on startup. The current source code, received via `admin-mode-moduleName` topic 
+ * has been compiled into a runtime structure. </p>
  * <ul>
  * <li>Select the oldest message among the topics we subscribe to. Process it; Constituting the start of one "cycle". </li>
- * <li>If the incoming message is module source code, compile it and set the resulting SodacanModule in this runtime object. Start a cycle.</li>
- * Ask the SodacanModule structure for the list of variables that it knows about.
+ * <li>If the incoming message is module source code, compile it and set the resulting SodacanModule in this runtime object. Process the new module 
+ * (at this time, nothing should match, but in the future, we may have new predicates that are sensitive to a code change).</li>
+ * <li>Ask the SodacanModule structure for the list of variables that it knows about.
  * For each variable from the (new) module, if it is not already in the reduced list, add the variable
  * and mark the variable changed so that it will be saved in module state topic. This allows a previously unknown variable to be added to the state
  * of the module without losing other variables.</li>
- * <li>If the incoming message is a variable (from another module), the variable in our in-memory variables is update. Start a cycle.</li>
- * <li>If the incoming message is a clock tick, then start a cycle.</li>
- * <li>At the end of each cycle, run through variables and send the ones that have changed that are publish type variables to the publish topic for this module. 
+ * <li>If the incoming message is a variable (from another module), the variable in our in-memory variables is update. process with this message being the current message.</li>
+ * <li>If the incoming message is a clock tick, then process with that tick, only: No other messages are considered when processing a clock tick.</li>
+ * <li>At the end of each processing cycle, run through variables and send the ones that have changed that are publish type variables to the publish topic for this module. 
  * Reminder: Sodacan does not send messages to other modules. Rather, it publishes to a topic that other modules can subscribe to.</li>
- * <li>Also, send any variables (of any kind) that have changed this cycle to the state store o facilitate recovery. Message offsets are also stored in the state topic.</li>
+ * <li>Also, send any variables (of any kind) that have changed in this cycle to the state store to facilitate recovery. Message offsets are also stored in the state topic.</li>
  * </ul>
  * <p>During startup, the state store is used to recover the various memory structures for the module: variables and the source code, compile anew from the module's state.
  * At that point, the module's state topic consumer can be closed. (We continue to publish to it of course.</p>
  * <p>Each runtime cycle runner gets its own thread, and we get our own instance of plugins. This satisfies the requirement for isolation between mode-modules.</p>
+ * <h3>Implementation Notes</h3>
+ * <p>We probably need to queue a number of records from each topic because Kafka may deliver a batch of one topic before sending any entries of another topic. This 
+ * would appear that the variables from the first topic all go first to the cycle even though we don't yet know if other topics have older message.</p>
+ * <p>ReductionConsumer is needed for state (no "follow") to load up state, which can stay in the ReductionConsumer - but that's only json!!</p>
+ * <p>The main processing queue needs a single interface or class. We've got clock and module variables covered under variable. Source could be there, too. This allows the cycle to
+ *  just see a smooth flow of variables and process accordingly, perhaps a simple dispatch based on `instanceof`.</p>
+ *  <p>Does the state recovery topic hold inbound traffic (subscription variables) as well as changes made by the module (local and publish)? Answer is NO for now. 
+ *  It is critical that the state topic keep the offsets for each of the input topics. Easy: Produce a "topic-offset-<topic-name>" key with the value being the offset.
+ *  This will all get resolve on the next startup from the snapshot reductionConsumer on the state topic which presents these settings in a map for easy lookup. </p>
+ *  <p></p>
  * @author John Churin
  *
  */
