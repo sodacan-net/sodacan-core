@@ -1,3 +1,0 @@
-// SUBSCRIPTION that applies to the class (But mode variable is class-wide)
-MODULE test04[location]
-	SUBSCRIBE mode {off,on}
