@@ -206,7 +206,7 @@ public class ReductionConsumer<K,V> implements Runnable, Followable {
 		        	 TopicPartition tp = new TopicPartition(record.topic(),record.partition());
 		        	 logger.debug("Record from topic: " + topicName + " Offset: " + record.offset() + " key: " + record.key());
 		        	 // Are we done with preload phase
-		        	 if (endOffsets.get(tp)==record.offset()) {
+		        	 if (record.offset() >=(endOffsets.get(tp)-1)) {
 			        	 processRecord( record.key(), record.value());
 		        		 sendAll();
 		        		 if (follow==false) break;
