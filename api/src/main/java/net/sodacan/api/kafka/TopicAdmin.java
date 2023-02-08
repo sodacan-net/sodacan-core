@@ -16,7 +16,6 @@ package net.sodacan.api.kafka;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
@@ -30,14 +29,12 @@ import org.apache.kafka.clients.admin.Config;
 import org.apache.kafka.clients.admin.ConfigEntry;
 import org.apache.kafka.clients.admin.CreateTopicsResult;
 import org.apache.kafka.clients.admin.DeleteTopicsResult;
-import org.apache.kafka.clients.admin.DescribeClusterResult;
 import org.apache.kafka.clients.admin.DescribeConfigsResult;
 import org.apache.kafka.clients.admin.DescribeTopicsResult;
 import org.apache.kafka.clients.admin.ListTopicsResult;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.apache.kafka.clients.admin.TopicDescription;
 import org.apache.kafka.common.KafkaFuture;
-import org.apache.kafka.common.Node;
 import org.apache.kafka.common.config.ConfigResource;
 import org.apache.kafka.common.config.TopicConfig;
 import org.slf4j.Logger;
@@ -51,11 +48,21 @@ public class TopicAdmin extends Admin {
 	private static final short REPLICAS = 1;
 	private static final int NUMBER_OF_TRIES = 5;
 	private static final int WAIT_SECONDS = 5;
-
-	public TopicAdmin() {
+	private static TopicAdmin instance = null;
+	private TopicAdmin() {
 		super();
 	}
-
+	/**
+	 * TopicAdmin is a singleton
+	 * @return An instance of TopicAdmin
+	 */
+	public static TopicAdmin getInstance() {
+		if (instance==null) {
+			instance = new TopicAdmin();
+		}
+		return instance;
+	}
+	
 	public List<String> listTopics() {
 		try {
 			// List the topics available
@@ -175,7 +182,8 @@ public class TopicAdmin extends Admin {
 			}
 			throw new RuntimeException("Create topic(s) timed out");
 		} catch (InterruptedException | ExecutionException | TimeoutException e) {
-			throw new RuntimeException("Create topic(s) failed", e);
+			logger.debug("Create topic(s) " + topics + " failed");
+			return false;
 		}
 	}
 

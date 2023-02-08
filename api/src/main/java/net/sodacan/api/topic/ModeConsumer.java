@@ -12,24 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
-
-import org.apache.commons.cli.CommandLine;
-
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
-
-public class BrokerStatusCmd extends CmdBase implements Action {
-
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
+package net.sodacan.api.topic;
+/**
+ * Consume the Modes topic looking only for one mode.
+ * @author John Churin
+ *
+ */
+public class ModeConsumer extends ReductionConsumer<String,String> {
+	private String modeName;
+	public ModeConsumer(String modeName) {
+		super(Initialize.MODES);
+		this.modeName = modeName;
 	}
+	/**
+	 * Add a filter to the process = we're only interested in one mode
+	 */
 	@Override
-	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
+	protected void processRecord(String name, String value) {
+		if (name.equals(modeName)) {
+			super.processRecord(name, value);
+		}
 	}
-
+	
 }

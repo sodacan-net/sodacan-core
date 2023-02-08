@@ -14,15 +14,29 @@
  */
 package net.sodacan.cli.cmd;
 
+import java.util.List;
+
 import org.apache.commons.cli.CommandLine;
 
+import net.sodacan.api.topic.Initialize;
+import net.sodacan.api.topic.ReductionConsumer;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class ModeListCmd implements Action {
+public class ModeListCmd extends CmdBase implements Action {
+
+	public ModeListCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		System.out.println("ModeList: " + index);
+		ReductionConsumer<String, String> mc = new ReductionConsumer<String,String>(Initialize.MODES);
+		mc.snapshot();
+		List<String> names = mc.getListOfKeys();
+//		names.sort(String::compareTo);
+		names.forEach((n) -> System.out.println(n));
 	}
 
 }

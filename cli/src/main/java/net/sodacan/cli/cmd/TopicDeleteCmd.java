@@ -15,19 +15,21 @@
 package net.sodacan.cli.cmd;
 
 import java.io.BufferedReader;
-import java.io.Console;
-import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.Arrays;
 
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.SodacanException;
 import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class TopicDeleteCmd implements Action {
+public class TopicDeleteCmd extends CmdBase implements Action {
 
+	public TopicDeleteCmd( CommandContext cc) {
+		super( cc );
+	}
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		try {
@@ -43,7 +45,7 @@ public class TopicDeleteCmd implements Action {
 					return;
 				}
 			}
-			TopicAdmin topicAdmin = new TopicAdmin();
+			TopicAdmin topicAdmin = TopicAdmin.getInstance();
 			topicAdmin.deleteTopic(topicName);
 			System.out.println("Topic Deleted: " + commandLine.getArgs()[index]);
 		} catch (Exception e) {

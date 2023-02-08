@@ -18,8 +18,14 @@ import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.api.kafka.BrokerAdmin;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class BrokerListCmd implements Action {
+public class BrokerListCmd extends CmdBase implements Action {
+
+	public BrokerListCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {

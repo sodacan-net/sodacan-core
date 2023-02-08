@@ -12,24 +12,17 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
+package net.sodacan.api.mode;
 
-import org.apache.commons.cli.CommandLine;
-
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
-
-public class BrokerStatusCmd extends CmdBase implements Action {
-
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
+public class ModeApi {
+	
+	
+	/**
+	 * Mode for the current thread is set here. An error is thrown if the mode is not found in the mast mode list which we also maintain here.
+	 * 
+	 * @param mode
+	 */
+	public void setMode(String mode) {
+		
 	}
-	@Override
-	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
-	}
-
 }

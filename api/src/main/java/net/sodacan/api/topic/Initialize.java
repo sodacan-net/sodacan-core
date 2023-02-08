@@ -38,7 +38,8 @@ import net.sodacan.mode.spi.ModePayload;
 import net.sodacan.module.statement.SodacanModule;
 
 /**
- * Create the Sodacan top-level topics. All topics involved in this are preserved if they already exist. Therefore, this procedure can be run safely at any time.
+ * <p>Create the Sodacan top-level topics. All topics involved are preserved if they already exist. 
+ * Therefore, this initialize procedure can be run safely at any time without data loss.</p>
  * @author John Churin
  *
  */
@@ -57,15 +58,11 @@ public class Initialize {
 	public static final String STATE_SUFFIX = "-state";
 
 	private TopicAdmin topicAdmin;
-	ObjectMapper mapper;
 
 	/**
 	 */
 	public Initialize() {
-		topicAdmin = new TopicAdmin();
-		mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
+		topicAdmin = TopicAdmin.getInstance();
 
 	}
 
@@ -111,27 +108,12 @@ public class Initialize {
 		}
 		return r;
 	}
-	/**
-	 * Serialize a mode to Json
-	 * @param mode
-	 * @return Json string representing the Mode
-	 */
-	public String modePayloadToJson( ModePayload modePayload ) {
-		try {
-			String json;
-			json = mapper
-						.writerWithDefaultPrettyPrinter()
-						.writeValueAsString(modePayload);
-			return json;
-		} catch (JsonProcessingException e) {
-			throw new SodacanException("Error serializing mode: " + modePayload, e);
-		}
-	}
+	
 	
 
 	/**
-	 * A default mode is always available. We create it here. Note: We create the default mode anytime we're called.
-	 * Duplicates in the mode topic can be compressed out later.
+	 * <p>A default mode is always available. We create it here. Note: We create the default mode each time we're called.
+	 * Duplicates in the mode topic can be compressed out later. </p>
 	 * @return True if we created a mode
 	 */
 	public boolean setupDefaultMode(boolean verbose) {
@@ -144,7 +126,7 @@ public class Initialize {
 					.stateStore(DEFAULT_STATE_STORE)
 					.logger(DEFAULT_LOGGER)
 					.build();
-			String json = modePayloadToJson( mode.createModePlayload());
+			String json = mode.getJsonPayload();
 			if (verbose) System.out.println("Mode created:\n" + json);
 			producer.put(MODES, DEFAULT_MODE, json);
 			return true;

@@ -22,8 +22,13 @@ import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.SodacanException;
 import net.sodacan.api.module.ModuleLoader;
+import net.sodacan.api.topic.Initialize;
+import net.sodacan.api.topic.ReductionConsumer;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 import net.sodacan.compiler.ModuleCompiler;
+import net.sodacan.mode.Mode;
 /**
  * <p>Load a module into Sodacan.</p>
  * <ul>
@@ -35,20 +40,24 @@ import net.sodacan.compiler.ModuleCompiler;
  * @author John Churin
  *
  */
-public class ModuleLoadCmd implements Action {
+public class ModuleLoadCmd extends CmdBase implements Action {
+
+	public ModuleLoadCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
-		String moduleName = commandLine.getArgs()[index];
-		Path path = Path.of(moduleName);
-		String rawSource;
+		init( commandLine, index);
+		Mode mode = needMode();
+		Path path = needPath(0);
 		try {
-			rawSource = Files.readString(path);
-		} catch (IOException e) {
-			throw new SodacanException("Error opening module file " + path.toString(), e);
+			Mode.setModeInThread(mode.getName());
+			String rawSource = needFileContents(path);
+			new ModuleLoader().loadModule( rawSource );
+		} finally {
+			Mode.clearModeInThread();
 		}
-		ModuleLoader.loadModule( rawSource );
 	}
 
 }

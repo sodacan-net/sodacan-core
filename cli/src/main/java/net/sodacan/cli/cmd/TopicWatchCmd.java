@@ -19,8 +19,14 @@ import org.apache.commons.cli.CommandLine;
 import net.sodacan.SodacanException;
 import net.sodacan.api.topic.TopicConsumer;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class TopicWatchCmd implements Action {
+public class TopicWatchCmd extends CmdBase implements Action {
+
+	public TopicWatchCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {

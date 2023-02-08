@@ -14,23 +14,32 @@
  */
 package net.sodacan.cli.cmd;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
 import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.api.topic.Initialize;
-import net.sodacan.api.topic.ModuleConsumer;
+import net.sodacan.api.topic.ReductionConsumer;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class ModuleListCmd implements Action {
+public class ModuleListCmd extends CmdBase implements Action, PropertyChangeListener {
+
+	public ModuleListCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		ModuleConsumer mc = new ModuleConsumer(Initialize.MODULES);
-		mc.consume(false);
-		List<String> names = mc.getListOfModuleNames();
-		names.sort(String::compareTo);
-		names.forEach((n) -> System.out.println(n));
+		needReductionConsumer(Initialize.MODULES, this);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		System.out.println(event.getPropertyName() + " = " + event.getNewValue());
 	}
 
 }

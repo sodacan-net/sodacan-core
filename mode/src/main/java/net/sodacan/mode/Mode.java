@@ -23,6 +23,10 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import net.sodacan.SodacanException;
 import net.sodacan.mode.spi.ModePayload;
 import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
@@ -48,7 +52,13 @@ import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
  *
  */
 public class Mode {
-	
+	private static ObjectMapper mapper; 
+	static {
+		mapper = new ObjectMapper();
+		mapper.setSerializationInclusion(Include.NON_NULL);
+		mapper.setSerializationInclusion(Include.NON_EMPTY);
+	}
+
 	private String name;
 	private Set<String> messageBusTypes;
 	private Set<String> clockTypes;
@@ -59,7 +69,7 @@ public class Mode {
 	private ClockService clockService = new ClockService(this);
 	private LoggerService loggerService = new LoggerService(this);
 	private StateStoreService stateStoreService = new StateStoreService(this);
-	private Set<PropertyChangeListener> listeners;
+	private Set<PropertyChangeListener> listeners = new HashSet<>();
 	
 //	private functionService funtionService;	// Include namespace and fn name
 
@@ -85,8 +95,8 @@ public class Mode {
 			this.stateStoreService.addPropertyChangeListener(listener);
 		}
 	}
-	
-	public ModePayload createModePlayload() {
+//	public String serialize
+	public ModePayload createModePayload() {
 		ModePayloadBuilder mpb = ModePayload.newModePayloadBuilder().name(name);
 		for (String mbt : this.messageBusTypes) mpb.messageBus(mbt);
 		for (String ct : this.clockTypes) mpb.clock(ct);
@@ -94,6 +104,35 @@ public class Mode {
 		for (String sst : this.stateStoreTypes) mpb.stateStore(sst);
 		return mpb.build();
 	}
+
+	public static Mode createModeFromJson( String json ) {
+		ModePayload modePayload;
+		try {
+			modePayload = mapper.readValue(json, ModePayload.class);
+		} catch (JsonProcessingException e) {
+			throw new SodacanException("Roor mapping json to ModePayload: " + json);
+		}
+		return new Mode(modePayload);
+	}
+	
+	/**
+	 * Serialize a mode to Json
+	 * @param mode
+	 * @return Json string representing the Mode
+	 */
+	public String getJsonPayload( ) {
+		ModePayload modePayload = createModePayload();
+		try {
+			String json;
+			json = mapper
+						.writerWithDefaultPrettyPrinter()
+						.writeValueAsString(modePayload);
+			return json;
+		} catch (JsonProcessingException e) {
+			throw new SodacanException("Error serializing mode: " + modePayload, e);
+		}
+	}
+
 	/**
 	 * Setup the mode, services, and providers underneath mode. Also any listeners requested.
 	 * @param mb
@@ -167,7 +206,11 @@ public class Mode {
 		if (mode==null) {
 			throw new SodacanException("Missing mode: " + modeName);
 		}
-		if (threadMode.get()!=null) {
+		Mode currentMode = threadMode.get();
+		if (currentMode!=null) {
+			if (currentMode.equals(mode)) {
+				return;
+			}
 			throw new SodacanException("Clear the mode in this thread before setting a another mode: " + modeName);
 		}
 		threadMode.set(mode);

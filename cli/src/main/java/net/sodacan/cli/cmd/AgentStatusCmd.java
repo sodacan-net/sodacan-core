@@ -17,8 +17,14 @@ package net.sodacan.cli.cmd;
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class AgentStatusCmd implements Action {
+public class AgentStatusCmd extends CmdBase implements Action {
+
+	public AgentStatusCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {

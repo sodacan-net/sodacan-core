@@ -12,24 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
+package net.sodacan.cli;
 
-import org.apache.commons.cli.CommandLine;
+import java.util.List;
 
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
+import net.sodacan.api.Followable;
 
-public class BrokerStatusCmd extends CmdBase implements Action {
-
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
-	}
-	@Override
-	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
-	}
-
+public interface CommandContext {
+	public void addFollowable( Followable followable );
+	public List<Followable> getFollowables();
+	public void stop( String name );
 }

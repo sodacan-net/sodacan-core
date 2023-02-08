@@ -1,3 +1,4 @@
+package net.sodacan.api;
 /*
  * Copyright 2023 John M Churin
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,24 +13,8 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
 
-import org.apache.commons.cli.CommandLine;
-
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
-
-public class BrokerStatusCmd extends CmdBase implements Action {
-
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
-	}
-	@Override
-	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
-	}
-
+public interface Followable {
+	public void stop();
+	public String getName();
 }

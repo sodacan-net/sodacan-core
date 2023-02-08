@@ -20,12 +20,17 @@ import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class TopicListCmd implements Action {
+public class TopicListCmd extends CmdBase implements Action {
 
+	public TopicListCmd( CommandContext cc) {
+		super( cc );
+	}
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		TopicAdmin topicAdmin = new TopicAdmin();
+		TopicAdmin topicAdmin = TopicAdmin.getInstance();
 		List<String> topics = topicAdmin.listTopics();
 		topics.sort(String::compareTo);
 		System.out.println(topics);

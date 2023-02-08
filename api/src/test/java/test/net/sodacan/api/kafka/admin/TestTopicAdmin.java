@@ -37,14 +37,14 @@ public class TestTopicAdmin {
 	
 //	@Test
 	public void testListTopics() {
-		TopicAdmin topicAdmin = new TopicAdmin();
+		TopicAdmin topicAdmin = TopicAdmin.getInstance();
 		System.out.println(topicAdmin.listTopics());
 	}
 	
 //	@Test
 	public void noLongerATest() throws InterruptedException, ExecutionException, TimeoutException {
 
-		TopicAdmin topicAdmin = new TopicAdmin();
+		TopicAdmin topicAdmin = TopicAdmin.getInstance();
 		
 		Properties props = new Properties();
 		props.put("java.net.preferIPv4Stack", "true");

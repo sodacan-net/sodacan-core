@@ -30,6 +30,7 @@ import org.apache.kafka.common.TopicPartition;
 import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
 /**
+ * **************** THIS SHOULD BE OBSOLETE NOW - SEE REDUCTION consumer ******************
  * A sometimes short-lived object that consumes records of a topic.
  * @author John Churin
  *

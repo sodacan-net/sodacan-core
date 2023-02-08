@@ -19,9 +19,15 @@ import org.apache.commons.cli.CommandLine;
 import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class InitializeCmd implements Action{
+public class InitializeCmd extends CmdBase implements Action{
 
+	public InitializeCmd( CommandContext cc) {
+		super( cc );
+	}
+	
 	@Override
 	public void execute(CommandLine cmd, int index) {
 		boolean verbose = false;

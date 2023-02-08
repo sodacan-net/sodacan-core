@@ -20,16 +20,18 @@ import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 
-public class BrokerStatusCmd extends CmdBase implements Action {
+public class FollowStopCmd extends CmdBase implements Action {
 
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
+	public FollowStopCmd(CommandContext cc) {
+		super(cc);
 	}
+
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
+		init( commandLine, index);
+		String threadName = this.needArg(0, "Follow Name");
+		cc.stop(threadName);
+		System.out.println("Stopped following: " + threadName);
 	}
 
 }

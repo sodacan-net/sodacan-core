@@ -14,20 +14,31 @@
  */
 package net.sodacan.cli.cmd;
 
+import java.beans.PropertyChangeEvent;
+import java.beans.PropertyChangeListener;
+
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.SodacanException;
-import net.sodacan.api.topic.TopicConsumer;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class TopicPrintCmd implements Action {
+public class TopicPrintCmd extends CmdBase implements Action, PropertyChangeListener {
 
+	public TopicPrintCmd( CommandContext cc) {
+		super( cc );
+	}
+	
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
-		String topicName = commandLine.getArgs()[index];
-		TopicConsumer tc = new TopicConsumer(topicName);
-		tc.consume(System.out, false);
+		init( commandLine, index);
+		String topicName = needArg(0, "topic name");
+		needReductionConsumer(topicName, this);
+	}
+
+	@Override
+	public void propertyChange(PropertyChangeEvent event) {
+		System.out.println(event.getPropertyName() + " = " + event.getNewValue());
 	}
 
 }

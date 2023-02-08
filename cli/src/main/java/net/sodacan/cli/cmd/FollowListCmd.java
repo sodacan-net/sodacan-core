@@ -16,20 +16,22 @@ package net.sodacan.cli.cmd;
 
 import org.apache.commons.cli.CommandLine;
 
+import net.sodacan.api.Followable;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
 
-public class BrokerStatusCmd extends CmdBase implements Action {
+public class FollowListCmd extends CmdBase implements Action {
 
-
-	public BrokerStatusCmd( CommandContext cc) {
-		super( cc );
+	public FollowListCmd(CommandContext cc) {
+		super(cc);
 	}
+
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
+		for (Followable followable : cc.getFollowables()) {
+			System.out.println("Following: " + followable.toString());
+		}
 	}
 
 }

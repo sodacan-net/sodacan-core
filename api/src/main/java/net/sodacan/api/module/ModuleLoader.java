@@ -53,10 +53,22 @@ import net.sodacan.module.statement.SodacanModule;
 public class ModuleLoader {
 	private final static Logger logger = LoggerFactory.getLogger(ModuleLoader.class);
 
-	public static SodacanModule compile(String rawString) {
+	private Mode mode;
+	private String rawSource;
+	private ModuleCompiler compiler;
+	protected SodacanProducer producer;
+	protected SodacanModule module;
+	
+	public ModuleLoader() {
+		mode = Mode.getInstance();
         // Fire up the compiler
-		ModuleCompiler compiler = new ModuleCompiler();
-		SodacanModule module = compiler.compile(rawString, null);
+		compiler = new ModuleCompiler();
+		// We'll need a producer
+		producer = new SodacanProducer();
+	}
+
+	protected SodacanModule compile() {
+		this.module = compiler.compile(rawSource, null);
 		return module;
 	}
 	/**
@@ -72,9 +84,8 @@ public class ModuleLoader {
 	 * </p>
 	 * @param module
 	 */
-	public static void createModuleTopics( SodacanModule module ) {
-		TopicAdmin topicAdmin = new TopicAdmin();
-		Mode mode = Mode.getInstance();
+	protected void createModuleTopics( ) {
+		TopicAdmin topicAdmin = TopicAdmin.getInstance();
 		String stateTopic = ModuleMethods.getModuleStateTopicName(mode, module);
 		boolean result = topicAdmin.createTopic(stateTopic, true);
 		if (!result) {
@@ -91,18 +102,24 @@ public class ModuleLoader {
 			logger.info("Topic " + adminTopic + " already exists");
 		}
 	}
-	
-	public static void loadModule( String rawString  ) {
-		SodacanProducer producer = new SodacanProducer();
+	protected void pushSourceToAdminTopic() {
+		String topicName = ModuleMethods.getModuleAdminTopicName(mode, module);
+		producer.put(topicName,"scc", rawSource);
+		logger.info("Module source pushed to " + topicName);
+	}
+
+	public void loadModule( String rawSource  ) {
+		this.rawSource = rawSource;
 		try {
-			SodacanModule module = compile(rawString);
+			SodacanModule module = compile();
 			System.out.println( "Errors: " + module.getErrors());
 			if(module.getErrors().size() > 0) {
 				throw new SodacanException("Compile Errors, aborting");
 			}
 			String moduleName = module.getName();
 			producer.put(Initialize.MODULES, ModuleMethods.getModuleKeyName(moduleName, null),Instant.now().toString());
-			createModuleTopics( module);
+			createModuleTopics();
+			pushSourceToAdminTopic();
 		} catch (Exception e) {
 			throw new SodacanException("Error loading module", e);
 		} finally {

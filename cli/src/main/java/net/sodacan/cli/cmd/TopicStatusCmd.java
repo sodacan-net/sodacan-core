@@ -19,8 +19,14 @@ import org.apache.commons.cli.CommandLine;
 import net.sodacan.SodacanException;
 import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.cli.Action;
+import net.sodacan.cli.CmdBase;
+import net.sodacan.cli.CommandContext;
 
-public class TopicStatusCmd implements Action {
+public class TopicStatusCmd extends CmdBase implements Action {
+
+	public TopicStatusCmd( CommandContext cc) {
+		super( cc );
+	}
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
@@ -28,7 +34,7 @@ public class TopicStatusCmd implements Action {
 		try {
 			if (commandLine.getArgList().size() <= index) throw new SodacanException("missing topic name"); 
 			topicName = commandLine.getArgs()[index];
-			TopicAdmin topicAdmin = new TopicAdmin();
+			TopicAdmin topicAdmin = TopicAdmin.getInstance();
 			System.out.println(topicAdmin.describeTopic(topicName));
 		} catch (Exception e) {
 			throw new SodacanException("Problem getting for topic: " + topicName, e);
