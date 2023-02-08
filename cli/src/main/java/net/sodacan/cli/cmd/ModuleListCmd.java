@@ -16,12 +16,10 @@ package net.sodacan.cli.cmd;
 
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
-import java.util.List;
 
 import org.apache.commons.cli.CommandLine;
 
 import net.sodacan.api.topic.Initialize;
-import net.sodacan.api.topic.ReductionConsumer;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
@@ -34,6 +32,7 @@ public class ModuleListCmd extends CmdBase implements Action, PropertyChangeList
 
 	@Override
 	public void execute(CommandLine commandLine, int index) {
+		init(commandLine,index);
 		needReductionConsumer(Initialize.MODULES, this);
 	}
 

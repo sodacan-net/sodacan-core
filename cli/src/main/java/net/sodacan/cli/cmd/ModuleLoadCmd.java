@@ -14,20 +14,14 @@
  */
 package net.sodacan.cli.cmd;
 
-import java.io.IOException;
-import java.nio.file.Files;
 import java.nio.file.Path;
 
 import org.apache.commons.cli.CommandLine;
 
-import net.sodacan.SodacanException;
 import net.sodacan.api.module.ModuleLoader;
-import net.sodacan.api.topic.Initialize;
-import net.sodacan.api.topic.ReductionConsumer;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
-import net.sodacan.compiler.ModuleCompiler;
 import net.sodacan.mode.Mode;
 /**
  * <p>Load a module into Sodacan.</p>

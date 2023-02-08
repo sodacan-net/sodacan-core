@@ -209,7 +209,7 @@ public class ReductionConsumer<K,V> implements Runnable, Followable {
 		        	 if (record.offset() >=(endOffsets.get(tp)-1)) {
 			        	 processRecord( record.key(), record.value());
 		        		 sendAll();
-		        		 if (follow==false) break;
+		        		 if (follow==false) return;
 		        	 }
 		        	 processRecord( record.key(), record.value());
 		         }
