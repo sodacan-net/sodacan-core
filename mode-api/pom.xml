@@ -7,4 +7,12 @@
   	<version>0.0.1</version>
   	<artifactId>sodacan</artifactId>
   </parent>
+  <dependencies>
+  	<dependency>
+		<groupId>net.sodacan</groupId>
+		<artifactId>utility</artifactId>
+		<version>${project.parent.version}</version>
+	</dependency>
+  </dependencies>
+
 </project>

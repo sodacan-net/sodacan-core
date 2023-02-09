@@ -12,24 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
+package net.sodacan.plugin.kafka;
 
-import org.apache.commons.cli.CommandLine;
+import com.google.auto.service.AutoService;
 
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
+import net.sodacan.config.Config;
+import net.sodacan.messagebus.MB;
+import net.sodacan.messagebus.kafka.MBK;
+import net.sodacan.mode.spi.MessageBusProvider;
 
-public class ModeCreateCmd extends CmdBase implements Action {
-
-	public ModeCreateCmd( CommandContext cc) {
-		super( cc );
-	}
+@AutoService(MessageBusProvider.class)
+public class KafkaMessageBusProvider extends KafkaProvider implements MessageBusProvider {
+	MB mb = null;
 	
 	@Override
-	public void execute(CommandLine commandLine, int index) {
-		// TODO Auto-generated method stub
-
+	public MB getMB(Config config) {
+		if (mb==null) {
+			mb = MBK.createInstance(config.getKafka().getUrl());
+		}
+		return mb;
 	}
+
 
 }

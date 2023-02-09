@@ -15,6 +15,8 @@
 package net.sodacan.messagebus;
 
 import java.time.Duration;
+import java.util.List;
+import java.util.Map;
 
 /**
  * General topic interface that can be backed by memory queue or Kafka
@@ -25,4 +27,5 @@ public interface MBTopic {
 	public String getTopicName();
 //	public long getNextOffset();
 	public MBRecord poll(Duration timeout);
+	public Map<String, MBRecord> snapshot();
 }

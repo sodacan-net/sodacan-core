@@ -7,11 +7,6 @@
   	<artifactId>sodacan</artifactId>
   </parent>
   <dependencies>
-		<dependency>
-		    <groupId>org.apache.kafka</groupId>
-		    <artifactId>kafka-clients</artifactId>
-		    <version>${kafka.version}</version>
-		</dependency>
 	  	<dependency>
 			<groupId>net.sodacan</groupId>
 	  		<artifactId>compiler</artifactId>

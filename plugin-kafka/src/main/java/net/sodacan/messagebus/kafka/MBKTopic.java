@@ -14,10 +14,12 @@
  */
 package net.sodacan.messagebus.kafka;
 
+import java.beans.PropertyChangeListener;
 import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -32,12 +34,13 @@ import org.apache.kafka.common.errors.InterruptException;
 import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 /**
- * A wrapper around KafkaConsumer
- * @author john
+ * A wrapper around KafkaConsumer.
+ * This is not thread safe. It is expected that a topic will be opened whenever it is needed.
+ * We close the topic after completion of one of the snapshot/follow methods.
+ * @author John Churin
  *
  */
 public class MBKTopic implements MBTopic, Closeable {
-	private Consumer<String, String> consumer = null;
 
 	// The nextOffset is where we desire to start consuming
 	private long nextOffset;
@@ -47,6 +50,7 @@ public class MBKTopic implements MBTopic, Closeable {
 	private long endOffset;
 	
 	private String topicName;
+	private String brokers;
 
 	/**
 	 * Construct a topic for consuming records
@@ -57,31 +61,71 @@ public class MBKTopic implements MBTopic, Closeable {
 	protected MBKTopic(String brokers, String topicName, long nextOffset) {
 		this.nextOffset = nextOffset;
 		this.topicName = topicName;
-		
+		this.brokers = brokers;
+	}
+	protected Consumer<String, String> openConsumer() {
+		Consumer<String, String> consumer = null;
+		Properties properties = new Properties();
+		properties.setProperty("bootstrap.servers", brokers);
+//		properties.setProperty("group.id", "test");
+		properties.setProperty("enable.auto.commit", "false");
+		properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+		properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
+		consumer = new KafkaConsumer<>(properties);
+		TopicPartition partition = new TopicPartition(topicName, 0);
+		List<TopicPartition> partitions = Arrays.asList(partition);
+		consumer.assign(partitions);
+		// Get positioned
+		consumer.seek(partition,nextOffset);
+		// Get the ending offset, if any
+		Map<TopicPartition,Long> endOffsets = consumer.endOffsets(partitions);
+		endOffset = endOffsets.get(partition);
+		return consumer;
+	}
+	/**
+	 * <p>Load up a reduced list of records from this topic. Only the most recent of any
+	 * key is in the list.</p>
+	 * <p>This a snapshot usually begins at offset zero and includes everything up 
+	 * the end offset known when the topic was opened. This also accounts for deleted keys
+	 * (tombstones in Kafka).</p>
+	 */
+	public Map<String, MBRecord> snapshot() {
+		 Map<String, MBRecord> mbrs = new HashMap<>();
+		Consumer<String,String> consumer = openConsumer();
 		try {
-			Properties properties = new Properties();
-			properties.setProperty("bootstrap.servers", brokers);
-	//				properties.setProperty("group.id", "test");
-			properties.setProperty("enable.auto.commit", "false");
-			properties.setProperty("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-			properties.setProperty("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
-			consumer = new KafkaConsumer<>(properties);
-			TopicPartition partition = new TopicPartition(topicName, 0);
-			List<TopicPartition> partitions = Arrays.asList(partition);
-			consumer.assign(partitions);
-			// Get positioned
-			consumer.seek(partition,nextOffset);
-			// Get the ending offset, if any
-			Map<TopicPartition,Long> endOffsets = consumer.endOffsets(partitions);
-			endOffset = endOffsets.get(partition);
+			while (true) {
+				ConsumerRecords<String, String> records = consumer.poll(Duration.ofMillis(200));
+				for (ConsumerRecord<String,String> record : records ) {
+					// If no value, then remove this key from the map. Otherwise, put the updated
+					// Record into the map.
+					if (record.value()==null) {
+						mbrs.remove(record.key());
+					} else {
+						MBRecord mbr = new MBKRecord(record);
+						mbrs.put(record.key(), mbr);
+					}
+					if (record.offset()==endOffset) {
+						return mbrs;
+					}
+				}
+			}
+		} catch (Throwable e) {
+			throw new RuntimeException("Problem consuming from topic: " + topicName, e);
+		} finally {
+			consumer.close();
+		}
+	}
+	
+	public void follow( PropertyChangeListener listener) {
+		try {
 		} catch (Throwable e) {
 			if (!(e instanceof InterruptedException || e instanceof InterruptException)) {
 				throw new RuntimeException("Problem consuming from topic: " + topicName, e);
 			}
+			// In
 		}
-
+		
 	}
-
 //	public void consume() {
 //	    while (true) {
 //	         ConsumerRecords<K, V> records = consumer.poll(Duration.ofMillis(500));
@@ -115,12 +159,9 @@ public class MBKTopic implements MBTopic, Closeable {
 		// TODO Auto-generated method stub
 		return null;
 	}
-
 	@Override
 	public void close() throws IOException {
-		if (consumer!=null) {
-		    consumer.close();
-		}
+		
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.spi.MessageBusProvider;
 import net.sodacan.mode.spi.ModeProvider;
@@ -51,13 +52,14 @@ public class MessageBusService extends ModeService {
 	protected List<MessageBusProvider> getProviders() {
 		return providers;
 	}
+	
 	/**
 	 * Get a message bus for this Mode
 	 * @return
 	 */
-	public MB getMB() {
+	public MB getMB(Config config) {
 		if (providers.size()>0) {
-			return providers.get(0).getMB();
+			return providers.get(0).getMB(config);
 		}
 		return null;
 	}

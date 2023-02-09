@@ -12,12 +12,13 @@
 		<module>compiler</module>
 		<module>mode</module>
 		<module>mode-api</module>
-		<module>plugin-memory</module>
-		<module>plugin-static-clock</module>
-		<module>plugin-real-clock</module>
 		<module>runtime</module>
 		<module>utility</module>
 		<module>webserver</module>
+		<module>plugin-memory</module>
+		<module>plugin-kafka</module>
+		<module>plugin-real-clock</module>
+		<module>plugin-static-clock</module>
 	</modules>
 	<packaging>pom</packaging>
 	<properties>

@@ -21,11 +21,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
-import net.sodacan.api.kafka.SodacanProducer;
-import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.api.utility.ModuleMethods;
 import net.sodacan.compiler.ModuleCompiler;
+import net.sodacan.config.Config;
+import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 import net.sodacan.module.statement.SodacanModule;
 /**
@@ -56,15 +56,14 @@ public class ModuleLoader {
 	private Mode mode;
 	private String rawSource;
 	private ModuleCompiler compiler;
-	protected SodacanProducer producer;
 	protected SodacanModule module;
-	
+	protected MB mb;
 	public ModuleLoader() {
 		mode = Mode.getInstance();
         // Fire up the compiler
 		compiler = new ModuleCompiler();
-		// We'll need a producer
-		producer = new SodacanProducer();
+		// We'll need a message bus
+		mb = mode.getMessageBusService().getMB(Config.getInstance());
 	}
 
 	protected SodacanModule compile() {
@@ -85,26 +84,26 @@ public class ModuleLoader {
 	 * @param module
 	 */
 	protected void createModuleTopics( ) {
-		TopicAdmin topicAdmin = TopicAdmin.getInstance();
+		
 		String stateTopic = ModuleMethods.getModuleStateTopicName(mode, module);
-		boolean result = topicAdmin.createTopic(stateTopic, true);
+		boolean result = mb.createTopic(stateTopic, true);
 		if (!result) {
 			logger.info("Topic " + stateTopic + " already exists");
 		}
 		String publishTopic = ModuleMethods.getModulePublishTopicName(mode, module);
-		result = topicAdmin.createTopic(publishTopic, false);
+		result = mb.createTopic(publishTopic, false);
 		if (!result) {
 			logger.info("Topic " + publishTopic + " already exists");
 		}
 		String adminTopic = ModuleMethods.getModuleAdminTopicName(mode, module);
-		result = topicAdmin.createTopic(adminTopic, false);
+		result = mb.createTopic(adminTopic, false);
 		if (!result) {
 			logger.info("Topic " + adminTopic + " already exists");
 		}
 	}
 	protected void pushSourceToAdminTopic() {
 		String topicName = ModuleMethods.getModuleAdminTopicName(mode, module);
-		producer.put(topicName,"scc", rawSource);
+		mb.produce(topicName,"scc", rawSource);
 		logger.info("Module source pushed to " + topicName);
 	}
 
@@ -117,13 +116,13 @@ public class ModuleLoader {
 				throw new SodacanException("Compile Errors, aborting");
 			}
 			String moduleName = module.getName();
-			producer.put(Initialize.MODULES, ModuleMethods.getModuleKeyName(moduleName, null),Instant.now().toString());
+			mb.produce(Initialize.MODULES, ModuleMethods.getModuleKeyName(moduleName, null),Instant.now().toString());
 			createModuleTopics();
 			pushSourceToAdminTopic();
 		} catch (Exception e) {
 			throw new SodacanException("Error loading module", e);
 		} finally {
-			producer.close();
+//			producer.close();
 		}
 	}
 

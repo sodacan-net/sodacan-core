@@ -16,6 +16,7 @@ package net.sodacan.plugin.memory;
 
 import com.google.auto.service.AutoService;
 
+import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.messagebus.mem.MBM;
 import net.sodacan.mode.spi.MessageBusProvider;
@@ -23,13 +24,13 @@ import net.sodacan.mode.spi.MessageBusProvider;
 @AutoService(MessageBusProvider.class)
 public class MemoryMessageBusProvider extends MemoryProvider implements MessageBusProvider {
 
-	MBM mbm = null;
+	MB mb = null;
 	@Override
-	public MB getMB() {
-		if (mbm==null) {
-			mbm = MBM.createInstance();
+	public MB getMB(Config config) {
+		if (mb==null) {
+			mb = MBM.createInstance();
 		}
-		return mbm;
+		return mb;
 	}
 
 }

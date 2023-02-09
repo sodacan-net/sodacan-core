@@ -12,26 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.cli.cmd;
+package net.sodacan.plugin.kafka;
 
-import org.apache.commons.cli.CommandLine;
+import java.util.Set;
 
-import net.sodacan.api.Followable;
-import net.sodacan.cli.Action;
-import net.sodacan.cli.CmdBase;
-import net.sodacan.cli.CommandContext;
+import net.sodacan.mode.spi.Plugin;
 
-public class FollowListCmd extends CmdBase implements Action {
+public abstract class KafkaProvider extends Plugin{
 
-	public FollowListCmd(CommandContext cc) {
-		super(cc);
-	}
+	public static final String PLUGIN_TYPE = "kafka";
 
 	@Override
-	public void execute(CommandLine commandLine, int index) {
-		for (Followable followable : cc.getFollowables()) {
-			System.out.println("Following: " + followable.toString());
+	public boolean isMatch(Set<String> types) {
+		for (String type : types ) {
+			if (PLUGIN_TYPE.equals(type)) {
+				return true;
+			}
 		}
+		return false;
 	}
 
 }

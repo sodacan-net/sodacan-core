@@ -15,10 +15,12 @@
 package net.sodacan.messagebus.mem;
 
 import java.time.Duration;
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Map;
 import java.util.Queue;
 
+import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 
 /**
@@ -69,5 +71,21 @@ public class MBMTopic implements MBTopic {
 		}
 		nextOffset = record.getOffset()+1;
 		return record;
+	}
+	/**
+	 * Return a reduced snapshot of the queue.
+	 */
+	@Override
+	public Map<String, MBRecord> snapshot() {
+		Map<String, MBRecord> map = new HashMap<>();
+		// If the value is null, delete that key from the map
+		for (MBMRecord record : queue) {
+			if (record.getValue()==null) {
+				map.remove(record.getKey());
+			} else {
+				map.put(record.getKey(), record);
+			}
+		}
+		return map;
 	}			
 }
