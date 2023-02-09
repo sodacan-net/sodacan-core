@@ -30,6 +30,7 @@ public class StaticClock extends Plugin implements ClockProvider, Supplier<Insta
 	public static final String PLUGIN_TYPE = "test";
 	
 	private ManualClock clock = new ManualClock();
+	
 	public boolean isMatch(Set<String> types) {
 		for (String type : types ) {
 			if (PLUGIN_TYPE.equals(type)) {
@@ -58,6 +59,11 @@ public class StaticClock extends Plugin implements ClockProvider, Supplier<Insta
 	 */
 	public void setClock(int year, int month, int day, int hour, int minute, int second) {
 		clock.setTime(year, month, day, hour, minute, second);
+	}
+
+	@Override
+	public long getTimestamp() {
+		return clock.millis();
 	}
 	
 }

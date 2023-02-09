@@ -23,6 +23,7 @@ import net.sodacan.api.topic.Initialize;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.mode.Mode;
 
 public class ModuleListCmd extends CmdBase implements Action, PropertyChangeListener {
 
@@ -33,6 +34,7 @@ public class ModuleListCmd extends CmdBase implements Action, PropertyChangeList
 	@Override
 	public void execute(CommandLine commandLine, int index) {
 		init(commandLine,index);
+		Mode mode = needMode();
 		needReductionConsumer(Initialize.MODULES, this);
 	}
 

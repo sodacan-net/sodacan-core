@@ -15,6 +15,8 @@
 package net.sodacan.config;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +35,17 @@ public class Config {
 	private Rules rules;
 	private Location location;
 	private Kafka kafka;
+	private List<ConfigMode> modes = new LinkedList<>();
 	
 	private Config() {
 		
+	}
+	/**
+	 * True if config file has already been read and config is initialized.
+	 * @return True if config file has already been read and config is initialized.
+	 */
+	public static boolean isInitialized() {
+		return (instance!=null);
 	}
 	
 	public static Config getInstance() {
@@ -89,6 +99,14 @@ public class Config {
 
 	public void setKafka(Kafka kafka) {
 		this.kafka = kafka;
+	}
+
+	public List<ConfigMode> getModes() {
+		return modes;
+	}
+
+	public void setModes(List<ConfigMode> modes) {
+		this.modes = modes;
 	}
 	
 }

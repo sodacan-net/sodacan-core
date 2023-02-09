@@ -13,6 +13,9 @@
  * limitations under the License.
  */
 package net.sodacan.mode.spi;
+
+import net.sodacan.messagebus.MB;
+
 /**
  * The message bus uses plugins to get and set the various messages of the message bus.
  * @author John Churin
@@ -22,4 +25,5 @@ public interface MessageBusProvider extends ModeProvider {
 //	public ModeSupplier getModeSupplier();
 //	public void putModePayload(ModePayload payload);
 //	public TopicModeSupplier get
+	public MB getMB();
 }

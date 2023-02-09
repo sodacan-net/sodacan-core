@@ -22,6 +22,8 @@ import net.sodacan.api.kafka.TopicAdmin;
 import net.sodacan.cli.Action;
 import net.sodacan.cli.CmdBase;
 import net.sodacan.cli.CommandContext;
+import net.sodacan.messagebus.MB;
+import net.sodacan.mode.Mode;
 
 public class TopicListCmd extends CmdBase implements Action {
 
@@ -30,9 +32,11 @@ public class TopicListCmd extends CmdBase implements Action {
 	}
 	@Override
 	public void execute(CommandLine commandLine, int index) {
-		TopicAdmin topicAdmin = TopicAdmin.getInstance();
-		List<String> topics = topicAdmin.listTopics();
-		topics.sort(String::compareTo);
+		init(commandLine, index);
+		Mode mode = needMode();
+		MB mb = mode.getMessageBusService().getMB();
+		List<String> topics = mb.listTopics();
+//		topics.sort(String::compareTo);
 		System.out.println(topics);
 	}
 

@@ -12,19 +12,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.mode.spi;
+package net.sodacan.plugin.memory;
 
-import java.time.Instant;
-import java.util.function.Supplier;
+import com.google.auto.service.AutoService;
 
-public interface ClockProvider extends ModeProvider {
-	/**
-	 * Return a supplier interface to the clock. For this type of clock, we only advance the clock
-	 * when the time is manually changed
-	 * @return Supplier of Instant(s)
-	 */
-	public Supplier<Instant> getSupplier();
-	public void setClock(int year, int month, int day, int hour, int minute, int second);
-	public long getTimestamp();
+import net.sodacan.messagebus.MB;
+import net.sodacan.messagebus.mem.MBM;
+import net.sodacan.mode.spi.MessageBusProvider;
+
+@AutoService(MessageBusProvider.class)
+public class MemoryMessageBusProvider extends MemoryProvider implements MessageBusProvider {
+
+	MBM mbm = null;
+	@Override
+	public MB getMB() {
+		if (mbm==null) {
+			mbm = MBM.createInstance();
+		}
+		return mbm;
+	}
 
 }

@@ -34,6 +34,7 @@ public class Initialize {
 	public static final String LOGGER = "Logger";
 	public static final String MODES = "Modes";
 	public static final String MODULES = "Modules";
+	public static final String DEFAULT_CONFIG_FILE = "config/config.yaml";
 	public static final String DEFAULT_MODE = "default";
 	public static final String DEFAULT_CLOCK = "real";
 	public static final String DEFAULT_LOGGER = "memory";
@@ -93,8 +94,6 @@ public class Initialize {
 		}
 		return r;
 	}
-	
-	
 
 	/**
 	 * <p>A default mode is always available. We create it here. Note: We create the default mode each time we're called.

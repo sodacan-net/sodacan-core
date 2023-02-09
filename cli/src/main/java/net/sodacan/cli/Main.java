@@ -55,6 +55,10 @@ public class Main implements CommandContext {
 	private Options options;
 	private CommandLineParser parser;
 	private List<Followable> followables = new LinkedList<>();
+
+	/**
+	 * Setup for command dispatching.
+	 */
 	public Main() {
 		logger.trace("Setup Command Dispatch");
 		// Setup command structure
@@ -145,12 +149,12 @@ public class Main implements CommandContext {
 			      command.printHelp("");
 			      return;
 			}
-			// Config file setup
-			if (cmd.hasOption('c')) {
-				setupConfig(cmd.getOptionValue("c"));
-			} else {
-				setupConfig( "config/config.yaml");
-			}
+//			// Config file setup
+//			if (cmd.hasOption('c')) {
+//				setupConfig(cmd.getOptionValue("c"));
+//			} else {
+//				setupConfig( "config/config.yaml");
+//			}
 			if (cmd.hasOption('i')) {
 				interactiveMode();
 				return;

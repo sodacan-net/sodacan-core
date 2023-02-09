@@ -57,5 +57,9 @@ public class RealClock extends Plugin implements ClockProvider, Supplier<Instant
 	public void setClock(int year, int month, int day, int hour, int minute, int second) {
 	}
 	
+	@Override
+	public long getTimestamp() {
+		return Instant.now().toEpochMilli();
+	}
 
 }

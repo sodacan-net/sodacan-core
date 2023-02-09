@@ -13,3 +13,11 @@ kafka:
         sessionTimeoutSec: 30
     producer:
         lingerMs: 0
+
+modes:
+    - name: default
+      clock: real
+      messageBus: memory
+      stateStore: memory
+      logger: console
+      

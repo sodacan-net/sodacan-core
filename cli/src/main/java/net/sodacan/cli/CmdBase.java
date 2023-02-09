@@ -28,6 +28,8 @@ import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.api.topic.ModeConsumer;
 import net.sodacan.api.topic.ReductionConsumer;
+import net.sodacan.config.Config;
+import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.Mode;
 
 /**
@@ -60,11 +62,63 @@ public abstract class CmdBase {
 			remainingArguments.add(commandLine.getArgList().get(x));
 		}
 	}
+	protected Config needConfig() {
+		if (!Config.isInitialized()) {
+			String configFile;
+			if (commandLine.hasOption("c")) {
+				configFile = commandLine.getOptionValue("c");
+			} else {
+				configFile = Initialize.DEFAULT_CONFIG_FILE;
+			}
+			Config config = Config.init(configFile);
+			return config;
+		} else {
+			Config config = Config.getInstance();
+			return config;
+		}
+	}
 	/**
-	 * Many commands need a mode to be specified, set it up here.
-	 * @return
+	 * See if we can get a mode out of the config file
+	 * @param modeName
+	 * @return Mode found or null if not
+	 */
+	protected Mode findConfigMode(String modeName) {
+		Mode mode = null;
+		// Before looking at a database of some kind (Kafka for example) see if the
+		// Mode we're looking for is in the config file.
+		List<ConfigMode> configModes =  Config.getInstance().getModes();
+		for (ConfigMode configMode : configModes) {
+			if (configMode.getName().equals(modeName)) {
+				mode = Mode.newModeBuilder()
+						.name(modeName)
+						.logger(configMode.getLogger())
+						.messageBus(configMode.getMessageBus())
+						.stateStore(configMode.getStateStore())
+						.clock(configMode.getClock())
+						.build();
+				break;
+			}
+		}
+		return mode;
+	}
+	/**
+	 * <p>Many commands need a mode to be specified or defaulted, so, set it up here.
+	 * We have a conundrum here.</p>
+	 * <ul>
+	 * <li>To find available modes, we need to look them up.</li>
+	 * <li>To get the list of modes requires a connection to a MessageBus, memory or kafka, or anything else.</li>
+	 * <li>To make a messageBus provider available, we need a mode to be specified.</li>
+	 * </ul>
+	 * <p>So, here's how it works. A mode option (-m) does not and should not be specified in order to create a mode.
+	 * Doing so would require the specified mode to be selected.
+	 * 
+	 * So we accept the user's "create mode" blindly. If the name of the mode is default, Then we supply the settings.
+	 * We look to the config file for the definition of a default mode, and use that. Maybe some others as well.
+	 * Once the bootstrapping is done, we're off to the races.</p>
+	 * @return The selected mode, or null
 	 */
 	protected Mode needMode() {
+		needConfig();
 		String modeName;
 		// The -m option specifies mode, but we allow a default mode, too
 		if (commandLine.hasOption("m")) {
@@ -72,16 +126,20 @@ public abstract class CmdBase {
 		} else {
 			modeName = Initialize.DEFAULT_MODE;
 		}
-		// Get the latest rendition of the mode
-		ModeConsumer rc = new ModeConsumer(modeName);
-		rc.snapshot();
-		// Get the value
-		String json = rc.get(modeName);
-		if (json==null) {
-			throw new SodacanException(commandName  + " Mode " + modeName + " not found");
+		// Try the configuration file first.
+		Mode mode = findConfigMode( modeName);
+		// If not found, then maybe we have a useful way to find it
+		if (mode==null) {
+			// Get the latest rendition of the mode
+			ModeConsumer rc = new ModeConsumer(modeName);
+			rc.snapshot();
+			String json = rc.get(modeName);
+			if (json==null) {
+				throw new SodacanException(commandName  + " Mode " + modeName + " not found");
+			}
+			// Turn the json into a node object
+			mode = Mode.createModeFromJson(json);
 		}
-		// Turn the json into a node object
-		Mode mode = Mode.createModeFromJson(json);
 		// And initialize it (load plugins)
 		mode.initialize();
 		return mode;
@@ -139,4 +197,5 @@ public abstract class CmdBase {
 		}
 		return tc;
 	}
+	
 }

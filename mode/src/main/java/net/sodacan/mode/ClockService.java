@@ -23,6 +23,7 @@ import java.util.function.Supplier;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.SodacanException;
 import net.sodacan.mode.spi.ClockProvider;
 import net.sodacan.mode.spi.ModeProvider;
 /**
@@ -76,4 +77,10 @@ public class ClockService extends ModeService {
 		}
 	}
 
+	public long getTimestamp() {
+		if (providers.size()>0) {
+			return providers.get(0).getTimestamp();
+		}
+		throw new SodacanException("No clock provider, cannot return timestamp");
+	}
 }
