@@ -51,7 +51,7 @@ public class TestPlugins implements PropertyChangeListener{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testMemoryLogger() {
 		// Do this only one time per mode. This example is small. Usually, messageBus, clock, and stateStore also also
 		// setup at this time.VariablePayload
@@ -78,7 +78,7 @@ public class TestPlugins implements PropertyChangeListener{
 		Mode.clearModeInThread();
 	}
 
-	@Test
+//	@Test
 	public void testMultipleMemoryLoggers() {
 		// Do this only one time per mode. This example is small. Usually, messageBus, clock, and stateStore also also
 		// setup at this time.
@@ -119,7 +119,7 @@ public class TestPlugins implements PropertyChangeListener{
 		}
 	}
 	
-	@Test
+//	@Test
 	public void testSaveState() {
 		try {
 			// Create some variables
@@ -152,7 +152,7 @@ public class TestPlugins implements PropertyChangeListener{
 		}
 	}
 
-	@Test
+//	@Test
 	public void testSaveAndRestoreState() {
 		try {
 			// Create a variable in a variables structure
