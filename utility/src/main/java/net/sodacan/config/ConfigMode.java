@@ -14,7 +14,11 @@
  */
 package net.sodacan.config;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
+
+import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
 /**
  * One of these per mode that we want to provide without the aid of looking into a database of modes.
@@ -23,13 +27,21 @@ import java.util.Set;
  */
 public class ConfigMode {
 	private String name;
-	private String messageBus;
-	private String clock;
-	private String logger; 
-	private String stateStore;
+	private Map<String,String> messageBus;
+	private Map<String,String> clock;
+	private Map<String,String> logger;
+	private Map<String,String> stateStore;
 	
 	public ConfigMode() {
 		
+	}
+
+	public ConfigMode(ConfigModeBuilder cmb) {
+		this.name = cmb.name;
+		this.messageBus = cmb.messageBus;
+		this.clock = cmb.clock;
+		this.logger = cmb.logger;
+		this.stateStore = cmb.stateStore;
 	}
 
 	public String getName() {
@@ -39,38 +51,107 @@ public class ConfigMode {
 	public void setName(String name) {
 		this.name = name;
 	}
-
-	public String getMessageBus() {
+	@JsonAnyGetter
+	public Map<String,String> getMessageBus() {
 		return messageBus;
 	}
 
-	public void setMessageBus(String messageBus) {
+	public void setMessageBus(Map<String,String> messageBus) {
 		this.messageBus = messageBus;
 	}
 
-	public String getClock() {
+	@JsonAnyGetter
+	public Map<String, String> getClock() {
 		return clock;
 	}
 
-	public void setClock(String clock) {
+	public void setClock(Map<String, String> clock) {
 		this.clock = clock;
 	}
 
-	public String getLogger() {
+	@JsonAnyGetter
+	public Map<String, String> getLogger() {
 		return logger;
 	}
 
-	public void setLogger(String logger) {
+	public void setLogger(Map<String, String> logger) {
 		this.logger = logger;
 	}
 
-	public String getStateStore() {
+	@JsonAnyGetter
+	public Map<String, String> getStateStore() {
 		return stateStore;
 	}
 
-	public void setStateStore(String stateStore) {
+	public void setStateStore(Map<String, String> stateStore) {
 		this.stateStore = stateStore;
 	}
+
+	public static ConfigModeBuilder newConfiguModeBuilder() {
+		return new ConfigModeBuilder();
+	}
 	
-	
+	public static class ConfigModeBuilder {
+		private String name;
+		private Map<String,String> messageBus;
+		private Map<String,String> clock;
+		private Map<String,String> logger;
+		private Map<String,String> stateStore;
+		
+		private ConfigModeBuilder() {
+			messageBus = new HashMap<String,String>();
+			clock = new HashMap<String,String>();
+			logger = new HashMap<String,String>();
+			stateStore = new HashMap<String,String>();
+		}
+		
+		public ConfigModeBuilder name( String name) {
+			this.name = name;
+			return this;
+		}
+		
+		public ConfigModeBuilder messageBusType( String pluginType) {
+			this.messageBus.put("pluginType", pluginType);
+			return this;
+		}
+		
+		public ConfigModeBuilder clockType( String pluginType) {
+			this.clock.put("pluginType", pluginType);
+			return this;
+		}
+		
+		public ConfigModeBuilder loggerType( String pluginType) {
+			this.logger.put("pluginType", pluginType);
+			return this;
+		}
+		
+		public ConfigModeBuilder stateStoreType( String pluginType) {
+			this.stateStore.put("pluginType", pluginType);
+			return this;
+		}
+
+		public ConfigModeBuilder messageBusProperty( String key, String value) {
+			this.messageBus.put(key, value);
+			return this;
+		}
+		
+		public ConfigModeBuilder clockProperty( String key, String value) {
+			this.clock.put(key, value);
+			return this;
+		}
+		
+		public ConfigModeBuilder loggerProperty( String key, String value) {
+			this.logger.put(key, value);
+			return this;
+		}
+		
+		public ConfigModeBuilder stateStoreProperty( String key, String value) {
+			this.stateStore.put(key, value);
+			return this;
+		}
+		
+		public ConfigMode build() {
+			return new ConfigMode(this);
+		}
+	}
 }

@@ -20,11 +20,6 @@ import java.util.List;
  * @author John Churin
  */
 public interface MB {
-//	/**
-//	 * MB is intended to be a singleton so this message supports that.
-//	 * @return and instance of MB
-//	 */
-//	public MB getInstance();
 	
 	/**
 	 * Return a list of known topics

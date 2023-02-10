@@ -21,6 +21,7 @@ import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
 import net.sodacan.mode.spi.VariablePayload;
@@ -46,17 +47,18 @@ public class StateStoreService extends ModeService {
 	private final static Logger logger = LoggerFactory.getLogger(StateStoreService.class);
 	protected List<StateStoreProvider> providers = new ArrayList<>();
 
-	public StateStoreService(Mode mode) {
-		super(mode, StateStoreProvider.class);
+	public StateStoreService(ConfigMode configMode) {
+		super(configMode, StateStoreProvider.class);
+		String pluginType = configMode.getMessageBus().get("pluginType");
+		loadProviders(pluginType);
 	}
 
-	@Override
-	public void loadProviders(Set<String> types) {
+	public void loadProviders(String pluginType) {
 		for (ModeProvider provider : getLoader()) {
-			if (provider.isMatch(types)) {
+			if (provider.isMatch(pluginType)) {
 				providers.add((StateStoreProvider) provider);
-				provider.setMode(getMode().getName());
-				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
+				provider.setMode(getModeName());
+				logger.info("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}

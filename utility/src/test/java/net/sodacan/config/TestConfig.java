@@ -27,8 +27,15 @@ public class TestConfig {
 	}
 
 	@Test
-	public void testKafka() {
+	public void testModes() {
     	Config config = Config.init(configFileName1);
-    	assert(config.getKafka()!=null);
+    	assert(config.getModes()!=null);
+    	assert(config.getModes().size()==1);
+    	ConfigMode cm = config.getModes().get(0);
+    	assert("kafka".equals(cm.getMessageBus().get("pluginType")));
+    	assert("500".equals(cm.getMessageBus().get("poll.timeout.ms")));
+    	assert(500==Integer.parseInt(cm.getMessageBus().get("poll.timeout.ms")));
+    	assert("soda6:9092,soda7:9092".equals(cm.getMessageBus().get("brokers")));
+    	
 	}
 }

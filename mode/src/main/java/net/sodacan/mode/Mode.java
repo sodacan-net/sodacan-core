@@ -26,8 +26,16 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sodacan.SodacanException;
+import net.sodacan.config.Config;
+import net.sodacan.config.ConfigMode;
+import net.sodacan.messagebus.MB;
 import net.sodacan.mode.spi.ModePayload;
+import net.sodacan.mode.spi.VariablePayload;
 import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
+import net.sodacan.module.statement.SodacanModule;
+import net.sodacan.module.variables.ModuleVariables;
+import net.sodacan.module.variables.Variables;
+import net.sodacan.mode.spi.StateStoreProvider;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -36,163 +44,86 @@ import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
  * <p>A mode instance will seek to establish services needed for that mode. 
  * Mode is not passed as an argument in most cases. Rather, mode is stored in and accessed from thread local storage.</p>
  * <p>On activation of the thread, such as when a REST api occurs, call the static method getInstance with the mode name.
- * In this case, mode is typically in a session or cookie. the latter is preferred because session setting might also
+ * In this case, mode is typically in a cookie or session. the latter is preferred because session setting might also
  * be stored by mode.</p>
- * <p>One thread can only be in one mode at a time. However, and number of threads can be in the same mode. Service providers
+ * <p>One thread can only be in one mode at a time. However, any number of threads can be in the same mode. Service providers
  * should be aware of this and be prepared to handle thread synchronization if applicable. In the case of calls from modules, 
- * the service provider can be certain of the single thread. Remember that calls of this sort are by module and, if applicable, 
- * module instance.</p>
+ * the service provider can be certain of the single thread: Calls of this sort are by module and, 
+ * if applicable, module instance.</p>
  * <p>Persisting modes is a bit tricky because of Sodacan rules about no cross-mode interaction. 
- * So, we leave Mode persistence to the individual services. On startup, we poll each of the
- * services asking for which mode(s) they apply to, if any. This allows the service to use its own method for persisting it's state.
+ * All modes originate from the configuration file. This configuration provides a specific combination 
+ * of plugins for each base mode.
+ * All other modes are cloned from one of these base modes. But mode cloning also includes copying 
+ * data to the new mode.
+ * </p>
  * This process reconstitutes the Mode list.</p>
  * @author John Churin
  *
  */
 public class Mode {
-	private static ObjectMapper mapper; 
-	static {
-		mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
-	}
-
-	private String name;
-	private Set<String> messageBusTypes;
-	private Set<String> clockTypes;
-	private Set<String> loggerTypes; 
-	private Set<String> stateStoreTypes;
+	// The list of all known baseModes, created on application startup.
+	private static Map<String,BaseMode> baseModes = null;
+	// The list of all known modes
+	private static Map<String,Mode> modes = null;
 	
-	private MessageBusService messageBusService = new MessageBusService(this);
-	private ClockService clockService = new ClockService(this);
-	private LoggerService loggerService = new LoggerService(this);
-	private StateStoreService stateStoreService = new StateStoreService(this);
-	private Set<PropertyChangeListener> listeners = new HashSet<>();
-	
-//	private functionService funtionService;	// Include namespace and fn name
-
-	private static Map<String,Mode> instances = new ConcurrentHashMap<>();
-
 	private static ThreadLocal<Mode> threadMode = new ThreadLocal<>();
-
-	public void initialize() {
-		this.messageBusService.loadProviders(messageBusTypes);
-		this.clockService.loadProviders(clockTypes);
-		this.loggerService.loadProviders(loggerTypes);
-		this.stateStoreService.loadProviders(stateStoreTypes);
-		// Keep a list of all modes
-		instances.put(this.name, this);
-
-		/**
-		 * Note: recovered modes don't need listeners, which are used for unit testing.
-		 */
-		for (PropertyChangeListener listener : listeners) {
-			this.messageBusService.addPropertyChangeListener(listener);
-			this.clockService.addPropertyChangeListener(listener);
-			this.loggerService.addPropertyChangeListener(listener);
-			this.stateStoreService.addPropertyChangeListener(listener);
-		}
-	}
-//	public String serialize
-	public ModePayload createModePayload() {
-		ModePayloadBuilder mpb = ModePayload.newModePayloadBuilder().name(name);
-		for (String mbt : this.messageBusTypes) mpb.messageBus(mbt);
-		for (String ct : this.clockTypes) mpb.clock(ct);
-		for (String lt : this.loggerTypes) mpb.logger(lt);
-		for (String sst : this.stateStoreTypes) mpb.stateStore(sst);
-		return mpb.build();
-	}
-
-	public static Mode createModeFromJson( String json ) {
-		ModePayload modePayload;
-		try {
-			modePayload = mapper.readValue(json, ModePayload.class);
-		} catch (JsonProcessingException e) {
-			throw new SodacanException("Roor mapping json to ModePayload: " + json);
-		}
-		return new Mode(modePayload);
+	
+	private String modeName;
+	private String baseModeName;
+	// Denormalize the BaseNode for speed
+	private BaseMode baseMode;
+	
+	private MB mb = null;
+	
+	/**
+	 * Find a Mode
+	 * @param baseModeName
+	 * @return The BaseNode or null
+	 */
+	public static Mode findMode(String modeName) {
+		return modes.get(modeName);
 	}
 	
 	/**
-	 * Serialize a mode to Json
-	 * @param mode
-	 * @return Json string representing the Mode
+	 * Return a base Mode of null if not found.
+	 * @param baseModeName
+	 * @return The BaseNode or null
 	 */
-	public String getJsonPayload( ) {
-		ModePayload modePayload = createModePayload();
-		try {
-			String json;
-			json = mapper
-						.writerWithDefaultPrettyPrinter()
-						.writeValueAsString(modePayload);
-			return json;
-		} catch (JsonProcessingException e) {
-			throw new SodacanException("Error serializing mode: " + modePayload, e);
+	public static BaseMode findBaseMode(String baseModeName) {
+		return baseModes.get(baseModeName);
+	}
+	/**
+	 * This crucial first step in the life of a mode begins with the configuration file 
+	 * where most BaseModes originate. Each BaseMode get's its own Mode, as well.
+	 * This method should be called only once and will return quietly if called again.
+	 * @param config
+	 */
+	public static void configure( Config config) {
+		// Been here already, don't do it again
+		if (baseModes!=null) {
+			return;
+		}
+		baseModes = new ConcurrentHashMap<>();
+		modes = new ConcurrentHashMap<>();
+		for (ConfigMode configMode : config.getModes()) {
+			String name = configMode.getName();
+			baseModes.put(name, new BaseMode(configMode));
+			modes.put(name, new Mode(name,name));
 		}
 	}
-
-	/**
-	 * Setup the mode, services, and providers underneath mode. Also any listeners requested.
-	 * @param mb
-	 */
-	private Mode(ModeBuilder mb) {	
-		this.name = mb.name;
-		
-		this.messageBusTypes = mb.messageBusTypes;
-		this.clockTypes = mb.clockTypes;
-		this.loggerTypes = mb.loggerTypes; 
-		this.stateStoreTypes = mb.stateStoreTypes;
-		this.listeners = mb.listeners;
-//		initialize();	// Do this explicitly
-
-	}
 	
-	/**
-	 * Create a mode starting from a mode payload
-	 * @param modePayload
-	 * @return
-	 */
-	public Mode( ModePayload modePayload ) {
-		this.name = modePayload.getName();
-		this.messageBusTypes = modePayload.getMessageBusTypes();
-		this.clockTypes = modePayload.getClockTypes();
-		this.loggerTypes = modePayload.getLoggerTypes(); 
-		this.stateStoreTypes = modePayload.getStateStoreTypes();
-//		initialize();
+	public Mode( String modeName, String baseModeName) {
+		if (baseModes==null) {
+			throw new SodacanException("Modes/BaseModes not setup, see Mode.configure()");
+		}
+		this.modeName = modeName;
+		this.baseModeName = baseModeName;
+		baseMode = findBaseMode(baseModeName);
+		if (baseMode==null) {
+			throw new SodacanException("Base Mode " + baseModeName + " not found for mode " + modeName);
+		}
+		modes.put(modeName, this);
 	}
-	
-	public Set<String> getMessageBusTypes() {
-		return messageBusTypes;
-	}
-	
-	public Set<String> getClockTypes() {
-		return clockTypes;
-	}
-	
-	public Set<String> getLoggerTypes() {
-		return loggerTypes;
-	}
-	
-	public Set<String> getStateStoreTypes() {
-		return stateStoreTypes;
-	}
-	
-	public MessageBusService getMessageBusService() {
-		return messageBusService;
-	}
-		
-	public StateStoreService getStateStoreService() {
-		return stateStoreService;
-	}
-
-	public ClockService getClockService() {
-		return clockService;
-	}
-
-	public LoggerService getLoggerService() {
-		return loggerService;
-	}
-		
 	/**
 	 * Find the named mode and set it in thread local storage.
 	 * Access the "current" mode using the static method getInstance()
@@ -200,7 +131,7 @@ public class Mode {
 	 * @return mode
 	 */
 	public static void setModeInThread(String modeName) {
-		Mode mode = instances.get(modeName);
+		Mode mode = modes.get(modeName);
 		if (mode==null) {
 			throw new SodacanException("Missing mode: " + modeName);
 		}
@@ -230,72 +161,56 @@ public class Mode {
 		return mode;
 	}
 	
-	public String getName() {
-		return name;
+	public String getModeName() {
+		return modeName;
 	}
 
+	public String getBaseModeName() {
+		return baseModeName;
+	}
 
+	public BaseMode getBaseMode() {
+		return baseMode;
+	}
+	
 	@Override
 	public String toString() {
-		return "Mode: " + getName();
+		return "Mode: " + getModeName() + "{" + getBaseModeName() + "}";
 	}
 	/**
-	 * Create a new, empty, builder for a Mode
+	 * Convenience method to dig down into plugins to find the correct message bus implementation for this mode.
+	 * @return MessageBus interface
 	 */
-	public static ModeBuilder newModeBuilder() {
-		return new ModeBuilder();
+	public MB getMB() {
+		if (this.mb==null) {
+			MessageBusService mbs = baseMode.getMessageBusService();
+			mb = mbs.getMB();
+		}
+		return mb;
 	}
 
-	public static class ModeBuilder {
-		private String name = null;
-		private Set<String> messageBusTypes = new HashSet<>();
-		private Set<String> clockTypes = new HashSet<>();
-		private Set<String> loggerTypes = new HashSet<>(); 
-		private Set<String> stateStoreTypes = new HashSet<>();
-		private Set<PropertyChangeListener> listeners = new HashSet<>();
-
-		protected ModeBuilder() {
-		}
-		
-		/**
-		 * Set the name of this mode. When we build, a check for duplicate mode names is made.
-		 * @param name
-		 * @return
-		 */
-		public ModeBuilder name(String name) {
-			this.name = name;
-			return this;
-		}
-		
-		public ModeBuilder messageBus( String messageBusType ) {
-			this.messageBusTypes.add(messageBusType);
-			return this;
-		}
-
-		public ModeBuilder clock( String clockType ) {
-			this.clockTypes.add(clockType);
-			return this;
-		}
-
-		public ModeBuilder stateStore( String stateStoreType ) {
-			this.stateStoreTypes.add(stateStoreType);
-			return this;
-		}
-
-		public ModeBuilder logger( String loggerType ) {
-			this.loggerTypes.add(loggerType);
-			return this;
-		}
-
-		public ModeBuilder listener( PropertyChangeListener listener ) {
-			this.listeners.add(listener);
-			return this;
-		}
-		
-		public Mode build( ) {
-			Mode mode = new Mode(this);
-			return mode;
-		}
+	/**
+	 * Convenience method to send something to the configured logger(s) for this mode.
+	 * @param msg
+	 */
+	public void log(String msg) {
+		baseMode.getLoggerService().log(msg);
 	}
 
+	/**
+	 * Convenience method to save the state of a variable
+	 * @param payload containing the serialized variable
+	 */
+	public void saveState( SodacanModule module, Variables variables) {
+		baseMode.getStateStoreService().save(module, variables);
+	}
+	
+	/**
+	 * Convenience method to restore a module's variables
+	 * @param module
+	 * @return reconstituted ModuleVariables structure
+	 */
+	public ModuleVariables restoreAll(SodacanModule module) {
+		return baseMode.getStateStoreService().restoreAll(module);
+	}
 }

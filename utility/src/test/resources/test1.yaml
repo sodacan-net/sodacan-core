@@ -7,10 +7,11 @@ location:
 webServer:
     listen: http://0.0.0.0:4011/api
 
-kafka:
-    url: soda6:9092
-    consumer:
-        sessionTimeoutSec: 30
-    producer:
-        lingerMs: 0
+modes:
+    - name: default
+      messageBus: 
+        pluginType: kafka 
+        brokers: soda6:9092,soda7:9092
+        linger.ms: 0
+        poll.timeout.ms: 500
         

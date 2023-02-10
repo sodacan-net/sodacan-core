@@ -24,13 +24,14 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sodacan.SodacanException;
+import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.VariablePayload;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
 /**
- * <p>A Mode instance has one ModeService instance per class of service: Logger, Clock, message, and StateStore.
+ * <p>A Mode instance has one ModeService instance per class of service: Logger, Clock, MessageBus, and StateStore.
  * The subclasses of this class have methods for coordinating access to a specific provider function.
  * For example, to generate a log entry, the Sodacan Runtime will ask the mode for the logging service.</p>
  * 
@@ -45,12 +46,12 @@ import net.sodacan.module.variable.Variable;
  *
  */
 public abstract class ModeService {
-	private Mode mode;
+	private ConfigMode configMode;
 	private ServiceLoader<? extends ModeProvider> loader = null;
 	ObjectMapper mapper;
 
-	public ModeService(Mode mode, Class<? extends ModeProvider> providerClass) {
-		this.mode = mode;
+	public ModeService(ConfigMode configMode, Class<? extends ModeProvider> providerClass) {
+		this.configMode = configMode;
 		// Create a loader if needed (we only need one per class of service)
 		if (loader==null) {
 			loader = ServiceLoader.load(providerClass);
@@ -61,16 +62,21 @@ public abstract class ModeService {
 
 	}
 
-	/**
-	 * Create a list of providers that satisfy at least one of the requested types.
-	 * For example, if the mode wants a memory-based logger, then file or message
-	 * based loggers are skipped (for this mode).
-	 * @param types A set of one or more types requested
-	 */
-	abstract void loadProviders( Set<String> types);
+//	/**
+//	 * Create a list of providers that satisfy at least one of the requested types.
+//	 * For example, if the mode wants a memory-based logger, then file or message
+//	 * based loggers are skipped (for this mode).
+//	 * @param types A set of one or more types requested
+//	 */
+//	abstract void loadProviders( Set<String> types);
 
-	public Mode getMode() {
-		return mode;
+	
+	public ConfigMode getConfigMode() {
+		return configMode;
+	}
+	
+	public String getModeName() {
+		return configMode.getName();
 	}
 
 	public ServiceLoader<? extends ModeProvider> getLoader() {
@@ -129,7 +135,7 @@ public abstract class ModeService {
 		}
 		ModuleVariable mv = (ModuleVariable)variable;
 		VariablePayload p = VariablePayload.newVariablePayloadBuilder()
-				.mode(this.getMode().getName())
+				.mode(this.getModeName())
 				.topic(module.getName())
 				.variableName(mv.getVariableDef().getFullName())
 				.instanceKey(mv.getVariableDef().getInstance())

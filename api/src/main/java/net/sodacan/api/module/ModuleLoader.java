@@ -14,7 +14,6 @@
  */
 package net.sodacan.api.module;
 
-import java.io.IOException;
 import java.time.Instant;
 
 import org.slf4j.Logger;
@@ -24,7 +23,6 @@ import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
 import net.sodacan.api.utility.ModuleMethods;
 import net.sodacan.compiler.ModuleCompiler;
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 import net.sodacan.module.statement.SodacanModule;
@@ -58,12 +56,13 @@ public class ModuleLoader {
 	private ModuleCompiler compiler;
 	protected SodacanModule module;
 	protected MB mb;
-	public ModuleLoader() {
-		mode = Mode.getInstance();
+
+	public ModuleLoader(Mode mode) {
+		this.mode = mode;
+		// We'll need a message bus
+		mb = mode.getMB();
         // Fire up the compiler
 		compiler = new ModuleCompiler();
-		// We'll need a message bus
-		mb = mode.getMessageBusService().getMB(Config.getInstance());
 	}
 
 	protected SodacanModule compile() {

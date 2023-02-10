@@ -21,6 +21,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -32,9 +33,7 @@ public class Config {
 	private static Config instance = null;
 
 	private WebServer webServer;
-	private Rules rules;
 	private Location location;
-	private Kafka kafka;
 	private List<ConfigMode> modes = new LinkedList<>();
 	
 	private Config() {
@@ -63,6 +62,7 @@ public class Config {
 			logger.debug("Opening config file: {}", filename);
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 			instance = mapper.readValue(new File(filename), Config.class);
+//			JsonNode node = mapper.readTree(new File(filename));
 			return instance;
 		} catch (Exception e) {
 			throw new SodacanException("Error initializing configuration", e);
@@ -77,14 +77,6 @@ public class Config {
 		this.webServer = webServer;
 	}
 
-	public Rules getRules() {
-		return rules;
-	}
-
-	public void setRules(Rules rules) {
-		this.rules = rules;
-	}
-
 	public Location getLocation() {
 		return location;
 	}
@@ -93,13 +85,6 @@ public class Config {
 		this.location = location;
 	}
 
-	public Kafka getKafka() {
-		return kafka;
-	}
-
-	public void setKafka(Kafka kafka) {
-		this.kafka = kafka;
-	}
 
 	public List<ConfigMode> getModes() {
 		return modes;

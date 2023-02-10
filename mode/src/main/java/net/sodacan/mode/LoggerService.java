@@ -16,11 +16,11 @@ package net.sodacan.mode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 
@@ -29,17 +29,18 @@ public class LoggerService extends ModeService {
 
 	protected List<LoggerProvider> providers = new ArrayList<>();
 
-	public LoggerService(Mode mode) {
-		super(mode, LoggerProvider.class);
+	public LoggerService(ConfigMode configMode) {
+		super(configMode, LoggerProvider.class);
+		String pluginType = configMode.getMessageBus().get("pluginType");
+		loadProviders(pluginType);
 	}
 
-	@Override
-	public void loadProviders( Set<String> types) {
+	public void loadProviders( String pluginType) {
 		for (ModeProvider provider : getLoader()) {
-			if (provider.isMatch(types)) {
+			if (provider.isMatch(pluginType)) {
 				providers.add((LoggerProvider) provider);
-				provider.setMode(getMode().getName());
-				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
+				provider.setMode(getModeName());
+				logger.info("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}
@@ -49,14 +50,9 @@ public class LoggerService extends ModeService {
 		return (List<LoggerProvider>) providers; 
 	}
 	
-	/**
-	 * Send a log message to all providers
-	 * @param msg
-	 */
 	public void log(String msg) {
-		for (LoggerProvider provider : getProviders()) {
-			provider.log(msg);
+		for (LoggerProvider loggerProvider : getProviders()) {
+			loggerProvider.log(msg);
 		}
 	}
-	
 }

@@ -3,7 +3,7 @@
 	<groupId>net.sodacan</groupId>
 	<artifactId>sodacan</artifactId>
 	<version>0.0.1</version>
-	<description>Top-level (parent) maven project for SodaCan</description>
+	<description>Top-level (parent) maven project for Sodacan</description>
 	<modules>
 		<module>module</module>
 		<module>api</module>
@@ -50,12 +50,6 @@
 			<groupId>org.apache.maven.plugins</groupId>
 			<artifactId>maven-compiler-plugin</artifactId>
 			<version>3.10.1</version>
-		</dependency>
-		<!-- https://mvnrepository.com/artifact/com.google.auto.service/auto-service -->
-		<dependency>
-			<groupId>com.google.auto.service</groupId>
-			<artifactId>auto-service</artifactId>
-			<version>${auto-service.version}</version>
 		</dependency>
 	</dependencies>
 	<build>

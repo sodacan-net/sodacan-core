@@ -46,9 +46,8 @@ public class Initialize {
 	 * Setup the top-level topics needed for Sodacan to operate.
 	 * @return true if one or more topics had to be created, false if all topics are in place
 	 */
-	public boolean setupTopics(boolean verbose) {
-		Mode mode = Mode.getInstance();
-		MB mb = mode.getMessageBusService().getMB(Config.getInstance());
+	public boolean setupTopics(Mode mode, boolean verbose) {
+		MB mb = mode.getMB();
 		List<String> topics = mb.listTopics();
 		Set<String> topicSet = Set.copyOf(topics);
 		

@@ -16,35 +16,42 @@ package net.sodacan.mode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.sodacan.config.Config;
+import net.sodacan.SodacanException;
+import net.sodacan.config.ConfigMode;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.spi.MessageBusProvider;
 import net.sodacan.mode.spi.ModeProvider;
 /**
+ * Provide access to one or more message bus providers.
  * @author John Churin
  *
  */
 public class MessageBusService extends ModeService {
 	private final static Logger logger = LoggerFactory.getLogger(MessageBusService.class);
 
-	public MessageBusService(Mode mode) {
-		super(mode, MessageBusProvider.class);
+	public MessageBusService(ConfigMode configMode) {
+		super(configMode, MessageBusProvider.class);
+		String pluginType = configMode.getMessageBus().get("pluginType");
+		loadProviders(pluginType);
 	}
 	protected List<MessageBusProvider> providers = new ArrayList<>();
 
-	@Override
-	public void loadProviders(Set<String> types) {
+//	@Override
+	protected void loadProviders(String pluginType) {
 		for (ModeProvider provider : getLoader()) {
-			if (provider.isMatch(types)) {
+			if (provider.isMatch(pluginType)) {
 				providers.add((MessageBusProvider) provider);
-				provider.setMode(getMode().getName());
-				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
+				provider.setMode(getModeName());
+				logger.debug("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
+		}
+		if (providers.size()==0) {
+			throw new SodacanException("No providers found for type: " + pluginType + " for mode " + getModeName());
 		}
 	}
 
@@ -55,11 +62,11 @@ public class MessageBusService extends ModeService {
 	
 	/**
 	 * Get a message bus for this Mode
-	 * @return
+	 * @return MessageBus (MB) 
 	 */
-	public MB getMB(Config config) {
+	public MB getMB() {
 		if (providers.size()>0) {
-			return providers.get(0).getMB(config);
+			return providers.get(0).getMB(getConfigMode().getMessageBus());
 		}
 		return null;
 	}

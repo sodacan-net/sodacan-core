@@ -22,7 +22,7 @@ public interface ModeProvider {
 	/**
 	* Provider must implement this method which the service will use to filter only selected providers.
 	*/
-	public boolean isMatch(Set<String> types);
+	public boolean isMatch(String pluginType);
     public void addPropertyChangeListener(PropertyChangeListener listener);
     public void removePropertyChangeListener(PropertyChangeListener listener);
 

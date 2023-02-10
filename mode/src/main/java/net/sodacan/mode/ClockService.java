@@ -17,36 +17,37 @@ package net.sodacan.mode;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
+import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ClockProvider;
 import net.sodacan.mode.spi.ModeProvider;
 /**
- * Instances of this service provide clock services. Sodacan will 
+ * Instances of this service provide clock services.
  * @author John Churin
  *
  */
 public class ClockService extends ModeService {
 	private final static Logger logger = LoggerFactory.getLogger(ClockService.class);
 
-	public ClockService(Mode mode) {
-		super(mode, ClockProvider.class);
+	public ClockService(ConfigMode configMode) {
+		super(configMode, ClockProvider.class);
+		String pluginType = configMode.getMessageBus().get("pluginType");
+		loadProviders(pluginType);
 	}
 
 	protected List<ClockProvider> providers = new ArrayList<>();
 
-	@Override
-	public void loadProviders(Set<String> types) {
+	public void loadProviders(String pluginType) {
 		for (ModeProvider provider : getLoader()) {
-			if (provider.isMatch(types)) {
+			if (provider.isMatch(pluginType)) {
 				providers.add((ClockProvider) provider);
-				provider.setMode(getMode().getName());
-				logger.info("Mode: " + getMode().getName() + " Types: " + types + " Provider: " + provider.getClass().getName());
+				provider.setMode(getModeName());
+				logger.info("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}

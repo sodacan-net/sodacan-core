@@ -26,7 +26,7 @@ public class ModuleMethods {
 	public static String getModuleStateTopicName(Mode mode, SodacanModule module) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("state-");
-		sb.append(mode.getName());
+		sb.append(mode.getModeName());
 		sb.append('-');
 		sb.append(module.getName());
 		if (module.getInstanceName()!=null) {
@@ -43,7 +43,7 @@ public class ModuleMethods {
 	public static String getModulePublishTopicName(Mode mode, SodacanModule module) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("pub-");
-		sb.append(mode.getName());
+		sb.append(mode.getModeName());
 		sb.append('-');
 		sb.append(module.getName());
 		if (module.getInstanceName()!=null) {
@@ -62,7 +62,7 @@ public class ModuleMethods {
 	public static String getModuleAdminTopicName(Mode mode, SodacanModule module) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("admin-");
-		sb.append(mode.getName());
+		sb.append(mode.getModeName());
 		sb.append('-');
 		sb.append(module.getName());
 		return sb.toString();
@@ -75,7 +75,7 @@ public class ModuleMethods {
 	public static String getModTopicName(Mode mode) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("mode-");
-		sb.append(mode.getName());
+		sb.append(mode.getModeName());
 		return sb.toString();
 	}
 

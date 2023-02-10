@@ -15,7 +15,6 @@
 package net.sodacan.runtime;
 
 import net.sodacan.mode.Mode;
-import net.sodacan.mode.spi.ModePayload;
 import net.sodacan.mode.spi.ModulePayload;
 import net.sodacan.module.statement.SodacanModule;
 
@@ -68,17 +67,13 @@ import net.sodacan.module.statement.SodacanModule;
  *
  */
 public class Cycle implements Runnable {
-	private ModePayload modePayload;
 	private ModulePayload modulePayload;
 	private SodacanModule module = null;
 	private Mode mode = null;
 	
-	public Cycle(ModePayload modePayload, ModulePayload modulePayload ) {
-		this.modePayload = modePayload;
+	public Cycle(Mode mode, ModulePayload modulePayload ) {
 		this.modulePayload = modulePayload;
-		// Build a mode from the saved mode we found.
-		mode = new Mode( modePayload );
-		mode.initialize();
+		this.mode = mode;
 	}
 
 	@Override
@@ -98,10 +93,6 @@ public class Cycle implements Runnable {
 		return modulePayload.getInstanceName();
 	}
 	
-	public ModePayload getModePayload() {
-		return modePayload;
-	}
-
 	public ModulePayload getModulePayload() {
 		return modulePayload;
 	}
