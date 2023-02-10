@@ -67,7 +67,8 @@ public class MBK implements MB {
 	
 	public static MB createInstance(String brokers) {
 		if (instance != null) {
-			throw new RuntimeException("MBK already initialized");
+			return instance;
+//			throw new RuntimeException("MBK already initialized");
 		}
 		instance = new MBK(brokers);
 		return instance;
