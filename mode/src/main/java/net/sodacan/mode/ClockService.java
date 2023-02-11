@@ -58,6 +58,16 @@ public class ClockService extends ModeService {
 	}
 
 	/**
+	 * Close this service by closing the providers it is using
+	 */
+	public void close() {
+		for (ClockProvider provider : getProviders()) {
+			provider.close();
+		}
+		super.close();
+	}
+
+	/**
 	 * In this case, we can't provide more than one clock supplier to a module so
 	 * the first one wins.
 	 * @return A supplier of instances

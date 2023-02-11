@@ -15,27 +15,16 @@ package net.sodacan.mode;
  */
 
 
-import java.beans.PropertyChangeListener;
-import java.util.HashSet;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
 
 import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.messagebus.MB;
-import net.sodacan.mode.spi.ModePayload;
-import net.sodacan.mode.spi.VariablePayload;
-import net.sodacan.mode.spi.ModePayload.ModePayloadBuilder;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.variables.ModuleVariables;
 import net.sodacan.module.variables.Variables;
-import net.sodacan.mode.spi.StateStoreProvider;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -85,23 +74,31 @@ public class Mode {
 	}
 	
 	/**
-	 * Return a base Mode of null if not found.
+	 * Return a base Mode or null if not found.
 	 * @param baseModeName
 	 * @return The BaseNode or null
 	 */
 	public static BaseMode findBaseMode(String baseModeName) {
 		return baseModes.get(baseModeName);
 	}
+	
 	/**
 	 * This crucial first step in the life of a mode begins with the configuration file 
 	 * where most BaseModes originate. Each BaseMode get's its own Mode, as well.
-	 * This method should be called only once and will return quietly if called again.
+	 * This method should be called only once except for testing.
 	 * @param config
 	 */
 	public static void configure( Config config) {
-		// Been here already, don't do it again
+		// Been here already? Close up first.
 		if (baseModes!=null) {
-			return;
+			// Close the modes
+			for (Map.Entry<String,Mode> entry : modes.entrySet()) {
+				entry.getValue().close();
+			}
+			// Close the baseModes
+			for (Map.Entry<String,BaseMode> entry : baseModes.entrySet()) {
+				entry.getValue().close();
+			}
 		}
 		baseModes = new ConcurrentHashMap<>();
 		modes = new ConcurrentHashMap<>();
@@ -212,5 +209,13 @@ public class Mode {
 	 */
 	public ModuleVariables restoreAll(SodacanModule module) {
 		return baseMode.getStateStoreService().restoreAll(module);
+	}
+
+	/**
+	 * Close the mode. Nothing serious to do except remove ourself from the collection of
+	 * modes.
+	 */
+	public void close() {
+		modes.remove(modeName);
 	}
 }

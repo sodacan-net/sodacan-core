@@ -16,7 +16,6 @@ package net.sodacan.mode.spi;
 
 import java.util.Map;
 
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 
 /**

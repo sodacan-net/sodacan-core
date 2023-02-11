@@ -14,9 +14,6 @@
  */
 package net.sodacan.mode;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-
 import net.sodacan.config.ConfigMode;
 
 /**
@@ -70,6 +67,22 @@ public class BaseMode {
 	public LoggerService getLoggerService() {
 		return loggerService;
 	}
-		
-
+	
+	/**
+	 * Close the base mode and tell our plugins we're going away.
+	 */
+	public void close() {
+		if (messageBusService!=null) {
+			messageBusService.close();
+		}
+		if (clockService!=null) {
+			clockService.close();
+		}
+		if (loggerService!=null) {
+			loggerService.close();
+		}
+		if (stateStoreService!=null) {
+			stateStoreService.close();
+		}
+	}
 }

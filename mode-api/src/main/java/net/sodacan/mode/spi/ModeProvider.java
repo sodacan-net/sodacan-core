@@ -18,12 +18,16 @@ import java.beans.PropertyChangeListener;
 import java.util.Set;
 
 public interface ModeProvider {
-	public void setMode( String mode);
+	public void setMode( String modeName);
 	/**
 	* Provider must implement this method which the service will use to filter only selected providers.
 	*/
 	public boolean isMatch(String pluginType);
+	
     public void addPropertyChangeListener(PropertyChangeListener listener);
     public void removePropertyChangeListener(PropertyChangeListener listener);
-
+    /**
+     * Close this provider, if it has resource to return, do it now.
+     */
+    public void close();
 }

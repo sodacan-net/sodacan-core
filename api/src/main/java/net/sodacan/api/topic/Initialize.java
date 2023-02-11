@@ -17,7 +17,6 @@ package net.sodacan.api.topic;
 import java.util.List;
 import java.util.Set;
 
-import net.sodacan.config.Config;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 

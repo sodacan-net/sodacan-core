@@ -17,7 +17,6 @@ package net.sodacan.mode;
 import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ServiceLoader;
-import java.util.Set;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -143,5 +142,15 @@ public abstract class ModeService {
 				.build();
 		return p;
 	}
-
+	
+	/**
+	 * Close this service. However, our subclasses may override and do additional cleanup.
+	 */
+	public void close() {
+		// Can't really close a ServiceLoader, but we can clear it's cache
+		if (loader!=null) {
+			loader.reload();
+		}
+		loader = null;
+	}
 }

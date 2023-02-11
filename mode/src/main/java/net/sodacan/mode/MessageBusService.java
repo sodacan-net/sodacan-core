@@ -16,7 +16,6 @@ package net.sodacan.mode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,5 +68,15 @@ public class MessageBusService extends ModeService {
 			return providers.get(0).getMB(getConfigMode().getMessageBus());
 		}
 		return null;
+	}
+	
+	/**
+	 * Close this service by closing the providers it is using
+	 */
+	public void close() {
+		for (MessageBusProvider provider : getProviders()) {
+			provider.close();
+		}
+		super.close();
 	}
 }

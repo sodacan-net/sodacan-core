@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sodacan.config.ConfigMode;
+import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
 import net.sodacan.mode.spi.VariablePayload;
@@ -108,5 +109,15 @@ public class StateStoreService extends ModeService {
 		}
 		return variables;
 	}
-	
+
+	/**
+	 * Close this service by closing the providers it is using
+	 */
+	public void close() {
+		for (StateStoreProvider provider : getProviders()) {
+			provider.close();
+		}
+		super.close();
+	}
+
 }

@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.LoggerProvider;
+import net.sodacan.mode.spi.MessageBusProvider;
 import net.sodacan.mode.spi.ModeProvider;
 
 public class LoggerService extends ModeService {
@@ -55,4 +56,15 @@ public class LoggerService extends ModeService {
 			loggerProvider.log(msg);
 		}
 	}
+
+	/**
+	 * Close this service by closing the providers it is using
+	 */
+	public void close() {
+		for (LoggerProvider provider : getProviders()) {
+			provider.close();
+		}
+		super.close();
+	}
+
 }
