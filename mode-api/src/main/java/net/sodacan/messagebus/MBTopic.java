@@ -14,8 +14,9 @@
  */
 package net.sodacan.messagebus;
 
+import java.io.Closeable;
+import java.io.IOException;
 import java.time.Duration;
-import java.util.List;
 import java.util.Map;
 
 /**
@@ -23,9 +24,10 @@ import java.util.Map;
  * @author John Churin
  *
  */
-public interface MBTopic {
+public interface MBTopic extends Closeable {
 	public String getTopicName();
 //	public long getNextOffset();
 	public MBRecord poll(Duration timeout);
 	public Map<String, MBRecord> snapshot();
+	public void close() throws IOException;
 }
