@@ -18,16 +18,29 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
+import java.util.stream.Stream;
 
 /**
- * General topic interface that can be backed by memory queue or Kafka
+ * General topic interface that can be backed by memory queue or Kafka.
  * @author John Churin
  *
  */
 public interface MBTopic extends Closeable {
 	public String getTopicName();
 //	public long getNextOffset();
-	public MBRecord poll(Duration timeout);
+	/**
+	 * Collect a reduced snapshot of the topic. Older versions of keys are eliminated as are deleted keys.
+	 * @return An unsorted map of the resulting records.
+	 */
 	public Map<String, MBRecord> snapshot();
+	/**
+	 * Follow a topic using a stream
+	 * @return Stream of records
+	 */
+	public Stream<MBRecord> follow();
+	
+	/**
+	 * Close the topic.
+	 */
 	public void close() throws IOException;
 }
