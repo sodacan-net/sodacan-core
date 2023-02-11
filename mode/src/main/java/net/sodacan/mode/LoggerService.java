@@ -31,7 +31,7 @@ public class LoggerService extends ModeService {
 
 	public LoggerService(ConfigMode configMode) {
 		super(configMode, LoggerProvider.class);
-		String pluginType = configMode.getMessageBus().get("pluginType");
+		String pluginType = configMode.getLogger().get("pluginType");
 		loadProviders(pluginType);
 	}
 

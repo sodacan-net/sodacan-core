@@ -49,7 +49,7 @@ public class StateStoreService extends ModeService {
 
 	public StateStoreService(ConfigMode configMode) {
 		super(configMode, StateStoreProvider.class);
-		String pluginType = configMode.getMessageBus().get("pluginType");
+		String pluginType = configMode.getStateStore().get("pluginType");
 		loadProviders(pluginType);
 	}
 

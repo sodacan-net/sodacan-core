@@ -21,7 +21,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.dataformat.yaml.YAMLFactory;
 
@@ -36,7 +35,7 @@ public class Config {
 	private Location location;
 	private List<ConfigMode> modes = new LinkedList<>();
 	
-	private Config() {
+	public Config() {
 		
 	}
 	/**
@@ -85,7 +84,10 @@ public class Config {
 		this.location = location;
 	}
 
-
+	public void addConfigMode( ConfigMode configMode ) {
+		modes.add(configMode);
+	}
+	
 	public List<ConfigMode> getModes() {
 		return modes;
 	}

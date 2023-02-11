@@ -36,7 +36,7 @@ public class ClockService extends ModeService {
 
 	public ClockService(ConfigMode configMode) {
 		super(configMode, ClockProvider.class);
-		String pluginType = configMode.getMessageBus().get("pluginType");
+		String pluginType = configMode.getClock().get("pluginType");
 		loadProviders(pluginType);
 	}
 

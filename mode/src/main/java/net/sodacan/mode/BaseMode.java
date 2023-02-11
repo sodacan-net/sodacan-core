@@ -41,10 +41,18 @@ public class BaseMode {
 	 * @param configMode
 	 */
 	public BaseMode(ConfigMode configMode) {
-		messageBusService = new MessageBusService(configMode);
-		clockService = new ClockService(configMode);
-		loggerService = new LoggerService(configMode);
-		stateStoreService = new StateStoreService(configMode);
+		if (configMode.getMessageBus().size()!=0) {
+			messageBusService = new MessageBusService(configMode);
+		}
+		if (configMode.getClock().size()!=0) {
+			clockService = new ClockService(configMode);
+		}
+		if (configMode.getLogger().size()!=0) {
+			loggerService = new LoggerService(configMode);
+		}
+		if (configMode.getStateStore().size()!=0) {
+			stateStoreService = new StateStoreService(configMode);
+		}
 	}
 
 	public MessageBusService getMessageBusService() {
