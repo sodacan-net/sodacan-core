@@ -27,10 +27,10 @@ import com.fasterxml.jackson.annotation.JsonAnyGetter;
  */
 public class ConfigMode {
 	private String name;
-	private Map<String,String> messageBus;
-	private Map<String,String> clock;
-	private Map<String,String> logger;
-	private Map<String,String> stateStore;
+	private Map<String,String> messageBus = new HashMap<>();
+	private Map<String,String> clock = new HashMap<>();
+	private Map<String,String> logger = new HashMap<>();
+	private Map<String,String> stateStore = new HashMap<>();
 	
 	public ConfigMode() {
 		
