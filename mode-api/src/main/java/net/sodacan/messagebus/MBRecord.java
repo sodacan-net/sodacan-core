@@ -20,5 +20,6 @@ public interface MBRecord {
 	public long getOffset();
 	public String getKey();
 	public String getValue();
+	public boolean isEOF();
 
 }

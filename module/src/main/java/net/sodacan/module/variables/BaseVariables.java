@@ -15,7 +15,6 @@
 package net.sodacan.module.variables;
 
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.ShortcutVariable;
 import net.sodacan.module.variable.Variable;
 
 public abstract class BaseVariables implements Variables {

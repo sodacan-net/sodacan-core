@@ -18,6 +18,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.time.Duration;
 import java.util.Map;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.CountDownLatch;
 import java.util.stream.Stream;
 
 /**
@@ -37,7 +39,9 @@ public interface MBTopic extends Closeable {
 	 * Follow a topic using a stream
 	 * @return Stream of records
 	 */
-	public Stream<MBRecord> follow();
+	public BlockingQueue<MBRecord> follow();
+	
+	public void stop();
 	
 	/**
 	 * Close the topic.
