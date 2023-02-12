@@ -14,7 +14,6 @@
  */
 package net.sodacan.api.topic;
 
-import java.util.List;
 import java.util.Set;
 
 import net.sodacan.messagebus.MB;
@@ -47,8 +46,7 @@ public class Initialize {
 	 */
 	public boolean setupTopics(Mode mode, boolean verbose) {
 		MB mb = mode.getMB();
-		List<String> topics = mb.listTopics();
-		Set<String> topicSet = Set.copyOf(topics);
+		Set<String> topicSet = mb.listTopics();
 		
 		// Get the set of topics we know about
 		boolean r = false;

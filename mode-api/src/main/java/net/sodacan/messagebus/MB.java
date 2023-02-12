@@ -14,7 +14,7 @@
  */
 package net.sodacan.messagebus;
 
-import java.util.List;
+import java.util.Set;
 /**
  * Sodacan-specific interface to the "Message Bus"
  * @author John Churin
@@ -22,10 +22,10 @@ import java.util.List;
 public interface MB {
 	
 	/**
-	 * Return a list of known topics
-	 * @return List of topic known to message bus
+	 * Return a set of known topics
+	 * @return Set of topics known to message bus
 	 */
-	public List<String> listTopics();
+	public Set<String> listTopics();
 
 	/**
 	 * Prvide detail about a topic

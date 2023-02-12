@@ -16,11 +16,8 @@ package net.sodacan.messagebus;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.CountDownLatch;
-import java.util.stream.Stream;
 
 /**
  * General topic interface that can be backed by memory queue or Kafka.
