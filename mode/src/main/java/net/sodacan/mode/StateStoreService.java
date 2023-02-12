@@ -59,7 +59,7 @@ public class StateStoreService extends ModeService {
 			if (provider.isMatch(pluginType)) {
 				providers.add((StateStoreProvider) provider);
 				provider.setMode(getModeName());
-				logger.info("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
+				logger.debug("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
 	}
@@ -114,6 +114,7 @@ public class StateStoreService extends ModeService {
 	 * Close this service by closing the providers it is using
 	 */
 	public void close() {
+		logger.debug("Closing StateStore service: " + getConfigMode());
 		for (StateStoreProvider provider : getProviders()) {
 			provider.close();
 		}

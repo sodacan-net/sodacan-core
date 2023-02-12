@@ -74,6 +74,7 @@ public class MessageBusService extends ModeService {
 	 * Close this service by closing the providers it is using
 	 */
 	public void close() {
+		logger.debug("Closing MessageBus service: " + getConfigMode());
 		for (MessageBusProvider provider : getProviders()) {
 			provider.close();
 		}

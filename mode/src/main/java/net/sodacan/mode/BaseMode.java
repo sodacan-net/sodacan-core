@@ -14,6 +14,9 @@
  */
 package net.sodacan.mode;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sodacan.config.ConfigMode;
 
 /**
@@ -26,6 +29,7 @@ import net.sodacan.config.ConfigMode;
  *
  */
 public class BaseMode {
+	private final static Logger logger = LoggerFactory.getLogger(BaseMode.class);
 	
 	private MessageBusService messageBusService;
 	private ClockService clockService;

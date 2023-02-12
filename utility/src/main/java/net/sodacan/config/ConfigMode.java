@@ -43,6 +43,21 @@ public class ConfigMode {
 		this.stateStore = cmb.stateStore;
 	}
 
+	@Override
+	public String toString() {
+		StringBuffer sb = new StringBuffer();
+		sb.append(name);
+		sb.append(" messageBus: ");
+		sb.append(messageBus);
+		sb.append(" clock: ");
+		sb.append(clock);
+		sb.append(" logger: ");
+		sb.append(logger);
+		sb.append("stateStore: ");
+		sb.append(stateStore);
+		return sb.toString();
+	}
+
 	public String getName() {
 		return name;
 	}

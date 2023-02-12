@@ -61,6 +61,7 @@ public class ClockService extends ModeService {
 	 * Close this service by closing the providers it is using
 	 */
 	public void close() {
+		logger.debug("Closing Clock service: " + getConfigMode());
 		for (ClockProvider provider : getProviders()) {
 			provider.close();
 		}

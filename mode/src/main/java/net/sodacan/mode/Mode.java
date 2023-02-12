@@ -16,7 +16,11 @@ package net.sodacan.mode;
 
 
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
@@ -50,6 +54,7 @@ import net.sodacan.module.variables.Variables;
  *
  */
 public class Mode {
+	private final static Logger logger = LoggerFactory.getLogger(Mode.class);
 	// The list of all known baseModes, created on application startup.
 	private static Map<String,BaseMode> baseModes = null;
 	// The list of all known modes
@@ -71,6 +76,14 @@ public class Mode {
 	 */
 	public static Mode findMode(String modeName) {
 		return modes.get(modeName);
+	}
+	
+	/**
+	 * Return the set of Mode names we know about.
+	 * @return Set of mode name
+	 */
+	public static Set<String> getModeNames() {
+		return modes.keySet();
 	}
 	
 	/**
@@ -103,12 +116,19 @@ public class Mode {
 		baseModes = new ConcurrentHashMap<>();
 		modes = new ConcurrentHashMap<>();
 		for (ConfigMode configMode : config.getModes()) {
+			logger.debug("Setup BaseMode: " + configMode);
 			String name = configMode.getName();
 			baseModes.put(name, new BaseMode(configMode));
 			modes.put(name, new Mode(name,name));
 		}
 	}
 	
+	/**
+	 * Construct a new mode based on the specified baseMode. 
+	 * Base mode originate from the configuration file. Applications are free to create (normal) modes.
+	 * @param modeName
+	 * @param baseModeName
+	 */
 	public Mode( String modeName, String baseModeName) {
 		if (baseModes==null) {
 			throw new SodacanException("Modes/BaseModes not setup, see Mode.configure()");
@@ -121,6 +141,7 @@ public class Mode {
 		}
 		modes.put(modeName, this);
 	}
+
 	/**
 	 * Find the named mode and set it in thread local storage.
 	 * Access the "current" mode using the static method getInstance()
@@ -140,9 +161,15 @@ public class Mode {
 			throw new SodacanException("Clear the mode in this thread before setting a another mode: " + modeName);
 		}
 		threadMode.set(mode);
+		if (logger.isDebugEnabled()) {
+			logger.debug("^^^^^ Selected Mode: " + modeName + " ^^^^^");
+		}
 	}
 	
 	public static void clearModeInThread( ) {
+		if (logger.isDebugEnabled()) {
+			logger.debug("vvvvv Mode: " + threadMode.get().getModeName() + " vvvvv");
+		}
 		threadMode.remove();
 	}
 	
@@ -216,6 +243,7 @@ public class Mode {
 	 * modes.
 	 */
 	public void close() {
+		logger.debug("Closing mode: " + modeName);
 		modes.remove(modeName);
 	}
 }

@@ -16,6 +16,9 @@ package net.sodacan.api.topic;
 
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.Mode;
 
@@ -26,6 +29,8 @@ import net.sodacan.mode.Mode;
  *
  */
 public class Initialize {
+	private final static Logger logger = LoggerFactory.getLogger(Initialize.class);
+
 	public static final String AGENT_STATUS = "Agent-Status";
 	public static final String AGENT_CONFIG = "Agent-Config";
 	public static final String LOGGER = "Logger";
@@ -41,10 +46,10 @@ public class Initialize {
 	public static final String STATE_SUFFIX = "-state";
 
 	/**
-	 * Setup the top-level topics needed for Sodacan to operate.
+	 * Setup the top-level topics needed for Sodacan to operate. These topics are not specific to a mode.
 	 * @return true if one or more topics had to be created, false if all topics are in place
 	 */
-	public boolean setupTopics(Mode mode, boolean verbose) {
+	public boolean setupTopics(Mode mode) {
 		MB mb = mode.getMB();
 		Set<String> topicSet = mb.listTopics();
 		
@@ -52,27 +57,27 @@ public class Initialize {
 		boolean r = false;
 		if (!topicSet.contains(AGENT_STATUS)) {
 			mb.createTopic(AGENT_STATUS,true);
-			if (verbose) System.out.println(AGENT_STATUS + " created");
+			logger.debug(AGENT_STATUS + " created");
 			r = true;
 		}
 		if (!topicSet.contains(AGENT_CONFIG)) {
 			mb.createTopic(AGENT_CONFIG,true);
-			if (verbose) System.out.println(AGENT_CONFIG + " created");
+			logger.debug(AGENT_CONFIG + " created");
 			r = true;
 		}
 		if (!topicSet.contains(LOGGER)) {
 			mb.createTopic(LOGGER,true);
-			if (verbose) System.out.println(LOGGER + " created");
+			logger.debug(LOGGER + " created");
 			r = true;
 		}
 		if (!topicSet.contains(MODES)) {
 			mb.createTopic(MODES,true);
-			if (verbose) System.out.println(MODES + " created");
+			logger.debug(MODES + " created");
 			r = true;
 		}
 		if (!topicSet.contains(MODULES)) {
 			mb.createTopic(MODULES,true);
-			if (verbose) System.out.println(MODULES + " created");
+			logger.debug(MODULES + " created");
 			r = true;
 		}
 		return r;

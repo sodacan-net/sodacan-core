@@ -61,6 +61,7 @@ public class LoggerService extends ModeService {
 	 * Close this service by closing the providers it is using
 	 */
 	public void close() {
+		logger.debug("Closing Logger service: " + getConfigMode());
 		for (LoggerProvider provider : getProviders()) {
 			provider.close();
 		}
