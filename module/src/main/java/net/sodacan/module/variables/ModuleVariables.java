@@ -287,8 +287,8 @@ public class ModuleVariables extends BaseVariables implements Variables {
 		StringBuffer sb = new StringBuffer();
 		sb.append("Variables: " );
 		sb.append(variables.toString());
-		sb.append("\nShortcuts: " );
-		sb.append(shortcutVariables.values());
+//		sb.append("\nShortcuts: " );
+//		sb.append(shortcutVariables.values());
 		return sb.toString();
 	}
 

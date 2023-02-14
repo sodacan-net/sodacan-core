@@ -37,6 +37,7 @@ import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variables.Variables;
 /**
+ * <p>Context for all variables related to a single module.</p>
  * <p>Mode-specific functions for saving and restoring variables to/from the MessageBus.
  * An instance of this class is good for at least one cycle for a single module[instance] in a single mode.
  * This class is normally paired with an instance of the ModuleLoader class.</p>
@@ -134,6 +135,10 @@ public class VariableContext {
 				.build();
 		return p;
 	}
+	
+	public Variables getVariables() {
+		return variables;
+	}
 
 	/**
 	 * <p>Get the current list of variables stored in the module's state topic. We normally only do this when a module is loaded.
@@ -172,24 +177,29 @@ public class VariableContext {
 	 * <p>State store should only keep the most recent version of whatever it saves. It is used strictly to recover state quickly, such as 
 	 * when a module is evicted from memory due to inactivity or during a system or agent restart. 
 	 * If a module needs to restore to an earlier state, that can be done by the much slower method of replaying the input stream.</p>
-
-	 * @param variables The collection of variables, some of which may need saving.
 	 */
-	public void save(Variables variables) {
+	public void save() {
 		for (Variable variable : variables.getListOfChangedVariables()) {
-			VariablePayload p = newVariablePayload(module, variable);
-			if (p!=null) {
+//			VariablePayload p = newVariablePayload(module, variable);
+//			if (p!=null) {
 				mb.produce(stateTopicName, 
 							ModuleMethods.getVariableKeyName(variable.getName()), 
 							variable.getValue().serialize());
-			}
+//			}
 		}
+		variables.resetChanged();
 	}
 
+	public void setValue( String variableName, Value value) {
+		Variable variable = variables.find(variableName);
+		if (variable==null) {
+			throw new SodacanException("variable not found: " + variableName);
+		}
+		variable.setValue(value);
+	}
 	/**
 	 * The fetchModuleVariables method does the heavy lifting, we simple
 	 * take the resulting values and set them in the corresponding variables map.
-	 * @return
 	 */
 	public void restoreAll() {
 		if (variables==null) {

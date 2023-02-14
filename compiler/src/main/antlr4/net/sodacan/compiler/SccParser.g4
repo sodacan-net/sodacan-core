@@ -117,7 +117,7 @@ instance
 	;
 
 initialValue
-	: EQ expr
+	: ASSIGN literal
 	;
 
 constraintExpression

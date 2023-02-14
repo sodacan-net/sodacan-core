@@ -55,10 +55,8 @@ public class ModuleVariable implements Variable {
 		if(!variableDef.validateAgainstConstraints(value)) {
 			throw new SodacanException("Value " + variableDef.getName() + " does not match any constraints");
 		}
-		if (0!=this.value.compare(value)) {
-			this.value = value;
-			changedInCycle = true;
-		}
+		this.value = value;
+		changedInCycle = true;
 	}
 	
 	public VariableDef getVariableDef() {

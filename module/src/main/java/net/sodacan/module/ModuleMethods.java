@@ -44,10 +44,10 @@ public class ModuleMethods {
 	public static String addTopicSuffix(StringBuffer sb, String modeName, String fullModuleName) {
 		String fullName[] = parseFullModuleName(fullModuleName);
 		String instanceName;
-		if (fullName.length>2) {
-			instanceName = null;
-		} else {
+		if (fullName.length>1) {
 			instanceName = fullName[1];
+		} else {
+			instanceName = null;
 		}
 		return addTopicSuffix( sb, modeName, fullName[0], instanceName);
 	}

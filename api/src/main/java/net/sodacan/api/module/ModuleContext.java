@@ -42,7 +42,7 @@ public class ModuleContext {
 	private Mode mode;
 	private String rawSource;
 	private ModuleCompiler compiler;
-	protected SodacanModule module;
+	protected SodacanModule module = null;
 	protected String modeName;
 	protected String moduleName;
 	protected String instanceName;
@@ -55,6 +55,17 @@ public class ModuleContext {
 		mb = mode.getMB();
         // Fire up the compiler
 		compiler = new ModuleCompiler();
+	}
+
+	/**
+	 * Create a variable context based on this module (and mode)
+	 * @return variable context 
+	 */
+	public VariableContext getVariableContext() {
+		if (module==null) {
+			throw new SodacanException("No module, either fetch or load module");
+		}
+		return new VariableContext(mode, module);
 	}
 
 	// Compile the module
@@ -121,7 +132,7 @@ public class ModuleContext {
 			}
 			topic = mb.openTopic(topicName, 0);
 			Map<String,MBRecord> mbrs = topic.snapshot();
-			MBRecord record = mbrs.get(fullModuleName);
+			MBRecord record = mbrs.get("scc");
 			if (record==null) {
 				throw new SodacanException("Module " + fullModuleName + " not found");
 			}

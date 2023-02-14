@@ -23,6 +23,7 @@ import net.sodacan.compiler.SccParser.AtStatementContext;
 import net.sodacan.compiler.SccParser.ConstraintContext;
 import net.sodacan.compiler.SccParser.ConstraintExpressionContext;
 import net.sodacan.compiler.SccParser.FullIdContext;
+import net.sodacan.compiler.SccParser.InitialValueContext;
 import net.sodacan.compiler.SccParser.OnStatementContext;
 import net.sodacan.compiler.SccParser.PrivateStatementContext;
 import net.sodacan.compiler.SccParser.PublishStatementContext;
@@ -30,6 +31,7 @@ import net.sodacan.compiler.SccParser.SubscribeStatementContext;
 import net.sodacan.compiler.SccParser.TopicStatementContext;
 import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
+import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
 
@@ -113,6 +115,14 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 	}
 
 	@Override
+	public Void visitInitialValue(InitialValueContext ctx) {
+		String literal = ctx.literal().getText();
+		Value value = new Value(literal);
+		vdb.initialValue(value);
+		return null;
+	}
+
+	@Override
 	public Void visitVariableDef(VariableDefContext ctx) {
 		// Get ready to construct a new variable
 		vdb = VariableDef.newVariableDefBuilder();
@@ -126,6 +136,9 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		}
 		if (ctx.constraintExpression()!=null) {
 			visit(ctx.constraintExpression());
+		}
+		if (ctx.initialValue()!=null) {
+			visit(ctx.initialValue());
 		}
 		// We've collected all the parts, so build it
 		VariableDef vd = vdb.build();

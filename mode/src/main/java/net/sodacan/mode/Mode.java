@@ -208,6 +208,9 @@ public class Mode {
 	public MB getMB() {
 		if (this.mb==null) {
 			MessageBusService mbs = baseMode.getMessageBusService();
+			if (mbs==null) {
+				throw new SodacanException("No messageBus service configured for mode " + getModeName());
+			}
 			mb = mbs.getMB();
 		}
 		return mb;
@@ -220,7 +223,7 @@ public class Mode {
 	public ClockProvider getClockProvider() {
 		if (this.clockProvider==null) {
 			ClockService cs = baseMode.getClockService();
-			if (cs.getProviders().size()==0) {
+			if (cs==null || cs.getProviders().size()==0) {
 				throw new SodacanException("No clock providers available in mode " + getModeName());
 			}
 			clockProvider = cs.getProviders().get(0);
@@ -233,7 +236,11 @@ public class Mode {
 	 * @param msg
 	 */
 	public void log(String msg) {
-		baseMode.getLoggerService().log(msg);
+		LoggerService ls = baseMode.getLoggerService();
+		if (ls==null) {
+			throw new SodacanException("No logging providers available in mode " + getModeName());
+		}
+		ls.log(msg);
 	}
 
 	/**
