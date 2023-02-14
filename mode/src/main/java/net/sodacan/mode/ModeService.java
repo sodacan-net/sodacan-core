@@ -18,17 +18,8 @@ import java.beans.PropertyChangeListener;
 import java.util.List;
 import java.util.ServiceLoader;
 
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
-import net.sodacan.SodacanException;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
-import net.sodacan.mode.spi.VariablePayload;
-import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.variable.ModuleVariable;
-import net.sodacan.module.variable.Variable;
 /**
  * <p>A Mode instance has one ModeService instance per class of service: Logger, Clock, MessageBus, and StateStore.
  * The subclasses of this class have methods for coordinating access to a specific provider function.
@@ -47,7 +38,6 @@ import net.sodacan.module.variable.Variable;
 public abstract class ModeService {
 	private ConfigMode configMode;
 	private ServiceLoader<? extends ModeProvider> loader = null;
-	ObjectMapper mapper;
 
 	public ModeService(ConfigMode configMode, Class<? extends ModeProvider> providerClass) {
 		this.configMode = configMode;
@@ -55,9 +45,6 @@ public abstract class ModeService {
 		if (loader==null) {
 			loader = ServiceLoader.load(providerClass);
 		}
-		mapper = new ObjectMapper();
-		mapper.setSerializationInclusion(Include.NON_NULL);
-		mapper.setSerializationInclusion(Include.NON_EMPTY);
 
 	}
 
@@ -96,52 +83,7 @@ public abstract class ModeService {
 		}
     }
 
-	/**
-	 * Serialize a variable to Json
-	 * @param variable
-	 * @return Json string representing Variable
-	 */
-	protected String variableToJson( Variable variable ) {
-		try {
-			String json;
-			json = mapper
-						.writerWithDefaultPrettyPrinter()
-						.writeValueAsString(variable);
-			return json;
-		} catch (JsonProcessingException e) {
-			throw new SodacanException("Error serializing variable: " + variable, e);
-		}
-	}
 	
-	protected ModuleVariable jsonToVariable( String json) {
-		ModuleVariable variable;
-		try {
-			variable = mapper.readValue(json, ModuleVariable.class);
-		} catch (JsonProcessingException e) {
-			throw new SodacanException("Error deserializing variable from string: " + json, e);
-		}
-	return variable;
-		
-	}
-	
-	/**
-	 * Return a new VariablePayload for use by MessageBus and StateStore plugins
-	 * @return A new VariablePayload or null if no payload possible (we only do ModuleVariables)
-	 */
-	public VariablePayload newVariablePayload(SodacanModule module,  Variable variable) {
-		if (!(variable instanceof ModuleVariable)) {
-			return null;
-		}
-		ModuleVariable mv = (ModuleVariable)variable;
-		VariablePayload p = VariablePayload.newVariablePayloadBuilder()
-				.mode(this.getModeName())
-				.topic(module.getName())
-				.variableName(mv.getVariableDef().getFullName())
-				.instanceKey(mv.getVariableDef().getInstance())
-				.content(variableToJson(mv))
-				.build();
-		return p;
-	}
 	
 	/**
 	 * Close this service. However, our subclasses may override and do additional cleanup.

@@ -50,7 +50,7 @@ public class MessageBusService extends ModeService {
 			}
 		}
 		if (providers.size()==0) {
-			throw new SodacanException("No providers found for type: " + pluginType + " for mode " + getModeName());
+			throw new SodacanException("No message bus providers found for PluginType: " + pluginType + " for mode: " + getModeName());
 		}
 	}
 

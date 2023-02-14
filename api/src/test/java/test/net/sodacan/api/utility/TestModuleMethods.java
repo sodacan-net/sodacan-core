@@ -12,12 +12,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.mode.spi;
+package test.net.sodacan.api.utility;
 
-import java.time.Duration;
+import org.junit.Test;
 
-public interface ClockProvider extends ModeProvider {
-	public void setClock(int year, int month, int day, int hour, int minute, int second);
-	public long getTimestamp();
-	public void advanceClock( Duration duration);
+import net.sodacan.module.ModuleMethods;
+
+public class TestModuleMethods {
+
+	@Test
+	public void testFullName() {
+		String parsed[] = ModuleMethods.parseFullModuleName("module");
+		assert(parsed.length==1);
+		assert(parsed[0].equals("module"));
+	}
+	@Test
+	public void testFullNameWithInstance() {
+		String parsed[] = ModuleMethods.parseFullModuleName("module[instance]");
+		assert(parsed.length==2);
+		assert(parsed[0].equals("module"));
+		assert(parsed[1].equals("instance"));
+	}
+
 }

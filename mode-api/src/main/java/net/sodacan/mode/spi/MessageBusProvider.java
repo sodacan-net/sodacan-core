@@ -24,8 +24,5 @@ import net.sodacan.messagebus.MB;
  *
  */
 public interface MessageBusProvider extends ModeProvider {
-//	public ModeSupplier getModeSupplier();
-//	public void putModePayload(ModePayload payload);
-//	public TopicModeSupplier get
 	public MB getMB(Map<String,String> configProperties);
 }

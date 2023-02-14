@@ -26,9 +26,7 @@ import net.sodacan.SodacanException;
 import net.sodacan.config.Config;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.messagebus.MB;
-import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.variables.ModuleVariables;
-import net.sodacan.module.variables.Variables;
+import net.sodacan.mode.spi.ClockProvider;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -68,6 +66,7 @@ public class Mode {
 	private BaseMode baseMode;
 	
 	private MB mb = null;
+	private ClockProvider clockProvider = null;
 	
 	/**
 	 * Find a Mode
@@ -201,6 +200,7 @@ public class Mode {
 	public String toString() {
 		return "Mode: " + getModeName() + "{" + getBaseModeName() + "}";
 	}
+	
 	/**
 	 * Convenience method to dig down into plugins to find the correct message bus implementation for this mode.
 	 * @return MessageBus interface
@@ -214,28 +214,26 @@ public class Mode {
 	}
 
 	/**
+	 * Convenience method to dig down into plugins to find the correct message bus implementation for this mode.
+	 * @return MessageBus interface
+	 */
+	public ClockProvider getClockProvider() {
+		if (this.clockProvider==null) {
+			ClockService cs = baseMode.getClockService();
+			if (cs.getProviders().size()==0) {
+				throw new SodacanException("No clock providers available in mode " + getModeName());
+			}
+			clockProvider = cs.getProviders().get(0);
+		}
+		return clockProvider;
+	}
+
+	/**
 	 * Convenience method to send something to the configured logger(s) for this mode.
 	 * @param msg
 	 */
 	public void log(String msg) {
 		baseMode.getLoggerService().log(msg);
-	}
-
-	/**
-	 * Convenience method to save the state of a variable
-	 * @param payload containing the serialized variable
-	 */
-	public void saveState( SodacanModule module, Variables variables) {
-		baseMode.getStateStoreService().save(module, variables);
-	}
-	
-	/**
-	 * Convenience method to restore a module's variables
-	 * @param module
-	 * @return reconstituted ModuleVariables structure
-	 */
-	public ModuleVariables restoreAll(SodacanModule module) {
-		return baseMode.getStateStoreService().restoreAll(module);
 	}
 
 	/**

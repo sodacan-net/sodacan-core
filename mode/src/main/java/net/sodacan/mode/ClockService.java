@@ -14,10 +14,9 @@
  */
 package net.sodacan.mode;
 
-import java.time.Instant;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Supplier;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,18 +66,6 @@ public class ClockService extends ModeService {
 		}
 		super.close();
 	}
-
-	/**
-	 * In this case, we can't provide more than one clock supplier to a module so
-	 * the first one wins.
-	 * @return A supplier of instances
-	 */
-	public Supplier<Instant> getSupplier() {
-		if (providers.size()>0) {
-			return providers.get(0).getSupplier();
-		}
-		return null;
-	}
 	
 	/**
 	 * Set the clock (this only works for manual clocks. A real clock will ignore this request.
@@ -94,5 +81,12 @@ public class ClockService extends ModeService {
 			return providers.get(0).getTimestamp();
 		}
 		throw new SodacanException("No clock provider, cannot return timestamp");
+	}
+	
+	public void advanceClock( Duration duration) {
+		if (providers.size()>0) {
+			providers.get(0).advanceClock( duration);
+		}
+		throw new SodacanException("No clock provider, cannot advance the clock");
 	}
 }

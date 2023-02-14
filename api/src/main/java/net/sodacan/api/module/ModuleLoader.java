@@ -15,36 +15,24 @@
 package net.sodacan.api.module;
 
 import java.time.Instant;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import net.sodacan.SodacanException;
 import net.sodacan.api.topic.Initialize;
-import net.sodacan.api.utility.ModuleMethods;
 import net.sodacan.compiler.ModuleCompiler;
 import net.sodacan.messagebus.MB;
+import net.sodacan.messagebus.MBRecord;
+import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
+import net.sodacan.module.ModuleMethods;
 import net.sodacan.module.statement.SodacanModule;
 /**
- * <p>Load a module into Sodacan.</p>
- * <ul>
- * <li>All of this is Mode-sensitive. Therefore, -m option is important even though a default is used if not provided.</li>
- * <li>Starting with a string containing the module source:</li>
- * <li>Compile the module</li>
- * <li>If compile errors, exception</li>
- * <li>Extract module name from compiled module</li>
- * <li>Add the module name to the Modules topic (it may already be there), if so, add it again.</li>
- * <li>The "value" of the Modules entry is the current (real) time.</li>
- * <li>Create a topic containing the module name for administrative message delivery for that module (as a whole, not per instance).</li>
- * <li>Create a topic containing the module name for message (variable) publishing for that module</li>
- * <li>Create a topic containing the module name for hold State and offsets.</li>
- * <li>Either of the three functions above will fail if the module already exists, that's normal and not considered an error.</li>
- * <li>Send the source code to the module administrative topic. 
- * (The compiled Module structure is not retained at this point.)</li>
- * </ul>
- * <p>Once loaded, the module will take effect as soon as the agent responsible for that module can process the
- * new or updated source code.</p>
+ * <p>Mode-specific functions for saving and restoring modules to/from the MessageBus.
+ * An instance of this class is good for at least one cycle for a single module.
+ * This class is normally paired with an instance of the VariableLoader class.</p>
  * @author John Churin
  *
  */
@@ -55,20 +43,32 @@ public class ModuleLoader {
 	private String rawSource;
 	private ModuleCompiler compiler;
 	protected SodacanModule module;
+	protected String modeName;
+	protected String moduleName;
+	protected String instanceName;
 	protected MB mb;
 
 	public ModuleLoader(Mode mode) {
 		this.mode = mode;
+		this.modeName = mode.getModeName();
 		// We'll need a message bus
 		mb = mode.getMB();
         // Fire up the compiler
 		compiler = new ModuleCompiler();
 	}
 
-	protected SodacanModule compile() {
+	// Compile the module
+	public void compile() {
 		this.module = compiler.compile(rawSource, null);
-		return module;
+		System.out.println( "Errors: " + module.getErrors());
+		if(module.getErrors().size() > 0) {
+			throw new SodacanException("Compile Errors, aborting");
+		}
+		moduleName = module.getName();
+		instanceName = module.getInstanceName();
 	}
+	
+	
 	/**
 	 * <p>Create three topics associated with a module: </p>
 	 * <ul>
@@ -84,40 +84,87 @@ public class ModuleLoader {
 	 */
 	protected void createModuleTopics( ) {
 		
-		String stateTopic = ModuleMethods.getModuleStateTopicName(mode, module);
+		String stateTopic = ModuleMethods.getModuleStateTopicName(mode.getModeName(), module.getName(), module.getInstanceName());
 		boolean result = mb.createTopic(stateTopic, true);
 		if (!result) {
 			logger.info("Topic " + stateTopic + " already exists");
 		}
-		String publishTopic = ModuleMethods.getModulePublishTopicName(mode, module);
+		String publishTopic = ModuleMethods.getModulePublishTopicName(mode.getModeName(), module.getName(), module.getInstanceName());
 		result = mb.createTopic(publishTopic, false);
 		if (!result) {
 			logger.info("Topic " + publishTopic + " already exists");
 		}
-		String adminTopic = ModuleMethods.getModuleAdminTopicName(mode, module);
+		String adminTopic = ModuleMethods.getModuleAdminTopicName(mode.getModeName(), module.getName(), module.getInstanceName());
 		result = mb.createTopic(adminTopic, false);
 		if (!result) {
 			logger.info("Topic " + adminTopic + " already exists");
 		}
 	}
+	
 	protected void pushSourceToAdminTopic() {
-		String topicName = ModuleMethods.getModuleAdminTopicName(mode, module);
+		String topicName = ModuleMethods.getModuleAdminTopicName(mode.getModeName(), module.getName(), module.getInstanceName());
 		mb.produce(topicName,"scc", rawSource);
 		logger.info("Module source pushed to " + topicName);
 	}
 
-	public void loadModule( String rawSource  ) {
+	/**
+	 * We fetch a module by name from the topic holding the module source( <code>admin-&#60;mode&#62;-&#60;modulename&#62;</code>)
+	 *  and compile it.
+	 * @param fullModuleName with instance name if present
+	 */
+	public void fetchModule( String fullModuleName ) {
+		String topicName = ModuleMethods.getModuleAdminTopicName(mode.getModeName(), fullModuleName);
+		MBTopic topic;
+		try {
+			if (logger.isDebugEnabled()) {
+				logger.debug("Get snapshot of topic: " + topicName);
+			}
+			topic = mb.openTopic(topicName, 0);
+			Map<String,MBRecord> mbrs = topic.snapshot();
+			MBRecord record = mbrs.get(fullModuleName);
+			if (record==null) {
+				throw new SodacanException("Module " + fullModuleName + " not found");
+			}
+			// Load up the raw source
+			rawSource = record.getValue();
+			// Compile so we have a module in memory
+			// Normally, this compile shouldn't fail since it 
+			// couldn't have been uploaded with compile errors.
+			compile();
+		} finally {
+			// The topic is already closed after the call to snapshot
+		}
+	}
+	
+	/**
+	 * <p>Add or update a module from rawSource, usually derived from the file system.</p>
+	 * <ul>
+	 * <li>All of this is done in the context of a Mode.</li>
+	 * <li>Starting with a string containing the module source:</li>
+	 * <li>Compile the module</li>
+	 * <li>If compile errors, raise an exception</li>
+	 * <li>Extract module name and instance name, if any, from the compiled module (done by compile() method.</li>
+	 * <li>Add the module name plus instance as the key to the "Modules" topic (it may already be there), if so, add it again.</li>
+	 * <li>The "value" of the Modules entry is the current (real) time.</li>
+	 * <li>Create a topic containing the module name for administrative message delivery for that module (as a whole, not per instance).</li>
+	 * <li>Create a topic containing the module name for message (variable) publishing for that module</li>
+	 * <li>Create a topic containing the module name for holding our variable State and offsets.</li>
+	 * <li>Either of the three functions above will fail if the module already exists, that's normal and not considered an error.</li>
+	 * <li>Send the source code to the module administrative topic. key is "scc" for Sodacan source code.
+	 * (The compiled Module structure is not retained at this point.)</li>
+	 * </ul>
+	 * <p>Once loaded, the module will take effect as soon as the agent responsible for that module can process the
+	 * new or updated source code.</p>
+	 * @param rawSource
+	 */
+	public void loadRawModule( String rawSource  ) {
 		this.rawSource = rawSource;
 		try {
-			SodacanModule module = compile();
-			System.out.println( "Errors: " + module.getErrors());
-			if(module.getErrors().size() > 0) {
-				throw new SodacanException("Compile Errors, aborting");
-			}
-			String moduleName = module.getName();
-			mb.produce(Initialize.MODULES, ModuleMethods.getModuleKeyName(moduleName, null),Instant.now().toString());
+			compile();
+			mb.produce(Initialize.MODULES, ModuleMethods.getModuleKeyName(modeName, moduleName, instanceName),Instant.now().toString());
 			createModuleTopics();
 			pushSourceToAdminTopic();
+//			fetchModuleVariables();
 		} catch (Exception e) {
 			throw new SodacanException("Error loading module", e);
 		} finally {

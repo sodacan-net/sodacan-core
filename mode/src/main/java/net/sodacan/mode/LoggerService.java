@@ -20,6 +20,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.SodacanException;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.MessageBusProvider;
@@ -43,6 +44,9 @@ public class LoggerService extends ModeService {
 				provider.setMode(getModeName());
 				logger.info("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
+		}
+		if (providers.size()==0) {
+			throw new SodacanException("No Logger providers found for type: " + pluginType + " for mode " + getModeName());
 		}
 	}
 

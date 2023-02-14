@@ -16,13 +16,12 @@ package net.sodacan.mode;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.sodacan.SodacanException;
 import net.sodacan.config.ConfigMode;
-import net.sodacan.mode.spi.LoggerProvider;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
 import net.sodacan.mode.spi.VariablePayload;
@@ -62,6 +61,9 @@ public class StateStoreService extends ModeService {
 				logger.debug("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
+		if (providers.size()==0) {
+			throw new SodacanException("No state store providers found for type: " + pluginType + " for mode " + getModeName());
+		}
 	}
 
 	@Override
@@ -69,46 +71,6 @@ public class StateStoreService extends ModeService {
 		return providers;
 	}
 	
-	/**
-	 * <p>Save the state of a (Module)Variable to all services. We only consider the set of variables for a module that have changed during a cycle. 
-	 * The plugin will only see individual variables.
-	 * Here we leave behind the class structure of the variable(s) and serialize each to
-	 * json which in turn is what we pass to the interested plugin(s) for storage.</p>
-	 * </p>
-	 * <p>These fields are added to a small object, VariablePayload for conveyance to the plugin(s).</p>
-	 * <p>State store should only keep the most recent version of whatever it saves. It is used strictly to recover state quickly, such as 
-	 * when a module is evicted from memory due to inactivity or during a system or agent restart. 
-	 * If a module needs to restore to an earlier state, that can be done by the much slower method of replaying the input stream.</p>
-
-	 * @param variables The collection of variables, some of which may need saving.
-	 */
-	public void save(SodacanModule module, Variables variables) {
-		for (Variable variable : variables.getListOfChangedVariables()) {
-			VariablePayload p = newVariablePayload(module, variable);
-			if (p!=null) {
-				// Send to the interested plugin(s)
-				for (StateStoreProvider provider : getProviders()) {
-					provider.save(p);
-				}
-			}
-		}
-	}
-	/**
-	 * Grab the saved payloads and deserialize into a ModuleVariables structure.
-	 * @param module The name of the module to return
-	 * @return
-	 */
-	public ModuleVariables restoreAll(SodacanModule module) {
-		ModuleVariables variables = new ModuleVariables();
-		for (StateStoreProvider provider : getProviders()) {
-			List<VariablePayload> vps = provider.restoreAll(module.getName());
-			for (VariablePayload vp : vps) {
-				ModuleVariable mv = (ModuleVariable)this.jsonToVariable(vp.getContent());
-				variables.addVariable(mv);
-			}
-		}
-		return variables;
-	}
 
 	/**
 	 * Close this service by closing the providers it is using
