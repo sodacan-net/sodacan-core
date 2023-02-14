@@ -36,8 +36,8 @@ import net.sodacan.module.statement.SodacanModule;
  * @author John Churin
  *
  */
-public class ModuleLoader {
-	private final static Logger logger = LoggerFactory.getLogger(ModuleLoader.class);
+public class ModuleContext {
+	private final static Logger logger = LoggerFactory.getLogger(ModuleContext.class);
 
 	private Mode mode;
 	private String rawSource;
@@ -48,7 +48,7 @@ public class ModuleLoader {
 	protected String instanceName;
 	protected MB mb;
 
-	public ModuleLoader(Mode mode) {
+	public ModuleContext(Mode mode) {
 		this.mode = mode;
 		this.modeName = mode.getModeName();
 		// We'll need a message bus

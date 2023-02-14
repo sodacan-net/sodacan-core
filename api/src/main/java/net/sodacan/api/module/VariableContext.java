@@ -12,7 +12,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.api.variable;
+package net.sodacan.api.module;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -43,7 +43,7 @@ import net.sodacan.module.variables.Variables;
  * @author John Churin
  *
  */
-public class VariableLoader {
+public class VariableContext {
 	protected static ObjectMapper mapper;
 
 	static {
@@ -51,7 +51,7 @@ public class VariableLoader {
 		mapper.setSerializationInclusion(Include.NON_NULL);
 		mapper.setSerializationInclusion(Include.NON_EMPTY);
 	}
-	private final static Logger logger = LoggerFactory.getLogger(VariableLoader.class);
+	private final static Logger logger = LoggerFactory.getLogger(VariableContext.class);
 
 	private Mode mode;
 	private SodacanModule module;
@@ -71,7 +71,7 @@ public class VariableLoader {
 	 * Construct a VariableLoader based on the specified mode and module
 	 * @param mode
 	 */
-	public VariableLoader(Mode mode, SodacanModule module) {
+	public VariableContext(Mode mode, SodacanModule module) {
 		this.mode = mode;
 		this.module = module;
 		this.modeName = mode.getModeName();
