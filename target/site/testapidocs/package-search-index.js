@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"test.net.sodacan.api.utility"},{"l":"test.net.sodacan.compiler"},{"l":"test.net.sodacan.config"},{"l":"test.net.sodacan.module"},{"l":"test.net.sodacan.utility"}]
