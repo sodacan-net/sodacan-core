@@ -1,6 +1,9 @@
-package net.sodacan.config;
+package test.net.sodacan.config;
 
 import org.junit.Test;
+
+import net.sodacan.config.Config;
+import net.sodacan.config.ConfigMode;
 
 public class TestConfig {
 	String configFileName1 = "src/test/resources/test1.yaml";
