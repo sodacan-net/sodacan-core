@@ -35,6 +35,7 @@ import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
+import net.sodacan.module.variable.VariableDef.VariableType;
 import net.sodacan.module.variables.Variables;
 /**
  * <p>Context for all variables related to a single module.</p>
@@ -62,6 +63,8 @@ public class VariableContext {
 	private MB mb;
 	private Variables variables;
 	private String stateTopicName;
+	private String publishTopicName;
+	
 	// Holds offsets as loaded from state topic, if any.
 	private Map<String, Long> offsets = new HashMap<>();
 	// Holds recent offsets which we compare to offsets to know if we need to update the state table.
@@ -80,6 +83,7 @@ public class VariableContext {
 		this.instanceName = module.getInstanceName();
 		this.variables = module.createVariablesMap();
 		this.stateTopicName = ModuleMethods.getModuleStateTopicName(modeName, moduleName, instanceName);
+		this.publishTopicName = ModuleMethods.getModulePublishTopicName(modeName, moduleName, instanceName);
 		// We'll need a message bus
 		mb = mode.getMB();
  	}
@@ -178,15 +182,22 @@ public class VariableContext {
 	 * when a module is evicted from memory due to inactivity or during a system or agent restart. 
 	 * If a module needs to restore to an earlier state, that can be done by the much slower method of replaying the input stream.</p>
 	 */
-	public void save() {
+	public void saveAndPublish() {
 		for (Variable variable : variables.getListOfChangedVariables()) {
-//			VariablePayload p = newVariablePayload(module, variable);
-//			if (p!=null) {
-				mb.produce(stateTopicName, 
+			mb.produce(stateTopicName, 
+					ModuleMethods.getVariableKeyName(variable.getName()), 
+					variable.getValue().serialize());
+			if (variable instanceof ModuleVariable) {
+				ModuleVariable mv = (ModuleVariable)variable;
+				// If this is a publish variable, then publish it
+				if (mv.getVariableDef().getVariableType() == VariableType.publishVariable ) {
+					mb.produce(publishTopicName,
 							ModuleMethods.getVariableKeyName(variable.getName()), 
 							variable.getValue().serialize());
-//			}
+				}
+			}
 		}
+		// Reset the changed flag
 		variables.resetChanged();
 	}
 
