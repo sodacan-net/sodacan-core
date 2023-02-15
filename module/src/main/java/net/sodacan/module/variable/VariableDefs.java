@@ -14,7 +14,10 @@
  */
 package net.sodacan.module.variable;
 
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 
 import net.sodacan.SodacanException;
@@ -51,11 +54,12 @@ public class VariableDefs {
 		}
 		return v;
 	}
+	
 	/**
 	 * Add a variable definition to the list of variables.
 	 * This checks both fullNames and aliases (shortNames) for duplicates.
 	 * @param variableDef The variable to be added
-	 * @return Returns true if a new, unique variable was added, otherwise false
+	 * @return Returns true if a new, unique variable was added, otherwise false because it's a duplicate.
 	 */
 	public boolean addVariableDef( VariableDef variableDef) {
 		// Short name must be unique
@@ -69,11 +73,14 @@ public class VariableDefs {
 		}
 		return true;
 	}
+	public Collection<VariableDef> getVariableDefs() {
+		return variablesDefs.values();
+	}
 	/**
 	 * At runtime, find each variable definition and create a set of variables.
 	 * @return A map of variables
 	 */
-	public Variables createVariablesMap() {
+	public ModuleVariables createVariablesMap() {
 		ModuleVariables vs = new ModuleVariables();
 		for (String key : variablesDefs.keySet()) {
 			VariableDef vd = variablesDefs.get(key);

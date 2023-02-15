@@ -15,6 +15,7 @@
 package net.sodacan.module.variables;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
@@ -98,6 +99,15 @@ public class ModuleVariables extends BaseVariables implements Variables {
 		return uniqueVariables;
 	}
 
+	public List<ModuleVariable> getUniqueSubscribeVariables() {
+		List<ModuleVariable> smvs = new LinkedList<>();
+		for (ModuleVariable v : getUniqueVariables()) {
+			if (VariableType.subscribeVariable  == v.getVariableDef().getVariableType()) {
+				smvs.add(v);
+			}
+		}
+		return smvs;
+	}
 	public List<ShortcutVariable> getShortcutVariables() {
 		return new ArrayList<ShortcutVariable>(shortcutVariables.values());
 	}

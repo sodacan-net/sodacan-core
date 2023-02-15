@@ -1,5 +1,5 @@
 MODULE test10
-    SUBSCRIBE mode {"on","off"}
+ 	SUBSCRIBE test03.mode AS mode
     // Same as mode.on
     ON mode
     AND mode==on

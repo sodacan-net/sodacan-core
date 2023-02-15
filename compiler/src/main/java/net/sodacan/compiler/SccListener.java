@@ -76,27 +76,6 @@ public class SccListener extends SccParserBaseListener {
 
 	
 	@Override
-	public void exitSubscribeStatement(SubscribeStatementContext ctx) {
-		String id = ctx.variableDef().identifier().getText();
-		if (id.contains(".") && ctx.variableDef().alias()==null) {
-			parser.notifyErrorListeners("The compound identifer '" + id + "' requires an AS clause");
-		}
-		super.exitSubscribeStatement(ctx);
-	}
-
-
-//	@Override
-//	public void exitAliasName(AliasNameContext ctx) {
-//		String name = ctx.getText();
-//		if (variables.contains(name)) {
-//			parser.notifyErrorListeners("Alias already defined: " + name);
-//		}
-//		variables.add(name);
-//		super.exitAliasName(ctx);
-//	}
-
-
-	@Override
 	public void exitEveryRule(ParserRuleContext ctx) {
 		// TODO Auto-generated method stub
 		super.exitEveryRule(ctx);

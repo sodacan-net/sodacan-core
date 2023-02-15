@@ -62,6 +62,12 @@ public class ModuleMethods {
 		return addTopicSuffix( sb, modeName,moduleName, instanceName);
 	}
 		
+	public static String getModulePublishTopicName(String modeName, String fullModuleName) {
+		StringBuffer sb = new StringBuffer();
+		sb.append("pub-");
+		return addTopicSuffix( sb, modeName, fullModuleName);
+	}
+	
 	/**
 	 * Return a consistent way of naming the publish topic for the supplied module
 	 * @return The topicName for this combination of mode and module
@@ -69,13 +75,13 @@ public class ModuleMethods {
 	public static String getModulePublishTopicName(String modeName, String moduleName, String instanceName) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("pub-");
-		return addTopicSuffix( sb, modeName,moduleName, instanceName);
+		return addTopicSuffix( sb, modeName, moduleName, instanceName);
 	}
 
 	public static String getModuleAdminTopicName(String modeName, String moduleName, String instanceName) {
 		StringBuffer sb = new StringBuffer();
 		sb.append("admin-");
-		return addTopicSuffix( sb, modeName,moduleName, instanceName);
+		return addTopicSuffix( sb, modeName, moduleName, instanceName);
 	}
 
 	/**

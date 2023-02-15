@@ -52,7 +52,8 @@ public class TestModuleSerialize {
         }
     } 
 
-	@Test
+	// NOTE: We're no longer storing scc in a variable, has it's own "admin" topic.
+//	@Test
 	public void testSerializeModule() throws IOException {
         List<String> filenameList = getSccFileList(DIRBASE);
         Collections.sort(filenameList);

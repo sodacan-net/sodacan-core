@@ -32,11 +32,11 @@ import net.sodacan.module.value.ValueSerializer;
 public class VariableDef {
 	public enum VariableType {topicVariable, publishVariable,subscribeVariable,privateVariable,SourceVariable};
 	public final String version = "1.1";
+	private String moduleName;
 	private String name;
 	private String alias;
 	private String instance;
 	private VariableType variableType;
-
 	@JsonProperty("initialValue")
 	@JsonSerialize(using = ValueSerializer.class)
 	private Value initialValue;
@@ -52,11 +52,16 @@ public class VariableDef {
 		this.constraints = builder.constraints;
 		this.variableType = builder.variableType;
 		this.initialValue = builder.initialValue;
+		this.moduleName = builder.moduleName;
 	}
 	
 	@JsonIgnore
 	public String getFullName( ) {
 		StringBuffer sb = new StringBuffer();
+		if (moduleName!=null) {
+			sb.append(moduleName);
+			sb.append('.');
+		}
 		if (name!=null) {
 			sb.append(name);
 		}
@@ -79,6 +84,11 @@ public class VariableDef {
 	public String getVersion() {
 		return version;
 	}
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
 	public String getName() {
 		return name;
 	}
@@ -211,6 +221,7 @@ public class VariableDef {
 		return new VariableDefBuilder();
 	}
 	public static class VariableDefBuilder {
+		private String moduleName;
 		private String name;
 		private String alias;
 		private String instance;
@@ -226,6 +237,15 @@ public class VariableDef {
 			this.name = name;
 			return this;
 		}
+		public VariableDefBuilder moduleName(String moduleName) {
+			this.moduleName = moduleName;
+			return this;
+		}
+		public VariableDefBuilder instance(String instance) {
+			this.instance = instance;
+			return this;
+		}
+
 		public VariableDefBuilder alias(String alias) {
 			this.alias = alias;
 			return this;

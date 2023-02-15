@@ -15,14 +15,18 @@
 package net.sodacan.module.statement;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.SubscribeVariable;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef;
+import net.sodacan.module.variable.VariableDef.VariableType;
 import net.sodacan.module.variable.VariableDefs;
+import net.sodacan.module.variables.ModuleVariables;
 import net.sodacan.module.variables.Variables;
 
 /**
@@ -55,14 +59,33 @@ public class SodacanModule extends ModuleComponent{
 	public SodacanModule() {
 		
 	}
-	
+	/**
+	 * Create a simple list of the variables that are subscriptions. Include the instance name, if present, in
+	 * the module name. We don't care about the variable names.
+	 */
+	public Set<String> getSubscriptionModuleNames() {
+		Set<String> moduleNames = new HashSet<>();
+		for (VariableDef vd : variableDefs.getVariableDefs()) {
+			if (VariableType.subscribeVariable==vd.getVariableType()) {
+				StringBuffer sb = new StringBuffer();
+				sb.append(vd.getModuleName());
+				if (vd.getInstance()!=null) {
+					sb.append('[');
+					sb.append(vd.getInstance());
+					sb.append(']');
+				}
+				moduleNames.add(sb.toString());
+			}
+		}
+		return moduleNames;
+	}
 	/**
 	 * One time, for each instance of a module, at runtime, visit each variable definition and create a set of variables 
 	 * that are persisted and lives forever independent of the module definition.
 	 * It will need to be revalidated after a module change.
 	 * @return
 	 */
-	public Variables createVariablesMap() {
+	public ModuleVariables createVariablesMap() {
 		return variableDefs.createVariablesMap();
 	}
 

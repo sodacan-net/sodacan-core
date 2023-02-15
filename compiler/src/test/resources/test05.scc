@@ -1,6 +1,6 @@
 // SUBSCRIPTION that applies to each instance (each instance has a mode variable)
 MODULE test05[location]
-	SUBSCRIBE mode {off,on}
+	SUBSCRIBE test03.mode AS mode
 	AT 10 minutes before sunset
 	  THEN topic.nose
 	  THEN any.time

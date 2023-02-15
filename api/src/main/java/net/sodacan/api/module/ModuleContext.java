@@ -111,6 +111,20 @@ public class ModuleContext {
 			logger.info("Topic " + adminTopic + " already exists");
 		}
 	}
+	/**
+	 * The subscriber may not exist yet, but we still need to listen for events, so
+	 * we create just the pub- topic if needed, leaving admin- and state- for when that
+	 * module shows up.
+	 */
+	protected void createSubscribeTopics() {
+		for (String fullModuleName : module.getSubscriptionModuleNames()) {
+			String topicName = ModuleMethods.getModulePublishTopicName(mode.getModeName(), fullModuleName);
+			boolean result = mb.createTopic(topicName, false);
+			if (!result) {
+				logger.info("Topic " + topicName + " already exists");
+			}
+		}
+	}
 	
 	protected void pushSourceToAdminTopic() {
 		String topicName = ModuleMethods.getModuleAdminTopicName(mode.getModeName(), module.getName(), module.getInstanceName());
@@ -142,6 +156,7 @@ public class ModuleContext {
 			// Normally, this compile shouldn't fail since it 
 			// couldn't have been uploaded with compile errors.
 			compile();
+			createSubscribeTopics();
 		} finally {
 			// The topic is already closed after the call to snapshot
 		}
@@ -174,13 +189,33 @@ public class ModuleContext {
 			compile();
 			mb.produce(Initialize.MODULES, ModuleMethods.getModuleKeyName(modeName, moduleName, instanceName),Instant.now().toString());
 			createModuleTopics();
+			createSubscribeTopics();
 			pushSourceToAdminTopic();
-//			fetchModuleVariables();
 		} catch (Exception e) {
 			throw new SodacanException("Error loading module", e);
 		} finally {
 //			producer.close();
 		}
+	}
+
+	public Mode getMode() {
+		return mode;
+	}
+
+	public SodacanModule getModule() {
+		return module;
+	}
+
+	public String getModeName() {
+		return modeName;
+	}
+
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public String getInstanceName() {
+		return instanceName;
 	}
 
 }

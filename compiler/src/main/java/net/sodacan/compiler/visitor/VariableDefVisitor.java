@@ -28,12 +28,14 @@ import net.sodacan.compiler.SccParser.OnStatementContext;
 import net.sodacan.compiler.SccParser.PrivateStatementContext;
 import net.sodacan.compiler.SccParser.PublishStatementContext;
 import net.sodacan.compiler.SccParser.SubscribeStatementContext;
+import net.sodacan.compiler.SccParser.SubscribeVariableDefContext;
 import net.sodacan.compiler.SccParser.TopicStatementContext;
 import net.sodacan.compiler.SccParser.VariableDefContext;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variable.VariableDef.VariableDefBuilder;
+import net.sodacan.module.variable.VariableDef.VariableType;
 
 /**
  * Look for variable declarations and add them to a variables list. Also, check for duplicate names.
@@ -119,6 +121,25 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 		String literal = ctx.literal().getText();
 		Value value = new Value(literal);
 		vdb.initialValue(value);
+		return null;
+	}
+
+	@Override
+	public Void visitSubscribeVariableDef(SubscribeVariableDefContext ctx) {
+		vdb = VariableDef.newVariableDefBuilder();
+		vdb.type(variableType);
+		vdb.moduleName(ctx.m.getText());
+		if (ctx.instance()!=null) {
+			vdb.instance(ctx.instance().getText());
+		}
+		vdb.name(ctx.v.getText());
+		vdb.alias(ctx.alias().getText());
+		
+		VariableDef vd = vdb.build();
+		// Add it to collection of variables
+		if (!module.addVariableDef(vd)) {
+			parser.notifyErrorListeners(ctx.getStart(), "Variable already defined: " + vd, null);
+		}
 		return null;
 	}
 

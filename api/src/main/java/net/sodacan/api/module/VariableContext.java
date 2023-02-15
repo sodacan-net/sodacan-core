@@ -15,6 +15,8 @@
 package net.sodacan.api.module;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -36,7 +38,7 @@ import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.ModuleVariable;
 import net.sodacan.module.variable.Variable;
 import net.sodacan.module.variable.VariableDef.VariableType;
-import net.sodacan.module.variables.Variables;
+import net.sodacan.module.variables.ModuleVariables;
 /**
  * <p>Context for all variables related to a single module.</p>
  * <p>Mode-specific functions for saving and restoring variables to/from the MessageBus.
@@ -61,7 +63,7 @@ public class VariableContext {
 	private String moduleName;
 	private String instanceName;
 	private MB mb;
-	private Variables variables;
+	private ModuleVariables variables;
 	private String stateTopicName;
 	private String publishTopicName;
 	
@@ -119,6 +121,18 @@ public class VariableContext {
 		}
 		return variable;
 	}
+	/**
+	 * When we're ready to run a module, we need a list of zero or more subscriber topics to follow.
+	 * The names include a prefix, mode name, and the name of the topic being subscribed to.
+	 * @return A list of topic names that this module subscribes to.
+	 */
+	public List<String> getListOfSubscriberTopics() {
+		List<String> topicNames = new LinkedList<>();
+		for (ModuleVariable mv : variables.getUniqueSubscribeVariables()) {
+			topicNames.add(ModuleMethods.getModulePublishTopicName(modeName, mv.getName(), instanceName));
+		}
+		return topicNames;
+	}
 
 	/**
 	 * Return a new VariablePayload for use by plugins. The VariablePayload has limited dependencies
@@ -140,14 +154,14 @@ public class VariableContext {
 		return p;
 	}
 	
-	public Variables getVariables() {
-		return variables;
+	public ModuleVariables getVariables() {
+		return (ModuleVariables) variables;
 	}
 
 	/**
 	 * <p>Get the current list of variables stored in the module's state topic. We normally only do this when a module is loaded.
 	 * The variables can stay in memory as long as we don't crash. However, we should be saving the variables
-	 * that have changed at the end of each cycle, along with the offset of the topic we last read from.
+	 * that have changed at the end of each cycle, along with the offset of the subscribe topic we last read from.
 	 * </p>
 	 */
 	protected Map<String,MBRecord> fetchModuleVariables() {
@@ -210,7 +224,7 @@ public class VariableContext {
 	}
 	/**
 	 * The fetchModuleVariables method does the heavy lifting, we simple
-	 * take the resulting values and set them in the corresponding variables map.
+	 * take the resulting values and set them in the corresponding variables map or offsets map.
 	 */
 	public void restoreAll() {
 		if (variables==null) {
@@ -232,5 +246,17 @@ public class VariableContext {
 		}
 	}
 
+	public String getModuleName() {
+		return moduleName;
+	}
+
+	public String getInstanceName() {
+		return instanceName;
+	}
+
+	public MB getMb() {
+		return mb;
+	}
+	
 
 }

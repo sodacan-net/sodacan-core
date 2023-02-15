@@ -1,6 +1,6 @@
 // Test AT with AND
 MODULE test06
- 	SUBSCRIBE mode {1,2}
+ 	SUBSCRIBE test03.mode AS mode
     AT 10 minutes before sunset
       AND x==1
 	  THEN blow.nose

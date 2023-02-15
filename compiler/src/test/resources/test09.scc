@@ -1,5 +1,5 @@
 MODULE test09
-    SUBSCRIBE mode {on,off}
+ 	SUBSCRIBE test03.mode AS mode
     ON mode.off
         THEN state=on
     ON mode.on

@@ -46,7 +46,7 @@ publishStatement
 	;
 
 subscribeStatement
-	: SUBSCRIBE variableDef EOL+
+	: SUBSCRIBE subscribeVariableDef EOL+
 	;
 
 privateStatement
@@ -82,8 +82,12 @@ thenStatement
 eventCondition
 	: ID (DOT ID)*
 	;
-		
-// Define a variable used by PUBLISH SUBSCRIBE TOPIC and PRIVATE
+
+subscribeVariableDef
+	: m=ID instance? DOT v=ID alias
+	;
+	
+// Define a variable used by PUBLISH TOPIC and PRIVATE
 variableDef
 	: identifier instance? alias? constraintExpression? initialValue?
 	;
