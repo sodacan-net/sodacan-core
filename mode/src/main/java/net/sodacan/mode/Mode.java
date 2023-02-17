@@ -217,8 +217,8 @@ public class Mode {
 	}
 
 	/**
-	 * Convenience method to dig down into plugins to find the correct message bus implementation for this mode.
-	 * @return MessageBus interface
+	 * Convenience method to dig down into plugins to find the correct clock provider implementation for this mode.
+	 * @return ClockProvider interface
 	 */
 	public ClockProvider getClockProvider() {
 		if (this.clockProvider==null) {

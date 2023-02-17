@@ -14,14 +14,51 @@
  */
 package net.sodacan.mode.spi;
 
-import java.time.Duration;
-import java.util.concurrent.BlockingQueue;
+import java.time.Instant;
 
+/**
+ * Class used to convey clock ticks to the module runtime.
+ */
 import net.sodacan.messagebus.MBRecord;
 
-public interface ClockProvider extends ModeProvider {
-	public void setClock(int year, int month, int day, int hour, int minute, int second);
-	public long getTimestamp();
-	public void advanceClock( Duration duration);
-	public BlockingQueue<MBRecord> follow();
+public class MBTick implements MBRecord {
+	long tick;
+	
+	public MBTick( long timestamp) {
+		tick = timestamp;
+	}
+	@Override
+	public String getTopic() {
+		return "clock";
+	}
+
+	@Override
+	public long getTimestamp() {
+		return tick;
+	}
+
+	@Override
+	public long getOffset() {
+		return 0;
+	}
+
+	@Override
+	public String getKey() {
+		return null;
+	}
+
+	@Override
+	public String getValue() {
+		return null;
+	}
+
+	@Override
+	public boolean isEOF() {
+		return false;
+	}
+	@Override
+	public String toString() {
+		return "Tick: " + Instant.ofEpochMilli(tick);
+	}
+
 }

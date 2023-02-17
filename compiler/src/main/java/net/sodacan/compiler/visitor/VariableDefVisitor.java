@@ -133,7 +133,7 @@ public class VariableDefVisitor extends SccParserBaseVisitor<Void> {
 			vdb.instance(ctx.instance().getText());
 		}
 		vdb.name(ctx.v.getText());
-		vdb.alias(ctx.alias().getText());
+		vdb.alias(ctx.alias().aliasName().getText());
 		
 		VariableDef vd = vdb.build();
 		// Add it to collection of variables

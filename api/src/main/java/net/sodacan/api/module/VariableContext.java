@@ -129,7 +129,7 @@ public class VariableContext {
 	public List<String> getListOfSubscriberTopics() {
 		List<String> topicNames = new LinkedList<>();
 		for (ModuleVariable mv : variables.getUniqueSubscribeVariables()) {
-			topicNames.add(ModuleMethods.getModulePublishTopicName(modeName, mv.getName(), instanceName));
+			topicNames.add(ModuleMethods.getModulePublishTopicName(modeName, mv.getVariableDef().getModuleName(), instanceName));
 		}
 		return topicNames;
 	}
