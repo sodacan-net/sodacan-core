@@ -14,6 +14,7 @@
  */
 package net.sodacan.messagebus;
 
+import java.util.Map;
 import java.util.Set;
 /**
  * Sodacan-specific interface to the "Message Bus"
@@ -46,6 +47,7 @@ public interface MB {
 	 * @param topicName
 	 */
 	public void deleteTopic(String topicName);
+	
 	/**
 	 * Return the requested topic, ready for consumption. 
 	 * @param nextOffset The first offset to be read will be this. zero is common except in cases where offset is stored elsewhere.
@@ -53,6 +55,14 @@ public interface MB {
 	 */
 	public MBTopic openTopic(String topicName, long nextOffset);
 
+	/**
+	 * Return the requested topics, ready for consumption. 
+	 * @param A map containing the full name of each topic and the corresponding nextOffset 
+	 * The first offset to be read will be this. zero is common except in cases where offset is stored elsewhere.
+	 * @return A topic
+	 */
+	public MBTopic openTopics( Map<String,Long> topics);
+	
 	/**
 	 * Produce a new record on the specified topic
 	 * @param topicName

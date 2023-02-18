@@ -245,6 +245,9 @@ public class VariableContext {
 			}
 		}
 	}
+	public Long getOffset( String topicName) {
+		return offsets.get(topicName);
+	}
 
 	public String getModuleName() {
 		return moduleName;

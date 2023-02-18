@@ -18,6 +18,8 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * General topic interface that can be backed by memory queue or Kafka.
@@ -25,18 +27,11 @@ import java.util.concurrent.BlockingQueue;
  *
  */
 public interface MBTopic extends Closeable {
-	public String getTopicName();
-//	public long getNextOffset();
 	/**
 	 * Collect a reduced snapshot of the topic. Older versions of keys are eliminated as are deleted keys.
 	 * @return An unsorted map of the resulting records.
 	 */
 	public Map<String, MBRecord> snapshot();
-	/**
-	 * Follow a topic using a stream
-	 * @return Stream of records
-	 */
-	public BlockingQueue<MBRecord> follow();
 	
 	public void stop();
 	
@@ -44,4 +39,12 @@ public interface MBTopic extends Closeable {
 	 * Close the topic.
 	 */
 	public void close() throws IOException;
+	/**
+	 * <p>Follow a topic starting from the supplied offset until forever, or when the stream is closed.</p>
+	 * <p>For Kafka, it 
+	 * is critical that consumption of the stream remain lively. The caller should get back to reading
+	 * records from the stream as quickly as possible. Otherwise, no keep-alive signal is sent to the broker.
+	 * </p>
+	 */
+	Future<?> follow(Consumer<MBRecord> cs);
 }

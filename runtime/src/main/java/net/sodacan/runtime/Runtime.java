@@ -15,22 +15,24 @@
 package net.sodacan.runtime;
 
 import java.time.Instant;
-import java.util.LinkedList;
+import java.util.HashMap;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
+import java.util.Map;
+import java.util.concurrent.Future;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
-import net.sodacan.SodacanException;
 import net.sodacan.api.module.ModuleContext;
 import net.sodacan.api.module.VariableContext;
+import net.sodacan.messagebus.MB;
 import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ClockProvider;
+import net.sodacan.module.ModuleMethods;
 /**
  * <p>Each module gets its own runtime which contains the a Mode, The compiled Module structure, the Variabled associated with the module, and a Ticker. </p>
  * <p>The current time is stored as a variable in the Variable list so that it is available should the module need to restart from SateStore. 
@@ -46,7 +48,8 @@ import net.sodacan.mode.spi.ClockProvider;
 public class Runtime implements Runnable {
 	
 	private final static Logger logger = LoggerFactory.getLogger(Runtime.class);
-	
+	public static final int QUEUE_SIZE = 100;
+
 	@JsonIgnore
 	long timestamp;	// Set and used by Runtime
 
@@ -55,10 +58,12 @@ public class Runtime implements Runnable {
 	protected ModuleContext moduleContext;
 	protected VariableContext variableContext;
 	protected List<String> subscriberTopicNames;
-	protected List<MBTopic> subscriberTopics;
+	protected String adminTopic;
 	protected ClockProvider clockProvider;
-	protected LinkedList<BlockingQueue<MBRecord>> queues; 
+	protected Future<?> topicFuture;
+	protected MB mb;
 	
+//	protected BlockingQueue<MBRecord> queue = new LinkedBlockingQueue<MBRecord>(QUEUE_SIZE); 
 	/**
 	 * Setup a runtime for a single mode/module combination
 	 * @param mode
@@ -67,75 +72,45 @@ public class Runtime implements Runnable {
 	public Runtime( Mode mode, String fullModuleName) {
 		// Remember the mode/module
 		this.mode = mode;
+		mb = mode.getMB();
 		this.fullModuleName = fullModuleName;
 		// Setup a context with the module structure and variables are available
 		this.moduleContext = new ModuleContext(mode);
 		moduleContext.fetchModule(fullModuleName);
 		this.variableContext = moduleContext.getVariableContext();
+		// Restore variable and offset context
 		variableContext.restoreAll();
 		// As soon as we get started, we listen for events from these subscriptions.
 		subscriberTopicNames = variableContext.getListOfSubscriberTopics();
-		
+		this.adminTopic = ModuleMethods.getModuleAdminTopicName(mode.getModeName(), fullModuleName);
 	}
 	
 	/**
-	 * For each subscriber, open it's corresponding topic. Don't actually "follow" the topics yet.
+	 * Create a map of topic names with starting offsets then open the topics
 	 * 
 	 */
 	protected void openTopics() {
-		subscriberTopics = new LinkedList<>();
+		Map<String,Long> topics = new HashMap<>();
 		for (String topicName : subscriberTopicNames) {
-			subscriberTopics.add(variableContext.getMb().openTopic(topicName, 0));	// <<<<<<<<<<< OFFSET s/b from state.
+			topics.put(topicName, variableContext.getOffset(topicName));
 		}
+		topics.put(adminTopic, variableContext.getOffset(adminTopic));
+		MBTopic topic = mb.openTopics(topics);
+		topicFuture = topic.follow((t) -> processRecord(t));
 	}
-	
+
+	protected void processRecord( MBRecord record) {
+		variableContext.saveOffset(record.getTopic(), record.getOffset());
+		logger.debug("Processing " + record);
+	}
+
 	/**
 	 * Setup for a flow of clock ticks
 	 */
 	protected void openClock() {
 		clockProvider = mode.getClockProvider();
 	}
-	/**
-	 * OK, we're now going to put together a number of blocking queues.
-	 */
-	protected void followAll() {
-		queues = new LinkedList<>();
-		queues.add(clockProvider.follow());		// Ticks
-		subscriberTopics.forEach((t) -> queues.add(t.follow())); // All subscriptions
-	}
-
-	/**
-	 * Look through each of the queues to determine the oldest timestamp. Return a record from that queue.
-	 * @return The MBRecord from the queue with the oldest timestamp at the head of the queue.
-	 */
-	protected MBRecord nextRecord() {
-		try {
-			MBRecord oldest = null;
-			BlockingQueue<MBRecord> oldestQueue = null;
-			for (BlockingQueue<MBRecord> q : queues) {
-				MBRecord r = q.peek();
-				if (r!=null) {	// Queue could be empty
-					if (oldest==null) {	// First item in queue
-						oldest = r;
-						oldestQueue = q;
-						timestamp = r.getTimestamp();
-					} else {
-						if (r.getTimestamp() < oldest.getTimestamp()) {
-							oldest = r;
-							oldestQueue = q;
-						}
-					}
-				}
-			}
-			if (oldestQueue!=null) {
-					return oldestQueue.take();
-			} else {
-				return null;
-			}
-		} catch (Exception e) {
-			throw new SodacanException("Error in runtime for module " + fullModuleName, e);
-		}
-	}
+		
 	/**
 	 * The Timestamp of a module originates in a clock plugin and is set by the Runtime system. 
 	 * It represents the time "now" as far as the current processing cycle of the module is concerned.
@@ -162,16 +137,9 @@ public class Runtime implements Runnable {
 		try {
 			openTopics();
 			openClock();
-			followAll();
 			// We run until interrupted
 			while (!Thread.currentThread().isInterrupted()) {
-				MBRecord nextRecord = nextRecord();
-				if (nextRecord!=null) {
-					logger.debug("Processing " + nextRecord);
-				} else {
-					Thread.sleep(100);
-//					logger.debug("Nothing to process");
-				}
+				Thread.sleep(60*1000);
 			}
 		} catch (Throwable e) {
 			logger.error("Exception in runtime for " + fullModuleName );
@@ -181,6 +149,8 @@ public class Runtime implements Runnable {
 				logger.error("  " + t.getMessage());
 				t = t.getCause();
 			}
+		} finally {
+			topicFuture.cancel(true);
 		}
 	}
 

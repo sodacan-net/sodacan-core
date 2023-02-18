@@ -16,6 +16,7 @@ package net.sodacan.mode.spi;
 
 import java.time.Duration;
 import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.Future;
 
 import net.sodacan.messagebus.MBRecord;
 
@@ -23,5 +24,5 @@ public interface ClockProvider extends ModeProvider {
 	public void setClock(int year, int month, int day, int hour, int minute, int second);
 	public long getTimestamp();
 	public void advanceClock( Duration duration);
-	public BlockingQueue<MBRecord> follow();
+	public  Future<?> follow(BlockingQueue<MBRecord> queue);
 }
