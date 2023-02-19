@@ -15,8 +15,6 @@
 package test.net.sodacan.module;
 
 import java.math.BigDecimal;
-import java.time.ZoneId;
-import java.time.ZonedDateTime;
 
 import org.junit.Test;
 
@@ -28,7 +26,6 @@ import net.sodacan.module.terminal.VariableRefExpression;
 import net.sodacan.module.value.Value;
 import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variables.ModuleVariables;
-import net.sodacan.module.variables.Variables;
 
 public class TestAssignmentExpressions extends TestConfig {
 	static final BigDecimal NUMBER1 = new BigDecimal("0.0");

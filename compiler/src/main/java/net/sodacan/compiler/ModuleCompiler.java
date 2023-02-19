@@ -26,7 +26,6 @@ import org.apache.commons.text.StringSubstitutor;
 import net.sodacan.SodacanException;
 import net.sodacan.compiler.visitor.ExecuteableStatementVisitor;
 import net.sodacan.compiler.visitor.VariableDefVisitor;
-import net.sodacan.module.statement.ModuleComponent;
 import net.sodacan.module.statement.SodacanModule;
 
 /**

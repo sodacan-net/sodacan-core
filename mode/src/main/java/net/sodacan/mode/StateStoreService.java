@@ -24,12 +24,6 @@ import net.sodacan.SodacanException;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
 import net.sodacan.mode.spi.StateStoreProvider;
-import net.sodacan.mode.spi.VariablePayload;
-import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.variable.ModuleVariable;
-import net.sodacan.module.variable.Variable;
-import net.sodacan.module.variables.ModuleVariables;
-import net.sodacan.module.variables.Variables;
 /**
  * <p>StateStore could be called Variable Store because the collection of variables for a module
  * comprise the totality of state for that module.</p>

@@ -17,7 +17,6 @@ package net.sodacan.module.operator;
 import net.sodacan.module.expression.BinaryOperator;
 import net.sodacan.module.expression.Expression;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variables.Variables;
 
 public class AddOperator extends BinaryOperator {
 

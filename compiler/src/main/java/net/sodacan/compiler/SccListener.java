@@ -21,7 +21,6 @@ import org.antlr.v4.runtime.ParserRuleContext;
 
 import net.sodacan.compiler.SccParser.ModuleContext;
 import net.sodacan.compiler.SccParser.ModuleNameContext;
-import net.sodacan.compiler.SccParser.SubscribeStatementContext;
 import net.sodacan.module.statement.SodacanModule;
 /**
  * This listener does some semantic checks. In a separate pass, we'll create the AST.

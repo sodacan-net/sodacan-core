@@ -15,14 +15,11 @@
 package net.sodacan.module.variable;
 
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.TreeMap;
 
 import net.sodacan.SodacanException;
 import net.sodacan.module.variables.ModuleVariables;
-import net.sodacan.module.variables.Variables;
 
 /**
  * A structure holding all variables for a module

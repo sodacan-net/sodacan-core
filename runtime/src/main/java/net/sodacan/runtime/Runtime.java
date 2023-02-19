@@ -99,9 +99,16 @@ public class Runtime implements Runnable {
 		topicFuture = topic.follow((t) -> processRecord(t));
 	}
 
+	/**
+	 * For each module, a single-stream of events arrive and call this method synchronously.
+	 * We generally have three things to handle: a tick event, a variable (from a subscribed topic),
+	 * and an admin event, typically a new module source code. 
+	 * @param record
+	 */
 	protected void processRecord( MBRecord record) {
 		variableContext.saveOffset(record.getTopic(), record.getOffset());
 		logger.debug("Processing " + record);
+//		if (record.getKey())
 	}
 
 	/**

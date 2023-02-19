@@ -17,7 +17,6 @@ package net.sodacan.messagebus;
 import java.io.Closeable;
 import java.io.IOException;
 import java.util.Map;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
 

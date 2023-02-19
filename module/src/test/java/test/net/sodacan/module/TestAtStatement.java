@@ -14,8 +14,6 @@
  */
 package test.net.sodacan.module;
 
-import static org.junit.Assert.*;
-
 import java.time.ZoneId;
 import java.time.ZonedDateTime;
 
