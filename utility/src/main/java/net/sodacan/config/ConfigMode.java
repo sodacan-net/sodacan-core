@@ -16,6 +16,7 @@ package net.sodacan.config;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import com.fasterxml.jackson.annotation.JsonAnyGetter;
 
@@ -29,18 +30,44 @@ public class ConfigMode {
 	private Map<String,String> messageBus = new HashMap<>();
 	private Map<String,String> clock = new HashMap<>();
 	private Map<String,String> logger = new HashMap<>();
-	private Map<String,String> stateStore = new HashMap<>();
+	private Map<String,String> tickSource = new HashMap<>();
 	
 	public ConfigMode() {
 		
 	}
+	/**
+	 * Copy attributes from another plugin type, most commonly, connection parameters from messageBus.
+	 * @param map
+	 */
+	protected void copyFrom( Map<String,String> map ) {
+		String copyFrom = tickSource.get("copyFrom");
+		if ( copyFrom==null) {
+			return;
+		}
+		if ("messageBus".equals(copyFrom)) {
+			for (Entry<String, String> e : messageBus.entrySet()) {
+				if (!map.containsKey(e.getKey())) {
+					map.put(e.getKey(), e.getValue());
+				}
+			}
+		}
+	}
 
+	public void getCopyFroms() {
+		// Also, copy requested settings
+		copyFrom( messageBus);
+		copyFrom( clock);
+		copyFrom( logger);
+		copyFrom( tickSource);
+	}
+	
 	public ConfigMode(ConfigModeBuilder cmb) {
 		this.name = cmb.name;
 		this.messageBus = cmb.messageBus;
 		this.clock = cmb.clock;
 		this.logger = cmb.logger;
-		this.stateStore = cmb.stateStore;
+		this.tickSource = cmb.tickSource;
+		getCopyFroms();
 	}
 
 	@Override
@@ -53,8 +80,8 @@ public class ConfigMode {
 		sb.append(clock);
 		sb.append(" logger: ");
 		sb.append(logger);
-		sb.append("stateStore: ");
-		sb.append(stateStore);
+		sb.append("tickSource: ");
+		sb.append(tickSource);
 		return sb.toString();
 	}
 
@@ -93,12 +120,12 @@ public class ConfigMode {
 	}
 
 	@JsonAnyGetter
-	public Map<String, String> getStateStore() {
-		return stateStore;
+	public Map<String, String> getTickSource() {
+		return tickSource;
 	}
 
-	public void setStateStore(Map<String, String> stateStore) {
-		this.stateStore = stateStore;
+	public void setTickSource(Map<String, String> tickSource) {
+		this.tickSource = tickSource;
 	}
 
 	public static ConfigModeBuilder newConfiguModeBuilder() {
@@ -110,13 +137,13 @@ public class ConfigMode {
 		private Map<String,String> messageBus;
 		private Map<String,String> clock;
 		private Map<String,String> logger;
-		private Map<String,String> stateStore;
+		private Map<String,String> tickSource;
 		
 		private ConfigModeBuilder() {
 			messageBus = new HashMap<String,String>();
 			clock = new HashMap<String,String>();
 			logger = new HashMap<String,String>();
-			stateStore = new HashMap<String,String>();
+			tickSource = new HashMap<String,String>();
 		}
 		
 		public ConfigModeBuilder name( String name) {
@@ -139,8 +166,8 @@ public class ConfigMode {
 			return this;
 		}
 		
-		public ConfigModeBuilder stateStoreType( String pluginType) {
-			this.stateStore.put("pluginType", pluginType);
+		public ConfigModeBuilder tickSourceType( String pluginType) {
+			this.tickSource.put("pluginType", pluginType);
 			return this;
 		}
 
@@ -159,8 +186,8 @@ public class ConfigMode {
 			return this;
 		}
 		
-		public ConfigModeBuilder stateStoreProperty( String key, String value) {
-			this.stateStore.put(key, value);
+		public ConfigModeBuilder tickSourceProperty( String key, String value) {
+			this.tickSource.put(key, value);
 			return this;
 		}
 		

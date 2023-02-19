@@ -23,15 +23,9 @@ import org.slf4j.LoggerFactory;
 import net.sodacan.SodacanException;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
-import net.sodacan.mode.spi.StateStoreProvider;
-import net.sodacan.mode.spi.VariablePayload;
-import net.sodacan.module.statement.SodacanModule;
-import net.sodacan.module.variable.ModuleVariable;
-import net.sodacan.module.variable.Variable;
-import net.sodacan.module.variables.ModuleVariables;
-import net.sodacan.module.variables.Variables;
+import net.sodacan.mode.spi.TickSourceProvider;
 /**
- * <p>StateStore could be called Variable Store because the collection of variables for a module
+ * <p>TickSource could be called Variable Store because the collection of variables for a module
  * comprise the totality of state for that module.</p>
  * <p>Save Variable State to all providers. Even though we're passed the entire set of variables for a module, our job is to pick
  * through the variables and save only those that have changed. We leave behind the class structure of variables and serialize to
@@ -43,31 +37,34 @@ import net.sodacan.module.variables.Variables;
  * @author John Churin
  *
  */
-public class StateStoreService extends ModeService {
-	private final static Logger logger = LoggerFactory.getLogger(StateStoreService.class);
-	protected List<StateStoreProvider> providers = new ArrayList<>();
+public class TickSourceService extends ModeService {
+	private final static Logger logger = LoggerFactory.getLogger(TickSourceService.class);
+	protected List<TickSourceProvider> providers = new ArrayList<>();
 
-	public StateStoreService(ConfigMode configMode) {
-		super(configMode, StateStoreProvider.class);
-		String pluginType = configMode.getStateStore().get("pluginType");
+	public TickSourceService(ConfigMode configMode) {
+		super(configMode, TickSourceProvider.class);
+		String pluginType = configMode.getTickSource().get("pluginType");
 		loadProviders(pluginType);
 	}
 
 	public void loadProviders(String pluginType) {
 		for (ModeProvider provider : getLoader()) {
 			if (provider.isMatch(pluginType)) {
-				providers.add((StateStoreProvider) provider);
+				providers.add((TickSourceProvider) provider);
 				provider.setMode(getModeName());
 				logger.debug("Mode: " + getModeName() + " PluginType: " + pluginType + " Provider: " + provider.getClass().getName());
 			}
 		}
 		if (providers.size()==0) {
-			throw new SodacanException("No state store providers found for type: " + pluginType + " for mode " + getModeName());
+			throw new SodacanException("No TickSource providers found for type: " + pluginType + " for mode " + getModeName());
 		}
 	}
 
 	@Override
-	protected List<StateStoreProvider> getProviders() {
+	protected List<TickSourceProvider> getProviders() {
+		for (TickSourceProvider p : providers) {
+			p.initConfig(configMode.getTickSource());
+		}
 		return providers;
 	}
 	
@@ -76,8 +73,8 @@ public class StateStoreService extends ModeService {
 	 * Close this service by closing the providers it is using
 	 */
 	public void close() {
-		logger.debug("Closing StateStore service: " + getConfigMode());
-		for (StateStoreProvider provider : getProviders()) {
+		logger.debug("Closing TickSource service: " + getConfigMode());
+		for (TickSourceProvider provider : getProviders()) {
 			provider.close();
 		}
 		super.close();

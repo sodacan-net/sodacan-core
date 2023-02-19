@@ -14,9 +14,12 @@
  */
 package net.sodacan.mode.spi;
 
-import java.util.List;
+import java.time.Instant;
+import java.util.Map;
+import java.util.concurrent.Future;
 
-public interface StateStoreProvider extends ModeProvider {
-	public void save( VariablePayload payload);
-	public List<VariablePayload> restoreAll( String moduleName );
+public interface TickSourceProvider extends ModeProvider {
+	public void initConfig(Map<String,String> configProperties);
+	public Future<?> start( );
+	public void sendTick(Instant tick);
 }

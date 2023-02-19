@@ -29,7 +29,7 @@ public class ModePayload {
 	private Set<String> messageBusTypes;
 	private Set<String> clockTypes;
 	private Set<String> loggerTypes; 
-	private Set<String> stateStoreTypes;
+	private Set<String> tickSourceTypes;
 	
 	public ModePayload() {
 		
@@ -41,7 +41,7 @@ public class ModePayload {
 		this.messageBusTypes = mpb.messageBusTypes;
 		this.clockTypes = mpb.clockTypes;
 		this.loggerTypes = mpb.loggerTypes; 
-		this.stateStoreTypes = mpb.stateStoreTypes;
+		this.tickSourceTypes = mpb.tickSourceTypes;
 
 	}
 
@@ -62,8 +62,8 @@ public class ModePayload {
 		return loggerTypes;
 	}
 
-	public Set<String> getStateStoreTypes() {
-		return stateStoreTypes;
+	public Set<String> getTickSourceTypes() {
+		return tickSourceTypes;
 	}
 
 	public static ModePayloadBuilder newModePayloadBuilder() {
@@ -75,7 +75,7 @@ public class ModePayload {
 		private Set<String> messageBusTypes = new HashSet<String>();
 		private Set<String> clockTypes = new HashSet<String>();
 		private Set<String> loggerTypes = new HashSet<String>(); 
-		private Set<String> stateStoreTypes = new HashSet<String>();
+		private Set<String> tickSourceTypes = new HashSet<String>();
 		private Set<PropertyChangeListener> listeners = new HashSet<>();
 
 		protected ModePayloadBuilder() {
@@ -97,8 +97,8 @@ public class ModePayload {
 			return this;
 		}
 
-		public ModePayloadBuilder stateStore( String stateStoreType ) {
-			this.stateStoreTypes.add(stateStoreType);
+		public ModePayloadBuilder tickSource( String tickSourceType ) {
+			this.tickSourceTypes.add(tickSourceType);
 			return this;
 		}
 

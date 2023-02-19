@@ -21,7 +21,7 @@ import java.util.ServiceLoader;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.mode.spi.ModeProvider;
 /**
- * <p>A Mode instance has one ModeService instance per class of service: Logger, Clock, MessageBus, and StateStore.
+ * <p>A Mode instance has one ModeService instance per class of service: Logger, Clock, MessageBus, and TickSource.
  * The subclasses of this class have methods for coordinating access to a specific provider function.
  * For example, to generate a log entry, the Sodacan Runtime will ask the mode for the logging service.</p>
  * 
@@ -36,7 +36,7 @@ import net.sodacan.mode.spi.ModeProvider;
  *
  */
 public abstract class ModeService {
-	private ConfigMode configMode;
+	protected ConfigMode configMode;
 	private ServiceLoader<? extends ModeProvider> loader = null;
 
 	public ModeService(ConfigMode configMode, Class<? extends ModeProvider> providerClass) {

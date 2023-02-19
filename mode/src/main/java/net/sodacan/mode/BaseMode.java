@@ -34,7 +34,7 @@ public class BaseMode {
 	private MessageBusService messageBusService;
 	private ClockService clockService;
 	private LoggerService loggerService;
-	private StateStoreService stateStoreService;
+	private TickSourceService tickSourceService;
 	
 	/**
 	 * A Base mode is constructed from a ConfigMode which usually comes from
@@ -51,8 +51,8 @@ public class BaseMode {
 		if (configMode.getLogger().size()!=0) {
 			loggerService = new LoggerService(configMode);
 		}
-		if (configMode.getStateStore().size()!=0) {
-			stateStoreService = new StateStoreService(configMode);
+		if (configMode.getTickSource().size()!=0) {
+			tickSourceService = new TickSourceService(configMode);
 		}
 	}
 
@@ -60,8 +60,8 @@ public class BaseMode {
 		return messageBusService;
 	}
 		
-	public StateStoreService getStateStoreService() {
-		return stateStoreService;
+	public TickSourceService getTickSourceService() {
+		return tickSourceService;
 	}
 
 	public ClockService getClockService() {
@@ -85,8 +85,8 @@ public class BaseMode {
 		if (loggerService!=null) {
 			loggerService.close();
 		}
-		if (stateStoreService!=null) {
-			stateStoreService.close();
+		if (tickSourceService!=null) {
+			tickSourceService.close();
 		}
 	}
 }

@@ -30,6 +30,7 @@ import net.sodacan.api.module.VariableContext;
 import net.sodacan.messagebus.MB;
 import net.sodacan.messagebus.MBRecord;
 import net.sodacan.messagebus.MBTopic;
+import net.sodacan.mode.ClockService;
 import net.sodacan.mode.Mode;
 import net.sodacan.mode.spi.ClockProvider;
 import net.sodacan.module.ModuleMethods;
@@ -37,7 +38,7 @@ import net.sodacan.module.ModuleMethods;
  * <p>Each module gets its own runtime which contains the a Mode, The compiled Module structure, the Variabled associated with the module, and a Ticker. </p>
  * <p>The current time is stored as a variable in the Variable list so that it is available should the module need to restart from SateStore. 
  * The same goes for the module source code.</p>
- * <p>If the runtime cannot restore from StateStore, then it "rewinds" the input queue and processes events from the beginning. 
+ * <p>If the runtime cannot restore from TickSource, then it "rewinds" the input queue and processes events from the beginning. 
  * The first (or near first) item in the input queue will be a variable containing the (initial) source code of the module.</p>
  * <p>During a recovery operation, the Ticker needs to be "pushed" along. Essentially, the clock is set to the timestamp of each message which 
  * allows the ticker to add Ticks into the stream in the same order they were received the first time through. 
@@ -62,6 +63,7 @@ public class Runtime implements Runnable {
 	protected ClockProvider clockProvider;
 	protected Future<?> topicFuture;
 	protected MB mb;
+	protected MBTopic topic;
 	
 //	protected BlockingQueue<MBRecord> queue = new LinkedBlockingQueue<MBRecord>(QUEUE_SIZE); 
 	/**
@@ -86,22 +88,38 @@ public class Runtime implements Runnable {
 	}
 	
 	/**
-	 * Create a map of topic names with starting offsets then open the topics
+	 * Create a map of topic names with starting offsets then open the topics. This includes the 
+	 * adminTopic for this module.
 	 * 
 	 */
 	protected void openTopics() {
 		Map<String,Long> topics = new HashMap<>();
+		// Modules that generate events that this module listens for (subscribes to)
 		for (String topicName : subscriberTopicNames) {
 			topics.put(topicName, variableContext.getOffset(topicName));
 		}
+		// Admin topic for this module
 		topics.put(adminTopic, variableContext.getOffset(adminTopic));
-		MBTopic topic = mb.openTopics(topics);
-		topicFuture = topic.follow((t) -> processRecord(t));
+		// If applicable, the clock as well.
+//		ClockService clockService = moduleContext.getMode().getBaseMode().getClockService();
+//		clockService.
+//		if (clockTopic!=null) {
+//			topics.put(clockTopic, variableContext.getOffset(clockTopic));
+//		}
+//		openClock();
+		topic = mb.openTopics(topics);
 	}
 
+	/**
+	 * For each module, a single-stream of events arrive and call this method synchronously.
+	 * We generally have three things to handle: a tick event, a variable (from a subscribed topic),
+	 * and an admin event, typically a new module source code. 
+	 * @param record
+	 */
 	protected void processRecord( MBRecord record) {
 		variableContext.saveOffset(record.getTopic(), record.getOffset());
 		logger.debug("Processing " + record);
+//		if (record.getKey())
 	}
 
 	/**
@@ -136,7 +154,7 @@ public class Runtime implements Runnable {
 	public void run() {
 		try {
 			openTopics();
-			openClock();
+			topicFuture = topic.follow((t) -> processRecord(t));
 			// We run until interrupted
 			while (!Thread.currentThread().isInterrupted()) {
 				Thread.sleep(60*1000);

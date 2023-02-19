@@ -12,15 +12,14 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package net.sodacan.mode.spi;
+package net.sodacan.messagebus;
 
 import java.time.Instant;
-
 /**
- * Class used to convey clock ticks to the module runtime.
+ * An implementation of message bus record that represents a clock tick.
+ * @author John Churin
+ *
  */
-import net.sodacan.messagebus.MBRecord;
-
 public class MBTick implements MBRecord {
 	long tick;
 	
@@ -44,7 +43,7 @@ public class MBTick implements MBRecord {
 
 	@Override
 	public String getKey() {
-		return null;
+		return "tick";
 	}
 
 	@Override

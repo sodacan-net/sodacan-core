@@ -17,6 +17,8 @@ package net.sodacan.config;
 import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,9 +64,19 @@ public class Config {
 			ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
 			instance = mapper.readValue(new File(filename), Config.class);
 //			JsonNode node = mapper.readTree(new File(filename));
+			instance.getCopyFroms();
 			return instance;
 		} catch (Exception e) {
 			throw new SodacanException("Error initializing configuration", e);
+		}
+	}
+
+	/**
+	 * Run through each mode looking for copyFroms
+	 */
+	public void getCopyFroms() {
+		for (ConfigMode cm : modes) {
+			cm.getCopyFroms();
 		}
 	}
 

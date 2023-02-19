@@ -38,7 +38,7 @@ public class Initialize {
 	public static final String MODULES = "Modules";
 	public static final String DEFAULT_CONFIG_FILE = "config/config.yaml";
 	public static final String DEFAULT_MODE = "default";
-	public static final String DEFAULT_CLOCK = "real";
+	public static final String DEFAULT_CLOCK = "real-clock";
 	public static final String DEFAULT_LOGGER = "memory";
 	public static final String DEFAULT_MESSAGE_BUS = "memory";
 	public static final String DEFAULT_STATE_STORE = "memory";
@@ -51,9 +51,9 @@ public class Initialize {
 	 */
 	public boolean setupTopics(Mode mode) {
 		MB mb = mode.getMB();
+		// Get the set of topics we know about
 		Set<String> topicSet = mb.listTopics();
 		
-		// Get the set of topics we know about
 		boolean r = false;
 		if (!topicSet.contains(AGENT_STATUS)) {
 			mb.createTopic(AGENT_STATUS,true);
@@ -78,6 +78,11 @@ public class Initialize {
 		if (!topicSet.contains(MODULES)) {
 			mb.createTopic(MODULES,true);
 			logger.debug(MODULES + " created");
+			r = true;
+		}
+		if (!topicSet.contains(DEFAULT_CLOCK)) {
+			mb.createTopic(DEFAULT_CLOCK,true);
+			logger.debug(DEFAULT_CLOCK + " created");
 			r = true;
 		}
 		return r;

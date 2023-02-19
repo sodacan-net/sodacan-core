@@ -15,7 +15,6 @@
 package net.sodacan.mode.spi;
 
 import java.beans.PropertyChangeListener;
-import java.util.Set;
 
 public interface ModeProvider {
 	public void setMode( String modeName);

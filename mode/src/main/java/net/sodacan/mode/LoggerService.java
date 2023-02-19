@@ -46,7 +46,7 @@ public class LoggerService extends ModeService {
 			}
 		}
 		if (providers.size()==0) {
-			throw new SodacanException("No Logger providers found for type: " + pluginType + " for mode " + getModeName());
+			logger.error("No Logger providers found for type: " + pluginType + " for mode " + getModeName());
 		}
 	}
 

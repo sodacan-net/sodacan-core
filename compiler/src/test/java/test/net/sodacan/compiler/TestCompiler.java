@@ -34,9 +34,7 @@ import net.sodacan.config.Location;
 import net.sodacan.module.message.ModuleMessage;
 import net.sodacan.module.statement.SodacanModule;
 import net.sodacan.module.value.Value;
-import net.sodacan.module.variable.VariableDef;
 import net.sodacan.module.variables.CompositeVariables;
-import net.sodacan.module.variables.ModuleVariables;
 import net.sodacan.module.variables.SystemVariables;
 import net.sodacan.module.variables.Variables;
 

@@ -27,6 +27,7 @@ import net.sodacan.config.Config;
 import net.sodacan.config.ConfigMode;
 import net.sodacan.messagebus.MB;
 import net.sodacan.mode.spi.ClockProvider;
+import net.sodacan.mode.spi.TickSourceProvider;
 
 /**
  * <p>Mode is a major operational partitioning mechanism in the Sodacan runtime. All IO is partitioned by mode.
@@ -67,6 +68,7 @@ public class Mode {
 	
 	private MB mb = null;
 	private ClockProvider clockProvider = null;
+	private TickSourceProvider tickSourceProvider = null;
 	
 	/**
 	 * Find a Mode
@@ -230,6 +232,22 @@ public class Mode {
 		}
 		return clockProvider;
 	}
+
+	/**
+	 * Convenience method to dig down into plugins to find the correct TickSource provider implementation for this mode.
+	 * @return TickSourceProvider interface
+	 */
+	public TickSourceProvider getTickSourceProvider() {
+		if (this.tickSourceProvider==null) {
+			TickSourceService cs = baseMode.getTickSourceService();
+			if (cs==null || cs.getProviders().size()==0) {
+				throw new SodacanException("No TickSource providers available in mode " + getModeName());
+			}
+			tickSourceProvider = cs.getProviders().get(0);
+		}
+		return tickSourceProvider;
+	}
+
 
 	/**
 	 * Convenience method to send something to the configured logger(s) for this mode.
