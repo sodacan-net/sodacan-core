@@ -32,7 +32,7 @@ import net.sodacan.module.statement.SodacanModule;
 /**
  * <p>Mode-specific functions for saving and restoring modules to/from the MessageBus.
  * An instance of this class is good for at least one cycle for a single module.
- * This class is normally paired with an instance of the VariableLoader class.</p>
+ * This class is normally paired with an instance of the VariableContext class.</p>
  * @author John Churin
  *
  */
