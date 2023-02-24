@@ -152,28 +152,78 @@ subgraph plugin
 end
 
 ```
-#### Message Flow
-When the system is initializes, two topic are created: The `module topic`, contains one entry per topic. And, the `mode topic`, one entry per mode. The module topic only has metadata about the module, not the module itself. The mode topic contains the definition of the mode and which plugins it uses.
 
-Either the command line tool or the Web Server will begin the lifecycle of a module using the Sodacan API. No agents need to be running at this time.
-The source code for a module begins on the file system or from the web server. In any case:
+### Runtime Behavior
+An API call initiates module processing in one of several threads involved in the processing of messages. Most of the remainder of this section is under the control of the message bus which calls back to a module runtime. Put simply, the message bus will notify the runtime factory that a specific module is active allowing the runtime to fetch and compile the module's source code and setup structures needed for that module. The message bus will then feed messages to that runtime as they arrive.
+
+Each module runtime will be called from a separate thread but messages for any one module will be delivered sequentially.
+
+The following diagram shows the key interactions between the API, the message bus, the runtime and runtime factory.
+
+```mermaid
+---
+title: Runtime Flow
+---
+sequenceDiagram
+    autonumber
+    participant A as API
+    participant RF as Runtime Factory
+    participant R as Runtime
+    A-)MB: Start Agent
+    A-)MB: Add/update module
+    MB->>+RF: Module Active with Initial State
+    RF->>R: Create Instance
+    R-->MB: Get Module Source
+    R->>MB: Subscribe Topics
+    par Thread Per Module
+    MB->>+R: Process Event
+    R->>MB: Save State, Publish Variables
+    end
+    MB-)R: Module Inctive
+
+```
+
+1. An API call gets things started by establishing an Sodacan Agent. The message bus starts running a separate thread.
+2. The application is then free to add, change or delete modules using the API. This can be done at any time before or after the agent is started. The module changes become part of the message flow which will cause the runtime to be updated when the changed module arrives.
+3. The message bus (agent) will then make a call to the runtime factory whenever it determines that a message has arrived for that module. 
+4. The runtime factory creates an instance of the runtime bound to that one module. The runtime is expected to remain active for that module until deactivated. 
+5. When the runtime for a module starts up, it will need to call back to the message bus to get the source code for that module, compile it, and create any structures that it needs.
+6. The runtime will also need to tell the message bus what topics it subscribes to. The message bus will subscribe to each of these topics plus the tick source plus module state messages.
+7. At this point, the Message Bus will deliver one message at a time to the runtime's processMessage method. The runtime will execute the module using the incoming message.
+8. When done, the runtime will save the state of the module's variables by sending them back to the message bus. This makes the variables available to other modules that have subscribed to them.
+9. When the message bus determines that the module is no longer active, it calls back to the Runtime which can then release any resources that it may have.
+
+### Message Bus Behavior
+While it may appear that the message bus runs all modules in a single address space, that is not usually the case. For the Kafka plugin, here's how it actually works.
+In Sodacan, a given module can only be executing in one place at a time and processing a single stream of events. If there is only a single "agent" running, then in fact all active modules will be in memory at the same time.
+
+However, if two or more agent's are running, then each agent gets a share of the modules. If more agents are running than there are modules, then the extra will be running idle. The extra agents can be though of hot backups since Sodacan (Kafka broker) can redirect traffic to the waiting agent at any time. If a new module is added to the system, this also affects what is running where. The message bus (Kafka) is free to "rebalance" the load at any time meaning the runtime and runtime factories must respond to the activation and deactivation callbacks.
+ 
+Due to the nature of Kafka, subscription to multiple topics are not merged and delivered in timestamp order. (Within a topic, order *is* guaranteed). Therefore, Sodacan adds an intermediate "priority queue" so that as events are received, they are added to the queue which is ordered by timestamp and then delivered to the module's runtime. The ordering issue only comes up when processing is stopped and therefore has to "catch up".
+
+#### Topic Allocation
+Each module gets its own topic. That topic will contain one message per processing cycle. This topic is what the module uses to store state and it is also what other module subscribe to if that module is interested in the results of this module.
+
+Another topic is used to maintain a list of all modules. 
+
+There is a single topic containing all versions of all module's source code. Only the Kafka offset for a particular version of a module is referenced in the module's state. This keeps the state record small. When the runtime sees a change in the offset for the module source code, it will fetch the new module and compile it. As with all other activity related to a module, this compile happens **between** events.
+
+
+### Module Origination
+
+The source code for a module begins on the file system. After initial introduction to Sodacan, it can be extracted from the message bus and updated.
+ In any case:
 
 - Compile the module, this yields the module and a newly minted collection of variables known to that module.
-- Two topics are created for each new module: Subscription topic and state topic.
-- The subscription topic may already exist if a publisher has already caused it to be created.
-- Conversely, this module will create any topics needed by its `publish` variables.
-- The new state topic is only used by the new module and it immediately receives the collection of variables extracted form the module.
-- Importantly, one of the variables contains the source code of the module.
-- At this point, the module is not yet ready to run on any particular agent
-- However, certain modules have specified which agent they must run on
+- The variables for a module have a different lifecycle than the module source code. For example, variables are unaffected by a source code change.
+- A topic is created for each new module. If the module already exists, the topic is unchanged.
+- This topic may already exist if some other module subscribed to it. But it won't contain any records.
+- Conversely, this module will create any topics needed by its `subscribe` variables.
+- The module's state topic is updated after each processing cycle for that module.
+- Therefore, the last record in the topic contains the most recent state of the module. That is, offset minus one.
 
-At this point, we have setup for a module to run, but have not actually run it. It will run on an agent. An agent can run zero or more modules.
-Ideally, if there were three agents running, one third of the modules will run on each agent. 
 
-Once all of the modules have a place to run, messages flow from a publishing module to zero or more subscribing modules. Each module has its own inbound topic. Since modules have state (variables), as the module completes each cycle, it publishes to a second topic maintained per module any changed variables. This state-saving topic is then replayed to recover state when the module starts up. After the state-recovery is done, the module can start processing inbound messages. 
-
-Determining where a module executes is the job of agents. Each agent is going to end up running some fraction of the known modules. 
-
+### Sticky (named) Agents
 Any agent that runs as a named agent is not counted as an available agent. That type of agent simply starts up and begins processing for the modules that have been tied to that named agent.
 
 When an unnamed agent starts up (it can be on any server in the network), it also names itself by creating a local file with the name or reading that file if it already exists. The name is arbitrary but must be unique. Usually a GUID and should be stable over time. It knows of no modules. The agent reads the list of known agents which contains the current status of all agents. This includes which modules that that agent is currently running. But the agent still has not been assigned any work.
@@ -231,17 +281,17 @@ Module agent(s) are the workhorse of Sodacan. These agents host one or more modu
  | ModulePersistence | N/A 
  | LoggingAgent	     | N/A 
  
-The smallest configuration will have a single agent that runs all modules in all modes.
-The command line administrative tool 
+The smallest configuration will have a single agent that runs all modules in all modes in one memory space.
 
-### Topic Structure
+### Module Topic Structure
 Each module has it's own topic. More specifically, topics are named as follows:
 
  | Component        | Description |
  | ----------- | ----------- |
- | mode      | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
- | domain | The full domain name of the local Sodacan broker |
+ | "m-"      | Prefix to identify all module state topics       |
  | module | The module name |
+ | "-"   | Separate module name from mode name |
+ | mode      | Deployment Mode. Not to be confused with any variables that happen to be named mode.       |
 
 ### Message Format
 Messages are organized by topic as described above. Within a topic, individual messages contain these fields:
@@ -259,12 +309,13 @@ Messages are organized by topic as described above. Within a topic, individual m
  | value | value | The value of the variable, if any|
 
 ### Message Delivery
-When a message is published, it is immediately delivered to any subscribing consumers, baring hardware or infrastructure difficulties. If a consumer (module) is unavailable, the message will be delivered when the component is restored.
+When a message is published, it is immediately available to any subscribing modules, baring hardware or infrastructure difficulties. If a consumer (module) is unavailable, the message will be delivered when the component is restored.
 
 Latency between a message being published and being consumed should be in the neighborhood of 1-20 milliseconds, depending on the underlying hardware. Any application that depends on faster delivery should seek another solution.
 
 ### Module Persistence
-Since messages arrive at a module one by-one, it is important to maintain state within a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of the mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
+******* Fix this
+Since events arrive at a module one-by-one, it is important to maintain state within a module. For example, a lamp module might have a "mode" setting that determines how other messages are handled. The mode-setting message will have arrived sometime before subsequent messages are processed that need the value of the mode setting. In the following, the `mode` variable will have been set via message some time in the past. When midnight arrives, that variable will be needed. Between those two times, the module may be off-line (crashed, power failure, explicitly taken off-line, etc). So, when the module needs to be restored, the variables must also be restored. 
 
 ```
 	MODULE lamp1
